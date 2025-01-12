@@ -1,6 +1,7 @@
 import serial
 import numpy as np
 from enum import Enum
+from typing import List
 
 # 创建长度固定为10的数据帧
 data_frame_size=10
@@ -25,15 +26,28 @@ class myAGV:
         # 指定底盘指令串口，并进行相关配置
         self.uartPort=serial.Serial(uart_port,baud_rate,timeout=0.5)
 
+
     def __str__(self):
         return ("AGV:\n\tid: {}\n\tSerial Port: {}\n\tBaud Rate: {}"
                 .format(hex(self.device_id),
                         self.uartPort.name,
                         self.uartPort.baudrate))
-    
-    def Velocity_Control(self,Vx_mm_s:np.int16,Vy_mm_s:np.int16,Omege_deg_s:np.int16):
+
+
+    def Velocity_Control(self,Velo_List:List[np.int16]):
+
+        """
+        @参数Velo_List：广义速度列表[Vx_mm_s,Vy_mm_s,Omege_deg_s],int16类型
+        @作用：装载并发送数据帧，共使用8有效字节
+        @数据帧格式：命令声明+速度方向 + Vx_h + Vx_l + Vy_h + Vy_l + Omege_h + Omege_l
+        """
+
         # 装载命令声明
         AGV_Data_Frame[0]=AGVCommand.VELOCITY_CONTROL.value
+
+        Vx_mm_s=np.int16(Velo_List[0])
+        Vy_mm_s=np.int16(Velo_List[1])
+        Omege_deg_s=np.int16(Velo_List[2])
 
         # 设置广义速度方向标志位
         sign_flag=np.uint8(0x00)
@@ -69,7 +83,18 @@ class myAGV:
         # 2.阻塞方式读取回应数据可能影响实时性，故暂时不处理，等待后续版本
 
 
-    def MOVJ_control(self,direction:MOVJ_Drection,rou_mm:np.uint16,omega_deg_s:np.uint16):
+    def MOVJ_control(self,direction:MOVJ_Drection,twist_param_list:List[np.uint16]):
+
+        """
+        @参数direction：圆弧运动方向,MOVJ_Drection类型
+        @参数twist_param_list：速度旋量参数列表[rou_mm,omega_deg_s],uint16类型
+        @作用：装载并发送数据帧，共使用6有效字节
+        @数据帧格式：命令声明+方向 + rou_h + rou_l + omega_h + omega_l
+        """
+
+        rou_mm=np.uint16(twist_param_list[0])
+        omega_deg_s=np.uint16(twist_param_list[1])
+
         # 装载命令声明
         AGV_Data_Frame[0]=AGVCommand.MOVJ_CONTROL.value
 
@@ -109,17 +134,17 @@ def data_frame_test():
 
 def Velocity_Control_Test():
     agv=myAGV(0x01,"/dev/ttyAMA2",115200)
-    agv.Velocity_Control(-100,200,300)
+    agv.Velocity_Control([-100,200,300])
 
 def MOVJ_direction_Enum_Test():
     print(MOVJ_Drection.Right_Backward.value)
 
 def MOVJ_control_Test():
     agv=myAGV(0x01,"/dev/ttyAMA2",115200)
-    agv.MOVJ_control(MOVJ_Drection.Right_Forward,1000,300)
+    agv.MOVJ_control(MOVJ_Drection.Right_Forward,[1000,300])
 
 def main():
-    MOVJ_control_Test()
+    Velocity_Control_Test()
 
 if(__name__=="__main__"):
     main()
