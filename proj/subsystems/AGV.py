@@ -1,7 +1,7 @@
 import serial
 import numpy as np
 from enum import Enum
-from typing import List
+from typing import List,Union
 
 # 创建长度固定为10的数据帧
 data_frame_size=10
@@ -83,17 +83,22 @@ class myAGV:
         # 2.阻塞方式读取回应数据可能影响实时性，故暂时不处理，等待后续版本
 
 
-    def MOVJ_control(self,direction:MOVJ_Drection,twist_param_list:List[np.uint16]):
+    def MOVJ_control(self,param_list:List[Union[MOVJ_Drection, np.uint16]]):
 
         """
-        @参数direction：圆弧运动方向,MOVJ_Drection类型
-        @参数twist_param_list：速度旋量参数列表[rou_mm,omega_deg_s],uint16类型
+        @参数param_list：圆弧运动参数列表[direction,rou_mm,omega_deg_s],
+            direction为MOVJ_Drection类型，rou_mm,omega_deg_s为uint16类型
         @作用：装载并发送数据帧，共使用6有效字节
         @数据帧格式：命令声明+方向 + rou_h + rou_l + omega_h + omega_l
         """
 
-        rou_mm=np.uint16(twist_param_list[0])
-        omega_deg_s=np.uint16(twist_param_list[1])
+        # 校验参数列表
+        if len(param_list) != 3:
+            raise ValueError("param_list必须包含3个元素：MOVJ_Drection 和 两个 np.uint16 类型的元素")
+
+        direction = param_list[0]
+        rou_mm = np.uint16(param_list[1])
+        omega_deg_s = np.uint16(param_list[2])
 
         # 装载命令声明
         AGV_Data_Frame[0]=AGVCommand.MOVJ_CONTROL.value

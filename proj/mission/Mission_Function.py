@@ -26,7 +26,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
     elif(self.Stage_Flag==1):
         if((time.time()-self.Phase_Start_Time)>=self.Time_List[0]):
             self.Change_Stage(2)
-            agv.MOVJ_control(AGV.MOVJ_Drection.Left_Forward,self.Para_List[1])
+            agv.MOVJ_control(self.Para_List[1])
             self.Phase_Start_Time=time.time()
             print("Mission({}) 开始圆弧转弯".format(self.Name))
 
