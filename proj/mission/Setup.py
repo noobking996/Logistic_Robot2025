@@ -2,6 +2,7 @@ import os
 from typing import List, Callable, Any,Union
 import time
 import numpy as np
+from enum import Enum
 # import sys
 # import subprocess
 
@@ -10,6 +11,13 @@ def setup():
     # os.system('chmod +x /home/zhang/Logistic_Robot2025/proj/mission/run.sh')
 
     pass
+
+
+class Correction_PosDef(Enum):
+    # 修正位置定义: 原料区、加工区、暂存区
+    Material=0x00
+    Processing=0x01
+    Storage=0x02
 
 
 # 非时变任务类,用于纠正、夹取放置等任务的定义
@@ -55,11 +63,13 @@ class MissionDef():
             print("Mission({}) Reset".format(self.Name))
 
     # 结束任务，在Run()函数中调用，返回True表示任务结束
-    def End(self):
+    def End(self)->float:
         self.End_Flag = True
+        mission_duration=time.time()-self.Start_Time
         if(self.Verbose_Flag==True):
             print("Mission({}) End, Duration:{}s"
-                  .format(self.Name,(time.time()-self.Start_Time)))
+                  .format(self.Name,mission_duration))
+        return mission_duration
 
     # 运行任务，放在循环中，外部判断返回值，True则切换到下一任务或结束循环
     def Run(self)->bool:
@@ -82,7 +92,37 @@ class MissionDef_t(MissionDef):
 class MissionManager(MissionDef):
     def __init__(self, mission_list:List[Union[MissionDef,MissionDef_t]],
                  para_list:List[Any]=[[]],
-                 verbose_flag:bool=False):
+                 verbose_flag:bool=False,num_mission:np.uint8=0):
+        """
+        @功能：任务管理器，用于管理多个任务调用顺序和切换
+        @参数: para_list, 任务参数列表,存储全局参数
+        @参数: mission_list, 任务列表,存储任务定义
+        @参数: verbose_flag, 是否输出详细信息
+        @参数: num_mission, 执行到的任务数量(从1开始),若不指定或赋0则表示自动获取任务总量
+        """
         super().__init__("MissionManager",None,para_list,verbose_flag)
         self.Mission_List = mission_list
+        if(num_mission==0):
+            self.Num_Mission = len(mission_list)
+        else:
+            self.Num_Mission = num_mission
+
+        # 使能子任务重置
+        self.Submission_Reset_Flag = True
+
+    def Run(self):
+        mission_code=self.Stage_Flag
+        if(self.Submission_Reset_Flag==True):
+            self.Submission_Reset_Flag=False
+            self.Mission_List[mission_code].Reset()
+        else:
+            end_flag=self.Mission_List[mission_code].Run()
+            if(end_flag==True):
+                # 重置子任务的重置标志位
+                self.Submission_Reset_Flag=True
+                self.Change_Stage(mission_code+1)
+
+        if(self.Stage_Flag>=self.Num_Mission):
+            self.End()
+        return self.End_Flag
 
