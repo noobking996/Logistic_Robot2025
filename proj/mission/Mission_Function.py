@@ -1,12 +1,117 @@
 import numpy as np
 import time
+from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 
-from mission.Setup import MissionDef, MissionDef_t, Correction_PosDef
+
+from mission.Setup import MissionDef, MissionDef_t, MissionManager ,Correction_PosDef
 from subsystems import AGV
+from subsystems.Computer_Vision import Video_Stream
+
+# from cv2 import VideoCapture, VideoWriter
+import cv2 as cv
+
+# from enum import Enum
 
 
 # 创建agv对象，指定串口
 agv=AGV.myAGV(0x01,"/dev/ttyAMA2",115200)
+
+# 摄像头捕获图像
+frame_captured=None
+
+
+def Frame_Capture_Func(self:MissionDef):
+    global frame_captured
+    video:Video_Stream=self.Para_List[0][0]
+    retval,frame_captured=video.Read_Frame()
+    if(retval==False):
+        raise Exception("Frame_Capture:帧捕获失败")
+
+def Frame_Capture_Trigger(self:MissionManager):
+    # 开始后直接触发
+    trigger_condition=(self.Stage_Flag>=self.Para_List[0][0])
+    P_Mission=self.Permanent_Mission_LIst[0]
+    error_flag=P_Mission.Run_Triggered_By(trigger_condition)
+    return error_flag
+
+def Frame_Capture_Callback(self:MissionDef):
+    video:Video_Stream=self.Para_List[0][0]
+    video.Release_VideoCapture()
+    
+
+def Frame_Mark_Display_Func(self:MissionDef):
+    """
+    @功能:标记帧
+    @两种模式:
+    1. standby阶段:在帧上标记十字,显示standby,并刷新帧显示
+    2. 出发后:在帧上标记十字,录制时间,并刷新帧显示
+    """
+    global frame_captured
+    video:Video_Stream=self.Para_List[0][0]
+    # 标记十字
+    video.Mark_Cross(frame_captured)
+    # 标记时间
+    annote_text=None
+    if(self.Stage_Flag==0):
+        # 显示standby字样
+        annote_text="Standing By"
+    elif(self.Stage_Flag==1):
+        # 显示录制时间
+        current_time=round((time.time()-self.Phase_Start_Time),1)
+        annote_text="{}s".format(current_time)
+    video.Mark_Text(frame_captured,annote_text)
+    # 更新窗口
+    video.Update_Window(frame_captured)
+    # 查询按键状态
+    key=(cv.pollKey() & 0xFF)
+    if(key==ord('q')):
+        raise Exception("Frame_Mark_Save: Keyboard Interrupt")
+
+def Frame_Mark_Display_Callback(self:MissionDef):
+    cv.destroyAllWindows()
+
+def Frame_Save_Func(self:MissionDef):
+    video:Video_Stream=self.Para_List[0][0]
+    video.Save_Frame(frame_captured)
+
+def Frame_Save_Callback(self:MissionDef):
+    video:Video_Stream=self.Para_List[0][0]
+    video.Release_VideoWriter()
+
+def Frame_Mark_Save_Trigger(self:MissionManager):
+    # 开始后直接触发mark+dsplay
+    trigger_condition=(self.Stage_Flag>=self.Para_List[0][1])
+    P_Mission=self.Permanent_Mission_LIst[1]
+    error_flag=P_Mission.Run_Triggered_By(trigger_condition)
+    if(error_flag==True):
+        return True
+    # 出发后,显示时间并开始录像
+    trigger_condition=(self.Stage_Flag>=self.Para_List[0][2])
+    if(trigger_condition==True):
+        if(P_Mission.Stage_Flag==0):
+            P_Mission.Phase_Start_Time=time.time()
+            P_Mission.Change_Stage(1)
+    # save
+    P_Mission=self.Permanent_Mission_LIst[2]
+    error_flag=P_Mission.Run_Triggered_By(trigger_condition)
+    return error_flag
+
+
+def Standby_Func(self:MissionDef):
+    """
+    @功能：待机
+    @参数列表元素数: 1 [[待机时间]]
+    """
+    wait_time=self.Para_List[0][0]
+    if(self.Stage_Flag==0):
+        self.Change_Stage(1)
+        if(self.Verbose_Flag==True):
+            self.Output("Mission({}) 准备出发...".format(self.Name))
+    elif(self.Stage_Flag==1):
+        if(time.time()-self.Start_Time>=wait_time):
+            self.Change_Stage(2)
+    elif(self.Stage_Flag==2):
+        self.End()
 
 
 def Departure_Func(self:MissionDef_t):
@@ -31,7 +136,7 @@ def Departure_Func(self:MissionDef_t):
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({})开始斜走".format(self.Name))
+            self.Output("Mission({})开始斜走".format(self.Name))
 
     # 等待斜走完成，开始直走
     elif(self.Stage_Flag==1):
@@ -40,7 +145,7 @@ def Departure_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[1])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({})开始直走".format(self.Name))
+                self.Output("Mission({})开始直走".format(self.Name))
 
     # 方案一：采用直走后停止方案，静止扫码
     if(stop_flag==True):
@@ -50,13 +155,13 @@ def Departure_Func(self:MissionDef_t):
                 self.Change_Stage(3)
                 agv.Velocity_Control([0,0,0])
                 self.Phase_Start_Time=time.time()
-                print("Mission({}) 开始制动".format(self.Name))
+                self.Output("Mission({}) 开始制动".format(self.Name))
 
         # 等待制动完成，结束
         elif(self.Stage_Flag==3):
             if((time.time()-self.Phase_Start_Time)>=wait_time):
                 self.Change_Stage(5)
-                print("Mission({}) 制动等待完成".format(self.Name))
+                self.Output("Mission({}) 制动等待完成".format(self.Name))
 
         elif(self.Stage_Flag==4):
             self.End()
@@ -80,13 +185,13 @@ def Scan_QRcode_Func(self:MissionDef):
         self.Change_Stage(1)
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始扫码".format(self.Name))
+            self.Output("Mission({}) 开始扫码".format(self.Name))
 
     elif(self.Stage_Flag==1):
         if((time.time()-self.Phase_Start_Time)>=scanning_time):
             self.Change_Stage(2)
             if(self.Verbose_Flag==True):
-                print("Mission({}) 扫码完成".format(self.Name))
+                self.Output("Mission({}) 扫码完成".format(self.Name))
 
     else:
         self.End()
@@ -109,7 +214,7 @@ def QRcode_2_RawMaterial_Func(self:MissionDef_t):
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始直走".format(self.Name))
+            self.Output("Mission({}) 开始直走".format(self.Name))
     
     # 直走结束后，开始制动,计时
     elif(self.Stage_Flag==1):
@@ -118,13 +223,13 @@ def QRcode_2_RawMaterial_Func(self:MissionDef_t):
             agv.Velocity_Control([0,0,0])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始制动".format(self.Name))
+                self.Output("Mission({}) 开始制动".format(self.Name))
 
     elif(self.Stage_Flag==2):
         if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
             self.Change_Stage(3)
             if(self.Verbose_Flag==True):
-                print("Mission({}) 制动等待完成".format(self.Name))
+                self.Output("Mission({}) 制动等待完成".format(self.Name))
     
     else:
         self.End()
@@ -145,13 +250,13 @@ def Pos_Correction_Func(self:MissionDef):
         self.Change_Stage(1)
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始位置纠正".format(self.Name))
+            self.Output("Mission({}) 开始位置纠正".format(self.Name))
     
     elif(self.Stage_Flag==1):
         if((time.time()-self.Phase_Start_Time)>=correction_time):
             self.Change_Stage(2)
             if(self.Verbose_Flag==True):
-                print("Mission({}) 位置纠正完毕".format(self.Name))
+                self.Output("Mission({}) 位置纠正完毕".format(self.Name))
             
     else:
         self.End()
@@ -179,7 +284,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始直走".format(self.Name))
+            self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，开始圆弧转弯
     elif(self.Stage_Flag==1):
@@ -188,7 +293,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
             agv.MOVJ_control(self.Para_List[1])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始圆弧转弯".format(self.Name))
+                self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
 
     # 等待圆弧转弯完成，开始直走
     elif(self.Stage_Flag==2):
@@ -197,7 +302,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[2])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始直走".format(self.Name))
+                self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，开始圆弧转弯
     elif(self.Stage_Flag==3):
@@ -206,7 +311,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
             agv.MOVJ_control(self.Para_List[3])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始圆弧转弯".format(self.Name))
+                self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
         
     # 等待圆弧转弯完成，开始直走
     elif(self.Stage_Flag==4):
@@ -215,7 +320,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[4])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始直走".format(self.Name))
+                self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，停止
     elif(self.Stage_Flag==5):
@@ -223,13 +328,13 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
             self.Change_Stage(6)
             agv.Velocity_Control([0,0,0])
             self.Phase_Start_Time=time.time()
-            print("Mission({}) 开始制动".format(self.Name))
+            self.Output("Mission({}) 开始制动".format(self.Name))
 
     # 等待制动完成，结束
     elif(self.Stage_Flag==6):
         if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
             self.Change_Stage(7)
-            print("Mission({}) 制动等待完成".format(self.Name))
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
 
     else:
         self.End()
@@ -257,7 +362,7 @@ def Three_Section_Turn_Func(self:MissionDef_t):
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始直走".format(self.Name))
+            self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，开始圆弧转弯
     elif(self.Stage_Flag==1):
@@ -266,7 +371,7 @@ def Three_Section_Turn_Func(self:MissionDef_t):
             agv.MOVJ_control(self.Para_List[1])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始圆弧转弯".format(self.Name))
+                self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
 
     # 等待圆弧转弯完成，开始直走
     elif(self.Stage_Flag==2):
@@ -275,7 +380,7 @@ def Three_Section_Turn_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[2])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始直走".format(self.Name))
+                self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，停止
     elif(self.Stage_Flag==3):
@@ -283,13 +388,13 @@ def Three_Section_Turn_Func(self:MissionDef_t):
             self.Change_Stage(4)
             agv.Velocity_Control([0,0,0])
             self.Phase_Start_Time=time.time()
-            print("Mission({}) 开始制动".format(self.Name))
+            self.Output("Mission({}) 开始制动".format(self.Name))
 
     # 等待制动完成，结束
     elif(self.Stage_Flag==4):
         if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
             self.Change_Stage(5)
-            print("Mission({}) 制动等待完成".format(self.Name))
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
 
     else:
         self.End()
@@ -326,7 +431,7 @@ def Storage_Go_Home_Func(self:MissionDef_t):
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            print("Mission({}) 开始直走".format(self.Name))
+            self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，开始圆弧转弯
     elif(self.Stage_Flag==1):
@@ -335,7 +440,7 @@ def Storage_Go_Home_Func(self:MissionDef_t):
             agv.MOVJ_control(self.Para_List[1])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始圆弧转弯".format(self.Name))
+                self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
 
     # 等待圆弧转弯完成，开始直走
     elif(self.Stage_Flag==2):
@@ -344,7 +449,7 @@ def Storage_Go_Home_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[2])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始直走".format(self.Name))
+                self.Output("Mission({}) 开始直走".format(self.Name))
 
     # 等待直走完成，开始斜走
     elif(self.Stage_Flag==3):
@@ -353,7 +458,7 @@ def Storage_Go_Home_Func(self:MissionDef_t):
             agv.Velocity_Control(self.Para_List[3])
             self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
-                print("Mission({}) 开始斜走".format(self.Name))
+                self.Output("Mission({}) 开始斜走".format(self.Name))
         
     # 等待直走完成，停止
     elif(self.Stage_Flag==4):
@@ -361,13 +466,13 @@ def Storage_Go_Home_Func(self:MissionDef_t):
             self.Change_Stage(5)
             agv.Velocity_Control([0,0,0])
             self.Phase_Start_Time=time.time()
-            print("Mission({}) 开始制动".format(self.Name))
+            self.Output("Mission({}) 开始制动".format(self.Name))
 
     # 等待制动完成，结束
     elif(self.Stage_Flag==5):
         if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
             self.Change_Stage(6)
-            print("Mission({}) 制动等待完成".format(self.Name))
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
 
     else:
         self.End()
