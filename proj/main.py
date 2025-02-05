@@ -18,7 +18,7 @@ Standby=MissionDef("待机",MF.Standby_Func,[[5]],True)
 
 Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-350,400,0],[0,200,0]],[0.8,0],True)
 
-Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,None,True)
+Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[False,2.5]],True)
 
 QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[0.85],True)
 
@@ -76,7 +76,14 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
                                    Home_Pos_Correction],[[0,0,1]],True,0)
 
-Mission_Code="调车0131"
+Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
+                             [[0,255],[0,144],[170,255],[True,True]],True)
+
+# 测试任务管理器
+# 参数列表内容:1. 常驻任务触发条件(这里将录像开启条件设为100,即一直不开启);
+Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,100]],True,0)
+
+Mission_Code="调车0204_1414"
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code)
 
@@ -88,25 +95,26 @@ Frame_Capture=MissionDef("视频帧捕获",MF.Frame_Capture_Func,[[myVideo]],Tru
 Frame_Capture.Set_Logger(Public_Logger)
 Frame_Capture.Set_Callback(MF.Frame_Capture_Callback,"Cap Released")
 
-# 视频帧标记+显示任务定义
+# 视频帧标记+显示任务定义(内含键盘按键状态读取)
 Frame_Mark_Display=MissionDef("视频帧标记+显示",MF.Frame_Mark_Display_Func,[[myVideo]],True)
 Frame_Mark_Display.Set_Logger(Public_Logger)
 Frame_Mark_Display.Set_Callback(MF.Frame_Mark_Display_Callback,"Windows Closed")
 
 # 视频帧保存任务定义
-Frame_Save=MissionDef("视频帧标记+保存",MF.Frame_Save_Func,[[myVideo]],True)
+Frame_Save=MissionDef("视频帧保存",MF.Frame_Save_Func,[[myVideo]],True)
 Frame_Save.Set_Logger(Public_Logger)
 Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 
 def main():
-    Logistics_Handling.Set_Logger(Public_Logger)
-    Logistics_Handling.Reset()
-    Logistics_Handling.Set_Permanent_Mission([Frame_Capture,Frame_Mark_Display,Frame_Save],
+    mission_manager=Partial_MIssion_Test
+    mission_manager.Set_Logger(Public_Logger)
+    mission_manager.Reset()
+    mission_manager.Set_Permanent_Mission([Frame_Capture,Frame_Mark_Display,Frame_Save],
                                              [MF.Frame_Capture_Trigger,
                                               MF.Frame_Mark_Save_Trigger],3)
     end_flag=False
     while(True):
-        end_flag=Logistics_Handling.Run()
+        end_flag=mission_manager.Run()
         if(end_flag==True):
             print("End of All Missions")
             break

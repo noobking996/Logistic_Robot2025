@@ -155,9 +155,13 @@ class MissionDef():
             if(self.Callback_Func!=None):
                 self.Callback_Func(self)
                 self.Output("Mission({}) {}".format(self.Name,self.Callback_Output),INFO)
-        mission_duration=time.time()-self.Start_Time
+        if(self.Start_Time!=None):
+            # 防止任务还未初始化就结束的情况
+            mission_duration=time.time()-self.Start_Time
+        else:
+            mission_duration=0.0
         if(self.Verbose_Flag==True):
-            self.Output("Mission({}) End, Duration:{}s".
+            self.Output("Mission({}) End, Duration(s):{}".
                         format(self.Name,mission_duration),INFO)
         return mission_duration
 

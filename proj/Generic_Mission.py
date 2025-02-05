@@ -39,12 +39,15 @@ def Send_Cmd():
 
 
 def WaitKey_Test():
-    img=cv.imread("proj/assets/img_green_filter.png",cv.IMREAD_GRAYSCALE)
+    img=cv.imread("proj/assets/images/img_green_filter.png",cv.IMREAD_GRAYSCALE)
     cv.imshow("img",img)
-    key=None
+    # key=None
     # 13是回车键的值
-    while(key!=13):
+    while(True):
         key=cv.waitKey(-1)
+        key=key & 0xFF
+        if(key==ord('q')):
+            break
         print(key)
 
 
@@ -252,8 +255,8 @@ def main():
     # cv.imwrite("proj/assets/img.png",img)
 
     # Send_Cmd()
-    # WaitKey_Test()
-    Camera_Test()
+    WaitKey_Test()
+    # Camera_Test()
     # Logging_test()
     # Window_Test()
 

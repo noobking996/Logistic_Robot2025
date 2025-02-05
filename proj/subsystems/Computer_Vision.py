@@ -22,7 +22,7 @@ class Video_Stream:
         # 自带窗口名取名为任务代码
         self.Window_Name=mission_code
         cv.namedWindow(self.Window_Name,cv.WINDOW_AUTOSIZE)
-        cv.moveWindow(self.Window_Name,320,180)
+        cv.moveWindow(self.Window_Name,160,50)
 
         # 设置显示文字标记的位置、字体、大小、颜色、粗细
         self.Text_pos=(10,35)
