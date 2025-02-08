@@ -11,8 +11,9 @@ from subsystems.Computer_Vision import Video_Stream
 # from cv2 import VideoCapture, VideoWriter
 import cv2 as cv
 from enum import Enum
-import pyzbar as pz
 from subsystems.Keyboard import Keyboard_Enum as kb
+import pyzbar.pyzbar as pz
+from pyzbar.pyzbar import Decoded
 
 
 # 创建agv对象，指定串口
@@ -23,6 +24,9 @@ frame_captured=None
 
 # 键盘按键状态
 key=None
+
+# 任务顺序码列表
+rgb_order_list=[]
 
 
 def Frame_Capture_Func(self:MissionDef):
@@ -64,11 +68,12 @@ def Frame_Mark_Display_Func(self:MissionDef):
     if(self.Stage_Flag==0):
         # 显示standby字样
         annote_text="Standing By"
+        video.Mark_Text(frame_captured,annote_text,buttom_left_pos,1,2)
     elif(self.Stage_Flag==1):
         # 显示录制时间
         current_time=round((time.time()-self.Phase_Start_Time),1)
         annote_text="{}s".format(current_time)
-    video.Mark_Text(frame_captured,annote_text,buttom_left_pos,1,2)
+        video.Mark_Text(frame_captured,annote_text)
     # 更新窗口
     video.Update_Window(frame_captured)
     # 查询按键状态
@@ -108,16 +113,21 @@ def Frame_Mark_Save_Trigger(self:MissionManager):
 def Standby_Func(self:MissionDef):
     """
     @功能：待机
-    @参数列表元素数: 1 [[待机时间]]
+    @参数列表元素数: 1 [[待机时间(s)]],若待机时间为0,则点击ENTER键结束待机
     """
     wait_time=self.Para_List[0][0]
+    global key
     if(self.Stage_Flag==0):
         self.Change_Stage(1)
         if(self.Verbose_Flag==True):
             self.Output("Mission({}) 准备出发...".format(self.Name))
     elif(self.Stage_Flag==1):
-        if(time.time()-self.Start_Time>=wait_time):
-            self.Change_Stage(2)
+        if(wait_time!=0):
+            if(time.time()-self.Start_Time>=wait_time):
+                self.Change_Stage(2)
+        else:
+            if(key==kb.ENTER.value):
+                self.Change_Stage(2)
     elif(self.Stage_Flag==2):
         self.End()
 
@@ -185,19 +195,78 @@ def Scan_QRcode_Func(self:MissionDef):
     """
     @功能：扫码
     @参数: scanning_time, 扫码时间
+    @ 参数列表: [[scan_flag,scanning_time]],
+    1. scan_flag为True则扫描二维码,否则用延时代替;
+    2. scanning_time为扫码时间,扫码超时会引发TimeoutError,若赋值0,则不会触发超时
     """
+    global frame_captured
+    global rgb_order_list
     # True则扫描二维码,否则用延时代替
     scan_flag=self.Para_List[0][0]
+    scanning_time=self.Para_List[0][1]
     if(scan_flag==True):
         if(self.Stage_Flag==0):
             self.Change_Stage(1)
+            self.Phase_Start_Time=time.time()
             if(self.Verbose_Flag==True):
                 self.Output("Mission({}) 开始扫码".format(self.Name))
-            elif(self.Stage_Flag==1):
-                frame_th=cv.inRange(frame_captured,np.array([0,0,0]),np.array([255,255,255]))
-                self.Change_Stage(2)
+        elif(self.Stage_Flag==1):
+            if(scanning_time!=0):
+                if((time.time()-self.Phase_Start_Time)>=scanning_time):
+                    raise TimeoutError("Mission({}) 扫码超时".format(self.Name))
+            # 检测图像中的内容码,若识别出二维码，则进行内容格式检查，若格式无误，则记录内容
+            frame_processed=cv.cvtColor(frame_captured,cv.COLOR_BGR2GRAY)
+            code_list:List[Decoded]=pz.decode(frame_processed)
+            frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+            frame_processed=self.Video.Make_Thumbnails(frame_processed)
+            self.Video.Paste_Img(frame_captured,frame_processed)
+            if(len(code_list)>0):
+                if(self.Verbose_Flag==True):
+                    self.Output("Mission({}) 检测到可识别码".format(self.Name),INFO)
+                for code in code_list:
+                    c,r,width,height=code.rect
+                    cv.rectangle(frame_captured,(c,r),(c+width,r+height),(0,0,255),2)
+                    code_type:str=code.type
+                    # 检查码类型
+                    if(code_type=="QRCODE"):
+                        code_data:bytes=code.data
+                        data_decoded=code_data.decode()
+                        if(self.Verbose_Flag==True):
+                            self.Output("Mission({}) code_data: {}"
+                                        .format(self.Name,data_decoded))
+                        # 检查格式是否为???+???
+                        if(data_decoded[3]=='+'):
+                            str_list=data_decoded.split('+')
+                            if(len(str_list)==2):
+                                error_flag=False
+                                num_list=[]
+                                # 检查???是否为123的组合
+                                for string in str_list:
+                                    if((string.isdigit()==False)or(len(string)!=3)):
+                                        error_flag=True
+                                        break
+                                    else:
+                                        for char in string:
+                                            num=np.uint8(char)
+                                            if(num>0 and num<4):
+                                                num_list.append(num)
+                                            else:
+                                                error_flag=True
+                                                break
+                                if(error_flag==False):
+                                    # 检查任务码互斥性
+                                    if(num_list[0]!=num_list[1] and num_list[0]!=num_list[2]):
+                                        if(num_list[3]!=num_list[4] and num_list[3]!=num_list[5]):
+                                            rgb_order_list=[num_list[:3],num_list[3:]]
+                                            self.Output("Mission({}) 装载任务码: {}"
+                                                        .format(self.Name,rgb_order_list),INFO)
+                                            self.Change_Stage(2)
+                # 若检测到内容码，但内容未记录,说明不是二维码或者格式错误,输出警告信息
+                if(rgb_order_list==None):
+                    self.Output("Mission({}) 内容码类型/格式错误".format(self.Name),WARNING)
+        elif(self.Stage_Flag==2):
+            self.End()
     else:
-        scanning_time=self.Para_List[0][1]
         # 开始扫码(扫码功能暂未开发，用计时代替)
         if(self.Stage_Flag==0):
             self.Change_Stage(1)

@@ -14,11 +14,11 @@ from mission import Mission_Function as MF
 
 
 
-Standby=MissionDef("待机",MF.Standby_Func,[[5]],True)
+Standby=MissionDef("待机",MF.Standby_Func,[[0]],True)
 
 Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-350,400,0],[0,200,0]],[0.8,0],True)
 
-Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[False,2.5]],True)
+Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,5]],True)
 
 QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[0.85],True)
 
@@ -74,7 +74,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,0)
+                                   Home_Pos_Correction],[[0,0,1]],True,3)
 
 # 二值化调参任务定义
 # 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
@@ -84,7 +84,7 @@ Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
 # 参数列表内容:1. 常驻任务触发条件(这里将录像开启条件设为100,即一直不开启);
 Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,100]],True,0)
 
-Mission_Code="调车0208_1640"
+Mission_Code="调车0208_2356"
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code)
 
@@ -111,7 +111,7 @@ Frame_Save.Set_VideoStream(myVideo)
 Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 
 def main():
-    mission_manager=Partial_MIssion_Test
+    mission_manager=Logistics_Handling
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()

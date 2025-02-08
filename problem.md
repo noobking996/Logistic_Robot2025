@@ -10,3 +10,5 @@ This application failed to start because no Qt platform plugin could be initiali
 Available platform plugins are: xcb.
 ```
 * 在raspi本地终端中运行时正常
+
+## 2. gpiozero库无法使用

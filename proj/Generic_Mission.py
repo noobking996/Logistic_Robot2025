@@ -7,7 +7,7 @@ import logging
 from matplotlib import pyplot as plt
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from subsystems.Keyboard import Keyboard_Enum as kb
-# from typing import Sized
+from typing import Sized,List
 # import pynput as pt
 
 # 设置工作目录
@@ -369,6 +369,37 @@ def Overlay_Test2():
         cv.imwrite("proj/assets/images/img_ovTest_liner.png",frame)
     cv.destroyAllWindows()
 
+from pyzbar.pyzbar import decode
+from pyzbar.pyzbar import Decoded
+def QRcode_Test():
+    img=cv.imread("proj/assets/images/frame_captured_0.png",cv.IMREAD_COLOR)
+    img_processed=cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    obj_list:List[Decoded]=decode(img_processed)
+    try:
+        if(len(obj_list)==0):
+            print("No QRcode detected")
+        for obj in obj_list:
+            # type为str型, data为bytes型
+            print('\"Type\":{}, type:{},  '.format(obj.type,type(obj.type)))
+            print("data type:",type(obj.data))
+            code_data:bytes=obj.data
+            print('Data(raw): ', code_data)
+            data_decoded=code_data.decode()
+            print('Data(decoded): ', data_decoded)
+            c,r,width,height=obj.rect
+            cv.rectangle(img,(c,r),(c+width,r+height),(0,0,255),2)
+        cv.imshow("img",img)
+        key=0xff & cv.waitKey(0)
+        if(key==kb.ENTER.value):
+            cv.imwrite("proj/assets/images/img_qr.png",img)
+    except Exception as e:
+        print(e)
+
+def str_test():
+    str1="12345"
+    for char in str1:
+        print(char)
+
 
 def main():
     # print("run in workspace:",os.getcwd())
@@ -385,7 +416,9 @@ def main():
     # Window_Test()
     # Frame_Annote_Test()
     # RGB_Statistical_Test()
-    Overlay_Test2()
+    # Overlay_Test2()
+    # QRcode_Test()
+    str_test()
 
 # 作为主函数文件运行时运行main()，作为库导入时不运行
 if(__name__=="__main__"):
