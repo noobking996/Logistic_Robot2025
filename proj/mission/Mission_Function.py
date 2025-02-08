@@ -27,7 +27,7 @@ key=None
 
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
-    video:Video_Stream=self.Para_List[0][0]
+    video:Video_Stream=self.Video
     retval,frame_captured=video.Read_Frame()
     if(retval==False):
         raise Exception("Frame_Capture:帧捕获失败")
@@ -40,8 +40,7 @@ def Frame_Capture_Trigger(self:MissionManager):
     return error_flag
 
 def Frame_Capture_Callback(self:MissionDef):
-    video:Video_Stream=self.Para_List[0][0]
-    video.Release_VideoCapture()
+    self.Video.Release_VideoCapture()
     
 
 def Frame_Mark_Display_Func(self:MissionDef):
@@ -53,11 +52,15 @@ def Frame_Mark_Display_Func(self:MissionDef):
     """
     global frame_captured
     global key
-    video:Video_Stream=self.Para_List[0][0]
+    video:Video_Stream=self.Video
     # 标记十字
     video.Mark_Cross(frame_captured)
     # 标记时间
     annote_text=None
+    # 左下角文字位置
+    # 左上角是时间显示,右下角添加缩略图,剩余右上角可以标记
+    # 受到屏幕尺寸限制,上边缘的文字实时不可见
+    buttom_left_pos=(3,470)
     if(self.Stage_Flag==0):
         # 显示standby字样
         annote_text="Standing By"
@@ -65,7 +68,7 @@ def Frame_Mark_Display_Func(self:MissionDef):
         # 显示录制时间
         current_time=round((time.time()-self.Phase_Start_Time),1)
         annote_text="{}s".format(current_time)
-    video.Mark_Text(frame_captured,annote_text)
+    video.Mark_Text(frame_captured,annote_text,buttom_left_pos,1,2)
     # 更新窗口
     video.Update_Window(frame_captured)
     # 查询按键状态
@@ -77,12 +80,11 @@ def Frame_Mark_Display_Callback(self:MissionDef):
     cv.destroyAllWindows()
 
 def Frame_Save_Func(self:MissionDef):
-    video:Video_Stream=self.Para_List[0][0]
+    video:Video_Stream=self.Video
     video.Save_Frame(frame_captured)
 
 def Frame_Save_Callback(self:MissionDef):
-    video:Video_Stream=self.Para_List[0][0]
-    video.Release_VideoWriter()
+    self.Video.Release_VideoWriter()
 
 def Frame_Mark_Save_Trigger(self:MissionManager):
     # 开始后直接触发mark+dsplay
@@ -508,11 +510,13 @@ def Thresholding_Test_Func(self:MissionDef):
     3. 点击'up/down'键调整阈值高低
     4. 点击'Tab'键切换调整精确度
     5. 点击'q'键结束测试
+    6. 点击'enter'键保存当前帧为图片
     @ 参数列表: 
     1. 初始高、低阈值数组列表[b,g,r];
     2. [阈值状态位(true:高阈值 false:低阈值), 精确度状态位(true:粗调 false:精调)]
     """
     
+    # 对局部变量赋值列表中的元素似乎不能共享内存
     threshold_status:List[bool]=self.Para_List[3]
     th_HighOrLow=threshold_status[0]
     # 阈值索引,由th_HighOrLow控制,决定调整高/低阈值
@@ -536,33 +540,25 @@ def Thresholding_Test_Func(self:MissionDef):
     # r_th:List[np.uint8]=self.Para_List[2]
     channal_th:List=self.Para_List[self.Stage_Flag-1]
 
+    global frame_captured
     global key
+
+    # 按键读取+触发操作
     if(key==kb.SHIFT.value):
         #点击该键,stage_flag++,在[1,4]区间内切换
         current_stage=self.Stage_Flag
         if(current_stage==4):
             current_stage=1
-            channal_th_0:List=self.Para_List[0]
-            self.Output("Mission({}) B通道,当前阈值:({},{})"
-                            .format(self.Name,channal_th_0[0],channal_th_0[1]),INFO)
         else:
             current_stage+=1
-            if(current_stage==2):
-                self.Output("Mission({}) G通道,当前阈值:({},{})"
-                        .format(self.Name,channal_th[0],channal_th[1]),INFO)
-            elif(current_stage==3):
-                self.Output("Mission({}) R通道,当前阈值:({},{})"
-                        .format(self.Name,channal_th[0],channal_th[1]),INFO)
-            elif(current_stage==4):
-                self.Output("Mission({}) 灰度模式".format(self.Name),INFO)
         self.Change_Stage(current_stage)
     elif(key==kb.LEFT_ARROW.value):
-        self.Output("Mission({}) 调整低阈值".format(self.Name),INFO)
+        self.Output("Mission({}) 调整低阈值".format(self.Name),DEBUG)
         if(th_HighOrLow==True):
             th_HighOrLow=False
             self.Para_List[3][0]=False
     elif(key==kb.RIGHT_ARROW.value):
-        self.Output("Mission({}) 调整高阈值".format(self.Name),INFO)
+        self.Output("Mission({}) 调整高阈值".format(self.Name),DEBUG)
         if(th_HighOrLow==False):
             th_HighOrLow=True
             self.Para_List[3][0]=True
@@ -580,7 +576,7 @@ def Thresholding_Test_Func(self:MissionDef):
             channal_th[threshold_indexs[0]]=th_modified
             self.Para_List[self.Stage_Flag-1][threshold_indexs[0]]=th_modified
             self.Output("Mission({}) 调整当前通道阈值为({},{})"
-                        .format(self.Name,channal_th[0],channal_th[1]),INFO)
+                        .format(self.Name,channal_th[0],channal_th[1]),DEBUG)
     elif(key==kb.DOWN_ARROW.value):
         if(self.Stage_Flag<4):
             th_modified=channal_th[threshold_indexs[0]]-threshold_delta
@@ -595,23 +591,32 @@ def Thresholding_Test_Func(self:MissionDef):
             channal_th[threshold_indexs[0]]=th_modified
             self.Para_List[self.Stage_Flag-1][threshold_indexs[0]]=th_modified
             self.Output("Mission({}) 调整当前通道阈值为({},{})"
-                        .format(self.Name,channal_th[0],channal_th[1]),INFO)
+                        .format(self.Name,channal_th[0],channal_th[1]),DEBUG)
     elif(key==kb.ESC.value):
+        # 结束测试
         self.Change_Stage(5)
     elif(key==kb.TAB.value):
         if(th_CoarseOrPrecise==True):
             th_CoarseOrPrecise=False
             self.Para_List[3][1]=False
-            self.Output("Mission({}) 精调模式".format(self.Name),INFO)
+            self.Output("Mission({}) 精调模式".format(self.Name),DEBUG)
         else:
             th_CoarseOrPrecise=True
             self.Para_List[3][1]=True
-            self.Output("Mission({}) 粗调模式".format(self.Name),INFO)
+            self.Output("Mission({}) 粗调模式".format(self.Name),DEBUG)
+    elif(key==kb.ENTER.value):
+        img_code=self.Para_List[4][0]
+        self.Para_List[4][0]+=1
+        img_name="frame_captured_{}.png".format(img_code)
+        cv.imwrite("proj/assets/images/{}".format(img_name),frame_captured)
+        self.Output("Mission({}) 已保存当前帧为图片{}".format(self.Name,img_name),INFO)
 
-    global frame_captured
+    # 图像显示状态机
+    video=self.Video
     th_3channals=np.zeros((2,3),dtype=np.uint8)
     for i in range(2):
         for j in range(3):
+            # 阈值格式变换(3*2->2*3)
             th_3channals[i][j]=self.Para_List[j][i]
     if(self.Stage_Flag==0):
         self.Change_Stage(1)
@@ -621,11 +626,49 @@ def Thresholding_Test_Func(self:MissionDef):
     elif(self.Stage_Flag<5):
         if(self.Stage_Flag<4):
             # 根据三通道阈值对帧图像进行二值化
-            frame_captured=cv.inRange(frame_captured,th_3channals[0],th_3channals[1])
+            frame_processed=cv.inRange(frame_captured,th_3channals[0],th_3channals[1])
         elif(self.Stage_Flag==4):
             # 以灰度模式显示二值化图像
-            frame_captured=cv.cvtColor(frame_captured,cv.COLOR_BGR2GRAY)
-        frame_captured=cv.cvtColor(frame_captured,cv.COLOR_GRAY2BGR)
+            frame_processed=cv.cvtColor(frame_captured,cv.COLOR_BGR2GRAY)
+        frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+        # 制作frame_processed缩略图,并粘贴到frame_captured中
+        frame_processed=video.Make_Thumbnails(frame_processed)
+        video.Paste_Img(frame_captured,frame_processed)
+        annote_pos=[3,300]
+        annote_font=cv.FONT_HERSHEY_SIMPLEX
+        annote_font_size=0.8
+        annote_font_color=(0,255,0)
+        annote_font_thickness=2
+        front_mark_list=[' ',' ',' ',' ']
+        front_mark_list[self.Stage_Flag-1]='*'
+        annote_text=["{}B:({},{})"
+                     .format(front_mark_list[0],self.Para_List[0][0],self.Para_List[0][1]),
+                    "{}G:({},{})"
+                    .format(front_mark_list[1],self.Para_List[1][0],self.Para_List[1][1]),
+                    "{}R:({},{})"
+                    .format(front_mark_list[2],self.Para_List[2][0],self.Para_List[2][1]),
+                    "{}Greyscale Mode"
+                    .format(front_mark_list[3])]
+        text_interval=30
+        for i in range(4):
+            # 阈值显示
+                annote_pos[1]+=text_interval
+                pos=np.array(annote_pos)
+                cv.putText(frame_captured,annote_text[i],pos,annote_font,
+                    annote_font_size,annote_font_color,
+                    annote_font_thickness)
+        if(th_HighOrLow==True):
+            cv.putText(frame_captured,"H",(100,300),annote_font,annote_font_size,
+                       annote_font_color,annote_font_thickness)
+        else:
+            cv.putText(frame_captured,"L",(50,300),annote_font,annote_font_size,
+                       annote_font_color,annote_font_thickness)
+        if(th_CoarseOrPrecise==True):
+            cv.putText(frame_captured,"C",(3,300),annote_font,annote_font_size,
+                       annote_font_color,annote_font_thickness)
+        else:
+            cv.putText(frame_captured,"P",(3,300),annote_font,annote_font_size,
+                       annote_font_color,annote_font_thickness)
     elif(self.Stage_Flag==5):
        self.Output("Mission({}) 测试结束,阈值:{}".format(self.Name,th_3channals),INFO)
        self.End()

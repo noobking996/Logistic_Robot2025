@@ -4,7 +4,9 @@ import os
 import serial
 import time
 import logging
+from matplotlib import pyplot as plt
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
+from subsystems.Keyboard import Keyboard_Enum as kb
 # from typing import Sized
 # import pynput as pt
 
@@ -246,6 +248,128 @@ def Window_Test():
             cv.destroyAllWindows()
             break
 
+def Frame_Annote_Test():
+    cv.namedWindow("window")
+    cv.moveWindow("window",100,-39)
+    frame=cv.imread("proj/assets/images/frame_captured.png",cv.IMREAD_COLOR)
+    # 设置显示标记的位置、字体、大小、颜色、粗细
+    # 标记文字的原点似乎不是左上角，而是左下角?
+    annote_pos=[3,380]
+    annote_font=cv.FONT_HERSHEY_SIMPLEX
+    annote_font_size=0.8
+    annote_font_color=(0,255,0)
+    annote_font_thickness=2
+    annote_text=["{}B:(144,255)".format('*'),
+                  "{}G:(144,255)".format(' '),
+                  "{}R:(144,255)".format(' ')]
+    text_interval=30
+
+
+    # 设置十字准星的位置、长度、颜色(BGR)、粗细
+    # frame_shape:(num_rows,num_cols,num_channels)
+    frame_shape=(480,640)
+    cross_length=25
+    cross_color=(0,255,0)
+    cross_thickness=1
+
+    # cross_pos：(column,row)
+    cross_pos=(int(round(frame_shape[1]/2,0)),int(round(frame_shape[0]/2,0)))
+    cross_length_half=int(round(cross_length/2,0))
+    cross_c_p1=(cross_pos[0],cross_pos[1]-cross_length_half)
+    cross_c_p2=(cross_pos[0],cross_pos[1]+cross_length_half)
+    cross_r_p1=(cross_pos[0]-cross_length_half,cross_pos[1])
+    cross_r_p2=(cross_pos[0]+cross_length_half,cross_pos[1])
+    for i in range(3):
+        annote_pos[1]+=text_interval
+        pos=np.array(annote_pos)
+        cv.putText(frame,annote_text[i],pos,annote_font,
+                    annote_font_size,annote_font_color,
+                    annote_font_thickness)
+    # 添加十字准星
+    cv.line(frame,cross_c_p1,cross_c_p2,cross_color,
+                            cross_thickness,cv.LINE_AA)
+    cv.line(frame,cross_r_p1,cross_r_p2,cross_color,
+                            cross_thickness,cv.LINE_AA)
+    cv.imshow("window",frame)
+    key=cv.waitKey(0)
+    if(key==kb.ENTER.value):
+        cv.imwrite("proj/assets/images/frame_annotated.png",frame)
+    cv.destroyAllWindows()
+
+def RGB_Statistical_Test():
+    frame=cv.imread("proj/assets/images/frame_annotated.png",cv.IMREAD_COLOR)
+    cv.cvtColor(frame,cv.COLOR_BGR2RGB)
+    plt.imshow(frame)
+    plt.show()
+    cv.waitKey(0)
+    plt.close('all')
+
+def Overlay_Test():
+    frame=np.zeros((480,640,1),dtype=np.uint8)
+    frame_processed=frame.copy()
+    print("frame shape=",frame.shape)
+    frame_processed.fill(255)
+
+    # 法一: 自行计算形状
+    # ov_shape=[np.uint16(480)>>1,np.uint16(640)>>1]
+    #     # resize()的dsize是(width,height)? 理解为(x*fx,y*fy)
+    #     # size & shape 似乎是不同的概念
+    #     # size=width*height
+    # print("ov_shape=",ov_shape)
+    # ov_shape=ov_shape[::-1]
+    # frame_resized:np.ndarray=cv.resize(frame_processed,ov_shape)
+
+    # 法二: 输入倍率
+    # 插值方法似乎默认为LINER
+    frame_resized:np.ndarray=cv.resize(frame_processed,None,fx=0.25,fy=0.25)
+
+    # shape=(height,width)||(num_rows,num_cols);切勿与cv中的像素坐标(c,r)||(u,v)相混淆
+    height,width=frame_resized.shape
+    
+    print("ov_size=",width,height)
+    ov_pos=(480-height,640-width)
+    # frame[ov_pos[0]:ov_pos[0]+width,ov_pos[1]:ov_pos[1]+height,0]=frame_resized
+    frame[ov_pos[0]:(ov_pos[0]+height),ov_pos[1]:(ov_pos[1]+width),0]=frame_resized
+    # frame[ov_pos[0]:ov_pos[0]+width][ov_pos[1]:ov_pos[1]+height][0]=frame_resized
+    # frame[(ov_pos[0]):ov_pos[0]-width:-1,(ov_pos[1]):ov_pos[1]-height:-1,0]=frame_resized
+    # print("resized_size",frame_resized.size)
+    # print("resized_shape",frame_resized.shape)
+    cv.imshow("frame",frame)
+    # cv.imshow("frame_resized",frame_resized)
+    key=(0xff & cv.waitKey(0))
+    if(key==kb.ENTER.value):
+        cv.imwrite("proj/assets/images/img_ovTest.png",frame)
+    cv.destroyAllWindows()
+
+def Overlay_Test2():
+    # 决定缩略图坐标原点在其左上角(false)/右下角(true)
+    org_flag=True
+
+    frame=cv.imread("proj/assets/images/img_green_filter.png",cv.IMREAD_COLOR)
+    frame_processed=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+    frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+
+    height,width,channal=frame_processed.shape
+    ov_pos=(width,height)
+    height=height>>2
+    width=width>>2
+    dsize=(width,height)
+    frame_processed=cv.resize(frame_processed,dsize,cv.INTER_NEAREST)
+
+    c,r=ov_pos
+    if(org_flag==False):
+        # 左上->右下
+        frame[r:r+height,c:c+width,:]=frame_processed
+    else:
+        # 右下->左上
+        frame[r-height:r,c-width:c,:]=frame_processed
+    cv.imshow("frame",frame)
+    key=(0xff & cv.waitKey(0))
+    if(key==kb.ENTER.value):
+        cv.imwrite("proj/assets/images/img_ovTest_liner.png",frame)
+    cv.destroyAllWindows()
+
+
 def main():
     # print("run in workspace:",os.getcwd())
 
@@ -255,10 +379,13 @@ def main():
     # cv.imwrite("proj/assets/img.png",img)
 
     # Send_Cmd()
-    WaitKey_Test()
+    # WaitKey_Test()
     # Camera_Test()
     # Logging_test()
     # Window_Test()
+    # Frame_Annote_Test()
+    # RGB_Statistical_Test()
+    Overlay_Test2()
 
 # 作为主函数文件运行时运行main()，作为库导入时不运行
 if(__name__=="__main__"):

@@ -15,7 +15,7 @@ class Keyboard_Enum(Enum):
     SPACE = 32
     ESC = 27
     TAB=9
-    Enter=13
+    ENTER=13
     SHIFT=225
     
     ALT=233

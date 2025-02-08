@@ -76,38 +76,44 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
                                    Home_Pos_Correction],[[0,0,1]],True,0)
 
+# 二值化调参任务定义
+# 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
-                             [[0,255],[0,144],[170,255],[True,True]],True)
-
+                             [[0,255],[0,144],[170,255],[True,True],[0]],True)
 # 测试任务管理器
 # 参数列表内容:1. 常驻任务触发条件(这里将录像开启条件设为100,即一直不开启);
 Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,100]],True,0)
 
-Mission_Code="调车0204_1414"
+Mission_Code="调车0208_1640"
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code)
 
 # 初始化视频流
 myVideo=Video_Setup(Mission_Code,Public_Logger)
 
+
 # 视频帧捕获任务定义
-Frame_Capture=MissionDef("视频帧捕获",MF.Frame_Capture_Func,[[myVideo]],True)
+Frame_Capture=MissionDef("视频帧捕获",MF.Frame_Capture_Func,None,True)
 Frame_Capture.Set_Logger(Public_Logger)
+Frame_Capture.Set_VideoStream(myVideo)
 Frame_Capture.Set_Callback(MF.Frame_Capture_Callback,"Cap Released")
 
 # 视频帧标记+显示任务定义(内含键盘按键状态读取)
-Frame_Mark_Display=MissionDef("视频帧标记+显示",MF.Frame_Mark_Display_Func,[[myVideo]],True)
+Frame_Mark_Display=MissionDef("视频帧标记+显示",MF.Frame_Mark_Display_Func,None,True)
 Frame_Mark_Display.Set_Logger(Public_Logger)
+Frame_Mark_Display.Set_VideoStream(myVideo)
 Frame_Mark_Display.Set_Callback(MF.Frame_Mark_Display_Callback,"Windows Closed")
 
 # 视频帧保存任务定义
-Frame_Save=MissionDef("视频帧保存",MF.Frame_Save_Func,[[myVideo]],True)
+Frame_Save=MissionDef("视频帧保存",MF.Frame_Save_Func,None,True)
 Frame_Save.Set_Logger(Public_Logger)
+Frame_Save.Set_VideoStream(myVideo)
 Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 
 def main():
     mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
+    mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
     mission_manager.Set_Permanent_Mission([Frame_Capture,Frame_Mark_Display,Frame_Save],
                                              [MF.Frame_Capture_Trigger,

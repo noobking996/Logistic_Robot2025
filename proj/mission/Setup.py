@@ -4,9 +4,11 @@ import time
 import numpy as np
 from enum import Enum
 import logging
+import traceback
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from cv2 import VideoCapture, VideoWriter
 import cv2 as cv
+from subsystems.Computer_Vision import Video_Stream
 # import sys
 # import subprocess
 
@@ -106,6 +108,12 @@ class MissionDef():
         # 发生回调后输出信息
         self.Callback_Output=None
 
+        # 该任务可能处理的视频流
+        self.Video:Video_Stream=None
+
+    def Set_VideoStream(self,video_stream:Video_Stream):
+        self.Video=video_stream
+
     def Set_Callback(self,callback_func:Callable[...,Any],output:str="Callback Executed"):
         self.Callback_Func=callback_func
         self.Callback_Output=output
@@ -177,7 +185,8 @@ class MissionDef():
             return self.End_Flag
         # 若捕获异常,结束任务并输出错误信息,返回None,外部接收后应跳转至error_handler
         except Exception as e:
-            self.Output("Mission({}) Run Error: {}".format(self.Name,str(e)),ERROR)
+            tb=traceback.format_exc()
+            self.Output("Mission({}) Run Error\n{}".format(self.Name,tb),ERROR)
             self.End(False)
             return None
         
@@ -283,6 +292,7 @@ class MissionManager(MissionDef):
             # 设置子任务的日志记录器
             if(self.Logger!=None):
                 self.Mission_List[mission_code].Set_Logger(self.Logger)
+                self.Mission_List[mission_code].Set_VideoStream(self.Video)
             # 初始化子任务
             self.Submission_Reset_Flag=False
             self.Mission_List[mission_code].Reset()

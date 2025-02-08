@@ -10,7 +10,8 @@ class Manipulator:
                  type:str="3R_Articulated",name:str="myManipulator"):
         """
         @功能: 创建机械臂对象,存储关节长度、执行器偏移量等参数
-        @参数: arm_params_list: 机械臂参数列表, 格式为[(link_lengths),(actuator_offsets)]
+        @参数: arm_params_list: 机械臂参数列表, 格式为[(link_lengths:l0,l1,l2...),
+        (actuator_offsets:x4,y4,z4)]
         @参数: logger: 日志记录器
         @参数: type: 机械臂类型
         @参数: name: 机械臂名称
@@ -59,12 +60,12 @@ class Manipulator:
             xb=x1-x4-l0
             yb=y1-y4
             c2=0.5*(xb**2+yb**2-(l1**2+l2**2))/(l1*l2)
-            s2_a=math.sqrt(1-c2**2)
+            # 此处s2_a2取正/负值会导向两个不同的解
+            s2_a=-math.sqrt(1-c2**2)
             theta2=math.atan2(s2_a,c2)
             theta2=math.degrees(theta2)
             theta1=math.atan2(yb,xb)-math.atan2(l2*s2_a,l1+l2*c2)
             theta1=math.degrees(theta1)
-
         return (theta3,theta1,theta2)
             
 
@@ -77,10 +78,22 @@ def test_Manipulator():
                                   datefmt='%Y-%m-%d %H:%M:%S')
     console_handler.setFormatter(formatter)
     myLogger.addHandler(console_handler)
-    arm=Manipulator([(65,130,130),(0,0,0)],myLogger)
+    arm=Manipulator([(65,130,130),(71,-20-1.12,0)],myLogger)
 
-    theta3,theta1,theta2=arm.INverse_Kinematics_3RAtype((114,0,51.4),False)
-    print(theta3,theta1,theta2)
+    theta3,theta1,theta2=arm.INverse_Kinematics_3RAtype((198.2-20,0,-6),False)
+    angle_3=theta3
+    angle_1=theta1
+    angle_2=-(theta2+theta1)
+    print("angles:",angle_3,angle_2,angle_1)
+    print("thetas:",theta3,theta2,theta1)
+
+def test_kinematics(angles:Tuple[float])->Tuple[float]:
+    angle_1=angles[0]
+    angle_2=angles[1]
+    x2=65+130*(math.cos(math.radians(angle_1))+math.cos(math.radians(angle_2)))
+    y2=130*(math.sin(math.radians(angle_1))+math.sin(math.radians(angle_2)))
+    return x2,y2
 
 if __name__=="__main__":
     test_Manipulator()
+    # print(test_kinematics((-27.78,120.52)))
