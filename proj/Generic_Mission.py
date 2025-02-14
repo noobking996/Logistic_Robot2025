@@ -400,7 +400,42 @@ def str_test():
     for char in str1:
         print(char)
 
-
+def Ellipse_Test():
+    myLogger=Logger("myLogger",logging.DEBUG)
+    file_handler = logging.FileHandler("proj/assets/logs/Ellipse_Test.log")
+    file_handler.setLevel(DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', 
+                                  datefmt='%Y-%m-%d %H:%M:%S')
+    file_handler.setFormatter(formatter)
+    myLogger.addHandler(file_handler)
+    img=cv.imread("proj/assets/images/plate_inrange0.png",cv.IMREAD_GRAYSCALE)
+    # 使用external模式，只检测外轮廓
+    # 轮廓近似方法为cv.CHAIN_APPROX_NONE
+    # 使用cv.CHAIN_APPROX_SIMPLE模式只能检测到一个点，无法绘制椭圆
+    contours,_=cv.findContours(img,cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    img=cv.cvtColor(img,cv.COLOR_GRAY2BGR)
+    # print("contours=",contours)
+    myLogger.debug("num_contours={}".format(len(contours)))
+    # 遍历轮廓，计算轮廓的外接椭圆
+    for cnt in contours:
+        # print("cnt=",cnt)
+        # try:
+        arcLength=cv.arcLength(cnt,True)
+        area=cv.contourArea(cnt)
+        if (arcLength>1000):
+            myLogger.debug("area={}".format(area))
+            myLogger.debug("arcLength={}".format(arcLength))
+            ellipse=cv.fitEllipse(cnt)
+            myLogger.debug("ellipse={}".format(ellipse))
+            # 绘制椭圆
+            cv.ellipse(img,ellipse,(0,255,0),2)
+        # except:
+        #     pass
+    cv.imshow("img",img)
+    key=(0xff & cv.waitKey(0))
+    if(key==kb.ENTER.value):
+        cv.imwrite("proj/assets/images/plate_ellipse_2.png",img)
+    cv.destroyAllWindows()
 def main():
     # print("run in workspace:",os.getcwd())
 
@@ -418,7 +453,8 @@ def main():
     # RGB_Statistical_Test()
     # Overlay_Test2()
     # QRcode_Test()
-    str_test()
+    # str_test()
+    Ellipse_Test()
 
 # 作为主函数文件运行时运行main()，作为库导入时不运行
 if(__name__=="__main__"):

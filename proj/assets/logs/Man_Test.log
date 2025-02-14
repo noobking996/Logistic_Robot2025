@@ -1,0 +1,798 @@
+Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+target_pos:(193.2, 0, 44)
+theta3:0.0
+theta1,theta2:119.23159548463418,-141.05393608511415
+cali_pos:[136.40889733   0.         -62.24977082]
+Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+target_pos:(193.2, 0, 44)
+theta3:0.0
+theta1,theta2:119.23159548463418,-141.05393608511415
+cali_pos:[136.42943066   0.         -62.75475622]
+Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+target_pos:(193.2, 0, 44)
+theta3:0.0
+theta1,theta2:119.23159548463418,-141.05393608511415
+Kinematics_3RAtype: joint_angles:[119.23159548463418, -141.05393608511415, 0.0]
+Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+Kinematics_3RAtype: l0:65,l1:130,l2:130
+Kinematics_3RAtype: p1:[ 65.40889733 -41.12977082   0.        ]
+Kinematics_3RAtype: p1+p4:[136.40889733 -62.24977082   0.        ]
+Kinematics_3RAtype: x1:136.40889733142407,y1:-62.24977081537415,z1:0.0
+Kinematics_3RAtype: p0:[136.40889733   0.         -62.24977082]
+cali_pos:[136.40889733   0.         -62.24977082]
+Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+target_pos:(193.2, 0, 44)
+theta3:0.0
+theta1,theta2:119.23159548463418,-141.05393608511415
+Kinematics_3RAtype: joint_angles:[119.23159548463418, -141.05393608511415, 0.0]
+Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+Kinematics_3RAtype: l0:65,l1:130,l2:130
+Kinematics_3RAtype: p1:[122.2   65.12   0.  ]
+Kinematics_3RAtype: p1+p4:[193.2  44.    0. ]
+Kinematics_3RAtype: x1:193.19999999999996,y1:43.999999999999915,z1:0.0
+Kinematics_3RAtype: p0:[193.2   0.   44. ]
+cali_pos:[193.2   0.   44. ]
+Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+(Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+(myManipulator) 开始移动
+2025-02-13 11:45:30 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:45:30 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:45:30 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 11:45:30 - INFO - (myManipulator) 开始移动
+2025-02-13 11:48:42 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:48:42 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:48:42 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 11:48:42 - INFO - (myManipulator) 开始移动
+2025-02-13 11:48:42 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 11:49:18 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:49:18 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:49:18 - DEBUG - (Joint_Angle_Ctrl)joint:[ 110.08865735 -136.08024574    0.        ],servo:[(1, 346), (2, 687), (3, 500)]
+2025-02-13 11:49:18 - INFO - (myManipulator) 开始移动
+2025-02-13 11:49:18 - INFO - (myManipulator) 到达目标点:(208.2, 0, 44)
+2025-02-13 11:49:35 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:49:35 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:49:35 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.59953332 -132.42554267    0.        ],servo:[(1, 369), (2, 679), (3, 500)]
+2025-02-13 11:49:35 - INFO - (myManipulator) 开始移动
+2025-02-13 11:49:35 - INFO - (myManipulator) 到达目标点:(218.2, 0, 44)
+2025-02-13 11:49:52 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:49:52 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:49:52 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 11:49:52 - INFO - (myManipulator) 开始移动
+2025-02-13 11:49:52 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 11:52:37 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:52:37 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:52:37 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.04439802 -150.99146791    0.        ],servo:[(1, 371), (2, 599), (3, 500)]
+2025-02-13 11:52:37 - INFO - (myManipulator) 开始移动
+2025-02-13 11:52:37 - INFO - (myManipulator) 到达目标点:(193.2, 0, 10)
+2025-02-13 11:52:48 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:52:48 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:52:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 11:52:48 - INFO - (myManipulator) 开始移动
+2025-02-13 11:52:49 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 11:56:16 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 11:56:16 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 11:56:16 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 11:56:16 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],目标点:(193.2, 0, 10),参数:[33.999999985082255, array([-3.37098193e-11,  0.00000000e+00, -1.00000000e+00]), 1.0, 0.1]
+2025-02-13 11:56:16 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          42.99999999],已移动距离:1.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          41.99999999],已移动距离:2.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          40.99999999],已移动距离:3.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          39.99999999],已移动距离:4.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          38.99999999],已移动距离:5.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          37.99999999],已移动距离:6.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          36.99999999],已移动距离:7.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          35.99999999],已移动距离:8.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          34.99999999],已移动距离:9.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          33.99999999],已移动距离:10.0
+2025-02-13 11:56:17 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          32.99999999],已移动距离:11.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          31.99999999],已移动距离:12.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          30.99999999],已移动距离:13.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          29.99999999],已移动距离:14.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          28.99999999],已移动距离:15.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          27.99999999],已移动距离:16.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          26.99999999],已移动距离:17.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          25.99999999],已移动距离:18.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          24.99999999],已移动距离:19.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 11:56:18 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          22.99999999],已移动距离:21.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          21.99999999],已移动距离:22.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          20.99999999],已移动距离:23.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          19.99999999],已移动距离:24.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          18.99999999],已移动距离:25.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          17.99999999],已移动距离:26.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          16.99999999],已移动距离:27.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          15.99999999],已移动距离:28.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          14.99999999],已移动距离:29.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          13.99999999],已移动距离:30.0
+2025-02-13 11:56:19 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          12.99999999],已移动距离:31.0
+2025-02-13 11:56:20 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          11.99999999],已移动距离:32.0
+2025-02-13 11:56:20 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          10.99999999],已移动距离:33.0
+2025-02-13 11:56:20 - DEBUG - (myManipulator) 直线运动完成
+2025-02-13 12:34:20 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:34:20 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:34:20 - DEBUG - (myManipulator) yaw轴开始加速,目标角:120.0;执行时间:0.1
+2025-02-13 12:34:20 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  120.        ],servo:[(3, 1000)]
+2025-02-13 12:34:20 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:35:39 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:35:39 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:35:39 - DEBUG - (myManipulator) yaw轴开始加速,目标角:120.0;执行时间:0.1
+2025-02-13 12:35:39 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  120.        ],servo:[(3, 1000)]
+2025-02-13 12:35:39 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:35:39 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:0.0;执行时间:0.1
+2025-02-13 12:35:39 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(3, 500)]
+2025-02-13 12:35:39 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 12:35:39 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:0.0;执行时间:0.0
+2025-02-13 12:35:39 - ERROR - ERROR
+Traceback (most recent call last):
+  File "proj/subsystems/Manipulator.py", line 619, in test_Manipulator
+    busy_flag=arm.Goto_Target_Pos(target_pos,100,arm.Ctrl_Mode.YAW_ROTATION)
+  File "proj/subsystems/Manipulator.py", line 513, in Goto_Target_Pos
+    self.Joint_Angle_Ctrl([(3,theta3)],acc_time)
+  File "proj/subsystems/Manipulator.py", line 302, in Joint_Angle_Ctrl
+    self.Servo.Angle_Ctrl(servo_angles,time_ms)
+  File "proj/subsystems/Manipulator.py", line 52, in Angle_Ctrl
+    raise ValueError("Servo: Time out of range")
+ValueError: Servo: Time out of range
+2025-02-13 12:48:43 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:48:43 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:48:43 - DEBUG - (myManipulator) yaw轴开始加速,目标角:120.0;执行时间:0.0
+2025-02-13 12:48:43 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  120.        ],servo:[(3, 1000)]
+2025-02-13 12:48:43 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:48:43 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:0.0;执行时间:0.1
+2025-02-13 12:48:43 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(3, 500)]
+2025-02-13 12:48:44 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 12:48:44 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:0.0;执行时间:0.0
+2025-02-13 12:48:44 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(3, 500)]
+2025-02-13 12:48:44 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 12:52:19 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:52:19 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴开始加速,目标角:0.0;执行时间:0.0
+2025-02-13 12:52:19 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(3, 500)]
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:14.509751526661407;执行时间:0.5
+2025-02-13 12:52:19 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609   14.50975153],servo:[(3, 560)]
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:14.509751526661407;执行时间:0.0
+2025-02-13 12:52:19 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609   14.50975153],servo:[(3, 560)]
+2025-02-13 12:52:19 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 12:54:27 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:54:27 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴开始加速,目标角:6.841502268354662;执行时间:0.06
+2025-02-13 12:54:27 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    6.84150227],servo:[(3, 529)]
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-34.20751134177331;执行时间:0.28
+2025-02-13 12:54:27 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -34.20751134],servo:[(3, 357)]
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-27.36600907341865;执行时间:0.06
+2025-02-13 12:54:27 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -27.36600907],servo:[(3, 386)]
+2025-02-13 12:54:27 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 12:57:20 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 12:57:20 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴开始加速,目标角:6.841502268354662;执行时间:0.06
+2025-02-13 12:57:20 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    6.84150227],servo:[(3, 529)]
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-34.20751134177331;执行时间:0.28
+2025-02-13 12:57:20 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -34.20751134],servo:[(3, 357)]
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-27.36600907341865;执行时间:0.06
+2025-02-13 12:57:20 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -27.36600907],servo:[(3, 386)]
+2025-02-13 12:57:20 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:01:04 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:01:04 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:01:04 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-6.841502268354662;执行时间:0.12
+2025-02-13 13:01:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609   -6.84150227],servo:[(3, 471)]
+2025-02-13 13:01:05 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:01:05 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-20.524506805063986;执行时间:0.56
+2025-02-13 13:01:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -20.52450681],servo:[(3, 414)]
+2025-02-13 13:01:05 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:01:05 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-27.36600907341865;执行时间:0.12
+2025-02-13 13:01:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -27.36600907],servo:[(3, 386)]
+2025-02-13 13:01:05 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:04:01 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:04:01 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:04:01 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-22.5;执行时间:0.12
+2025-02-13 13:04:01 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -22.5       ],servo:[(3, 406)]
+2025-02-13 13:04:01 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:04:01 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-67.5;执行时间:0.56
+2025-02-13 13:04:01 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -67.5       ],servo:[(3, 219)]
+2025-02-13 13:04:02 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:04:02 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.12
+2025-02-13 13:04:02 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:04:02 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:04:40 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:04:40 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:04:40 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-13.5;执行时间:0.2
+2025-02-13 13:04:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -13.5       ],servo:[(3, 444)]
+2025-02-13 13:04:41 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:04:41 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-76.5;执行时间:0.4
+2025-02-13 13:04:41 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -76.5       ],servo:[(3, 181)]
+2025-02-13 13:04:41 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:04:41 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.2
+2025-02-13 13:04:41 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:04:41 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:05:06 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:05:06 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:05:06 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-13.5;执行时间:0.2
+2025-02-13 13:05:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -13.5       ],servo:[(3, 444)]
+2025-02-13 13:05:07 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:05:07 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-76.5;执行时间:0.4
+2025-02-13 13:05:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -76.5       ],servo:[(3, 181)]
+2025-02-13 13:05:07 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:05:07 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.2
+2025-02-13 13:05:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:05:07 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:06:18 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:06:18 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.2
+2025-02-13 13:06:18 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.4
+2025-02-13 13:06:18 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.2
+2025-02-13 13:06:18 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:06:18 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:06:29 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:06:29 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.2
+2025-02-13 13:06:29 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.4
+2025-02-13 13:06:29 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.2
+2025-02-13 13:06:29 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:06:29 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:06:48 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:06:48 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.2
+2025-02-13 13:06:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.4
+2025-02-13 13:06:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.2
+2025-02-13 13:06:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:06:48 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:07:12 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:07:12 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:07:12 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.15
+2025-02-13 13:07:12 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:07:13 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:07:13 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.3
+2025-02-13 13:07:13 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:07:13 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:07:13 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.15
+2025-02-13 13:07:13 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:07:13 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:07:47 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:07:47 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:07:47 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.125
+2025-02-13 13:07:47 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:07:48 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:07:48 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.25
+2025-02-13 13:07:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:07:48 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:07:48 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.125
+2025-02-13 13:07:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:07:48 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:08:06 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:08:06 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.15
+2025-02-13 13:08:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.3
+2025-02-13 13:08:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.15
+2025-02-13 13:08:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:08:06 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:08:22 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:08:22 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:08:22 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.17500000000000002
+2025-02-13 13:08:22 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:08:22 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:08:22 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.35000000000000003
+2025-02-13 13:08:22 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:08:23 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:08:23 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.17500000000000002
+2025-02-13 13:08:23 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:08:23 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:08:36 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:08:36 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:08:36 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.15
+2025-02-13 13:08:36 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:08:36 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:08:36 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.3
+2025-02-13 13:08:36 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:08:36 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:08:36 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.15
+2025-02-13 13:08:36 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:08:37 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:09:10 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:09:10 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:09:10 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.18
+2025-02-13 13:09:10 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:09:10 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:09:10 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.24
+2025-02-13 13:09:10 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:09:11 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:09:11 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.18
+2025-02-13 13:09:11 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:09:11 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:09:35 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:09:35 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:09:35 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.18
+2025-02-13 13:09:35 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:09:35 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:09:35 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.24
+2025-02-13 13:09:35 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:09:36 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:09:36 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.18
+2025-02-13 13:09:36 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:09:36 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:10:28 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:10:28 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:10:28 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.15
+2025-02-13 13:10:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:10:28 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:10:28 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.3
+2025-02-13 13:10:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:10:28 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:10:28 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.15
+2025-02-13 13:10:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:10:29 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:11:08 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:11:08 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:11:08 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.15
+2025-02-13 13:11:08 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -18.        ],servo:[(3, 425)]
+2025-02-13 13:11:09 - DEBUG - (myManipulator) yaw轴加速完成
+2025-02-13 13:11:09 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.3
+2025-02-13 13:11:09 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -72.        ],servo:[(3, 200)]
+2025-02-13 13:11:09 - DEBUG - (myManipulator) yaw轴匀速运动完成
+2025-02-13 13:11:09 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.15
+2025-02-13 13:11:09 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609  -90.        ],servo:[(3, 125)]
+2025-02-13 13:11:09 - DEBUG - (myManipulator) yaw轴减速完成
+2025-02-13 13:21:09 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:21:09 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:21:09 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:21:09 - INFO - (myManipulator) 开始移动
+2025-02-13 13:21:10 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 13:22:04 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:22:04 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:22:04 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[33.999999985082255, array([-3.37098193e-11,  0.00000000e+00, -1.00000000e+00]), 1.0, 0.1]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          42.99999999],已移动距离:1.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.9664635 -141.4037868    0.       ],servo:[(1, 309), (2, 702), (3, 500)]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          41.99999999],已移动距离:2.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.69223168 -141.75085796    0.        ],servo:[(1, 310), (2, 699), (3, 500)]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          40.99999999],已移动距离:3.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.408726   -142.09509805    0.        ],servo:[(1, 312), (2, 696), (3, 500)]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          39.99999999],已移动距离:4.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.11577026 -142.43645375    0.        ],servo:[(1, 313), (2, 694), (3, 500)]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          38.99999999],已移动距离:5.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.81318626 -142.77486993    0.        ],servo:[(1, 314), (2, 691), (3, 500)]
+2025-02-13 13:22:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          37.99999999],已移动距离:6.0
+2025-02-13 13:22:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.50079393 -143.11028959    0.        ],servo:[(1, 315), (2, 688), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          36.99999999],已移动距离:7.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.17841155 -143.44265386    0.        ],servo:[(1, 317), (2, 686), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          35.99999999],已移动距离:8.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.84585595 -143.77190194    0.        ],servo:[(1, 318), (2, 683), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          34.99999999],已移动距离:9.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.50294275 -144.09797109    0.        ],servo:[(1, 320), (2, 680), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          33.99999999],已移动距离:10.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.1494866  -144.42079659    0.        ],servo:[(1, 321), (2, 677), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          32.99999999],已移动距离:11.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.78530146 -144.74031173    0.        ],servo:[(1, 323), (2, 674), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          31.99999999],已移动距离:12.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.41020095 -145.05644776    0.        ],servo:[(1, 324), (2, 671), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          30.99999999],已移动距离:13.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.02399865 -145.36913391    0.        ],servo:[(1, 326), (2, 669), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          29.99999999],已移动距离:14.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 114.62650846 -145.67829733    0.        ],servo:[(1, 327), (2, 666), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          28.99999999],已移动距离:15.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 114.21754503 -145.98386309    0.        ],servo:[(1, 329), (2, 663), (3, 500)]
+2025-02-13 13:22:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          27.99999999],已移动距离:16.0
+2025-02-13 13:22:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.79692419 -146.2857542     0.        ],servo:[(1, 331), (2, 660), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          26.99999999],已移动距离:17.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.3644634  -146.58389155    0.        ],servo:[(1, 333), (2, 657), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          25.99999999],已移动距离:18.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 112.91998226 -146.87819397    0.        ],servo:[(1, 335), (2, 654), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          24.99999999],已移动距离:19.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 112.46330303 -147.16857817    0.        ],servo:[(1, 336), (2, 650), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.99425125 -147.4549588     0.        ],servo:[(1, 338), (2, 647), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          22.99999999],已移动距离:21.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.51265629 -147.73724846    0.        ],servo:[(1, 340), (2, 644), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          21.99999999],已移动距离:22.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.01835207 -148.0153577     0.        ],servo:[(1, 342), (2, 641), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          20.99999999],已移动距离:23.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 110.5111777  -148.28919507    0.        ],servo:[(1, 345), (2, 638), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          19.99999999],已移动距离:24.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.99097821 -148.55866716    0.        ],servo:[(1, 347), (2, 634), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          18.99999999],已移动距离:25.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.45760536 -148.82367864    0.        ],servo:[(1, 349), (2, 631), (3, 500)]
+2025-02-13 13:22:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          17.99999999],已移动距离:26.0
+2025-02-13 13:22:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 108.91091838 -149.08413231    0.        ],servo:[(1, 351), (2, 628), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          16.99999999],已移动距离:27.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 108.35078489 -149.33992919    0.        ],servo:[(1, 354), (2, 624), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          15.99999999],已移动距离:28.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.7770817  -149.59096859    0.        ],servo:[(1, 356), (2, 621), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          14.99999999],已移动距离:29.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.18969576 -149.83714819    0.        ],servo:[(1, 358), (2, 617), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          13.99999999],已移动距离:30.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 106.58852511 -150.07836415    0.        ],servo:[(1, 361), (2, 614), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          12.99999999],已移动距离:31.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.97347979 -150.31451119    0.        ],servo:[(1, 363), (2, 610), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          11.99999999],已移动距离:32.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.34448291 -150.54548279    0.        ],servo:[(1, 366), (2, 607), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          10.99999999],已移动距离:33.0
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.70147159 -150.77117126    0.        ],servo:[(1, 369), (2, 603), (3, 500)]
+2025-02-13 13:22:07 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 10)
+2025-02-13 13:22:07 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.04439802 -150.99146791    0.        ],servo:[(1, 371), (2, 599), (3, 500)]
+2025-02-13 13:22:42 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:22:42 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:22:42 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:22:42 - INFO - (myManipulator) 开始移动
+2025-02-13 13:22:42 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 13:23:03 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:23:03 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:23:03 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:23:03 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[33.999999985082255, array([-3.37098193e-11,  0.00000000e+00, -1.00000000e+00]), 2.0, 0.1]
+2025-02-13 13:23:03 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          41.99999999],已移动距离:2.0
+2025-02-13 13:23:03 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.69223168 -141.75085796    0.        ],servo:[(1, 310), (2, 699), (3, 500)]
+2025-02-13 13:23:03 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          39.99999999],已移动距离:4.0
+2025-02-13 13:23:03 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.11577026 -142.43645375    0.        ],servo:[(1, 313), (2, 694), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          37.99999999],已移动距离:6.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.50079393 -143.11028959    0.        ],servo:[(1, 315), (2, 688), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          35.99999999],已移动距离:8.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.84585595 -143.77190194    0.        ],servo:[(1, 318), (2, 683), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          33.99999999],已移动距离:10.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.1494866  -144.42079659    0.        ],servo:[(1, 321), (2, 677), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          31.99999999],已移动距离:12.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.41020095 -145.05644776    0.        ],servo:[(1, 324), (2, 671), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          29.99999999],已移动距离:14.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 114.62650846 -145.67829733    0.        ],servo:[(1, 327), (2, 666), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          27.99999999],已移动距离:16.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.79692419 -146.2857542     0.        ],servo:[(1, 331), (2, 660), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          25.99999999],已移动距离:18.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 112.91998226 -146.87819397    0.        ],servo:[(1, 335), (2, 654), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.99425125 -147.4549588     0.        ],servo:[(1, 338), (2, 647), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          21.99999999],已移动距离:22.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.01835207 -148.0153577     0.        ],servo:[(1, 342), (2, 641), (3, 500)]
+2025-02-13 13:23:04 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          19.99999999],已移动距离:24.0
+2025-02-13 13:23:04 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.99097821 -148.55866716    0.        ],servo:[(1, 347), (2, 634), (3, 500)]
+2025-02-13 13:23:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          17.99999999],已移动距离:26.0
+2025-02-13 13:23:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 108.91091838 -149.08413231    0.        ],servo:[(1, 351), (2, 628), (3, 500)]
+2025-02-13 13:23:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          15.99999999],已移动距离:28.0
+2025-02-13 13:23:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.7770817  -149.59096859    0.        ],servo:[(1, 356), (2, 621), (3, 500)]
+2025-02-13 13:23:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          13.99999999],已移动距离:30.0
+2025-02-13 13:23:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 106.58852511 -150.07836415    0.        ],servo:[(1, 361), (2, 614), (3, 500)]
+2025-02-13 13:23:05 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          11.99999999],已移动距离:32.0
+2025-02-13 13:23:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.34448291 -150.54548279    0.        ],servo:[(1, 366), (2, 607), (3, 500)]
+2025-02-13 13:23:05 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 10)
+2025-02-13 13:23:05 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.04439802 -150.99146791    0.        ],servo:[(1, 371), (2, 599), (3, 500)]
+2025-02-13 13:23:50 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:23:50 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:23:50 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:23:50 - INFO - (myManipulator) 开始移动
+2025-02-13 13:23:50 - INFO - (myManipulator) 到达目标点:(193.2, 0, 44)
+2025-02-13 13:24:40 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:24:40 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:24:40 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[49.999999985082255, array([-2.29226771e-11,  0.00000000e+00, -1.00000000e+00]), 4.0, 0.1]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          39.99999999],已移动距离:4.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.11577026 -142.43645375    0.        ],servo:[(1, 313), (2, 694), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          35.99999999],已移动距离:8.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.84585595 -143.77190194    0.        ],servo:[(1, 318), (2, 683), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          31.99999999],已移动距离:12.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.41020095 -145.05644776    0.        ],servo:[(1, 324), (2, 671), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          27.99999999],已移动距离:16.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.79692419 -146.2857542     0.        ],servo:[(1, 331), (2, 660), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.99425125 -147.4549588     0.        ],servo:[(1, 338), (2, 647), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          19.99999999],已移动距离:24.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.99097821 -148.55866716    0.        ],servo:[(1, 347), (2, 634), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          15.99999999],已移动距离:28.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.7770817  -149.59096859    0.        ],servo:[(1, 356), (2, 621), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          11.99999999],已移动距离:32.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.34448291 -150.54548279    0.        ],servo:[(1, 366), (2, 607), (3, 500)]
+2025-02-13 13:24:40 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           7.99999999],已移动距离:36.0
+2025-02-13 13:24:40 - DEBUG - (Joint_Angle_Ctrl)joint:[ 102.68795425 -151.41544708    0.        ],servo:[(1, 377), (2, 592), (3, 500)]
+2025-02-13 13:24:41 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           3.99999999],已移动距离:40.0
+2025-02-13 13:24:41 - DEBUG - (Joint_Angle_Ctrl)joint:[  99.80612679 -152.19385316    0.        ],servo:[(1, 389), (2, 577), (3, 500)]
+2025-02-13 13:24:41 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 1.93200000e+02  0.00000000e+00 -1.49177453e-08],已移动距离:44.0
+2025-02-13 13:24:41 - DEBUG - (Joint_Angle_Ctrl)joint:[  96.7025172  -152.87363948    0.        ],servo:[(1, 402), (2, 561), (3, 500)]
+2025-02-13 13:24:41 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          -4.00000001],已移动距离:48.0
+2025-02-13 13:24:41 - DEBUG - (Joint_Angle_Ctrl)joint:[  93.38644841 -153.44793992    0.        ],servo:[(1, 416), (2, 545), (3, 500)]
+2025-02-13 13:24:41 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, -6)
+2025-02-13 13:24:41 - DEBUG - (Joint_Angle_Ctrl)joint:[  91.65341171 -153.693513      0.        ],servo:[(1, 423), (2, 536), (3, 500)]
+2025-02-13 13:25:21 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:25:21 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:25:21 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:25:21 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 4.0, 0.05]
+2025-02-13 13:25:21 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:25:21 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:25:27 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:25:27 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:25:27 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:25:27 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[49.999999985082255, array([-2.29226771e-11,  0.00000000e+00, -1.00000000e+00]), 4.0, 0.05]
+2025-02-13 13:25:27 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          39.99999999],已移动距离:4.0
+2025-02-13 13:25:27 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.11577026 -142.43645375    0.        ],servo:[(1, 313), (2, 694), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          35.99999999],已移动距离:8.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.84585595 -143.77190194    0.        ],servo:[(1, 318), (2, 683), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          31.99999999],已移动距离:12.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.41020095 -145.05644776    0.        ],servo:[(1, 324), (2, 671), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          27.99999999],已移动距离:16.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.79692419 -146.2857542     0.        ],servo:[(1, 331), (2, 660), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.99425125 -147.4549588     0.        ],servo:[(1, 338), (2, 647), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          19.99999999],已移动距离:24.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.99097821 -148.55866716    0.        ],servo:[(1, 347), (2, 634), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          15.99999999],已移动距离:28.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.7770817  -149.59096859    0.        ],servo:[(1, 356), (2, 621), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          11.99999999],已移动距离:32.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.34448291 -150.54548279    0.        ],servo:[(1, 366), (2, 607), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           7.99999999],已移动距离:36.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[ 102.68795425 -151.41544708    0.        ],servo:[(1, 377), (2, 592), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           3.99999999],已移动距离:40.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[  99.80612679 -152.19385316    0.        ],servo:[(1, 389), (2, 577), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 1.93200000e+02  0.00000000e+00 -1.49177453e-08],已移动距离:44.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[  96.7025172  -152.87363948    0.        ],servo:[(1, 402), (2, 561), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          -4.00000001],已移动距离:48.0
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[  93.38644841 -153.44793992    0.        ],servo:[(1, 416), (2, 545), (3, 500)]
+2025-02-13 13:25:28 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, -6)
+2025-02-13 13:25:28 - DEBUG - (Joint_Angle_Ctrl)joint:[  91.65341171 -153.693513      0.        ],servo:[(1, 423), (2, 536), (3, 500)]
+2025-02-13 13:25:48 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:25:48 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:25:48 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:25:48 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 5.0, 0.05]
+2025-02-13 13:25:48 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:25:48 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:26:06 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:26:06 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:26:06 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[49.999999985082255, array([-2.29226771e-11,  0.00000000e+00, -1.00000000e+00]), 5.0, 0.05]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          38.99999999],已移动距离:5.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.81318626 -142.77486993    0.        ],servo:[(1, 314), (2, 691), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          33.99999999],已移动距离:10.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.1494866  -144.42079659    0.        ],servo:[(1, 321), (2, 677), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          28.99999999],已移动距离:15.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 114.21754503 -145.98386309    0.        ],servo:[(1, 329), (2, 663), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          23.99999999],已移动距离:20.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.99425125 -147.4549588     0.        ],servo:[(1, 338), (2, 647), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          18.99999999],已移动距离:25.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.45760536 -148.82367864    0.        ],servo:[(1, 349), (2, 631), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          13.99999999],已移动距离:30.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 106.58852511 -150.07836414    0.        ],servo:[(1, 361), (2, 614), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           8.99999999],已移动距离:35.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[ 103.37323044 -151.20626324    0.        ],servo:[(1, 374), (2, 596), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.           3.99999999],已移动距离:40.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[  99.80612679 -152.19385316    0.        ],servo:[(1, 389), (2, 577), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2          0.          -1.00000001],已移动距离:45.0
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[  95.89291542 -153.02736373    0.        ],servo:[(1, 405), (2, 557), (3, 500)]
+2025-02-13 13:26:06 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, -6)
+2025-02-13 13:26:06 - DEBUG - (Joint_Angle_Ctrl)joint:[  91.65341171 -153.693513      0.        ],servo:[(1, 423), (2, 536), (3, 500)]
+2025-02-13 13:26:41 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:26:41 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:26:41 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:26:41 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 5.0, 0.05]
+2025-02-13 13:26:41 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:26:41 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:26:58 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:26:58 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:26:58 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[56.79999999885388, array([1.0000000e+00, 0.0000000e+00, 2.6263636e-10]), 5.0, 0.05]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[198.2          0.          43.99999999],已移动距离:5.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.0492294  -139.47083782    0.        ],servo:[(1, 321), (2, 697), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[203.2          0.          43.99999999],已移动距离:10.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.00490468 -137.81097936    0.        ],servo:[(1, 334), (2, 692), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[208.2          0.          43.99999999],已移动距离:15.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 110.08865735 -136.08024575    0.        ],servo:[(1, 346), (2, 687), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[213.2          0.          43.99999999],已移动距离:20.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.29025222 -134.2836806     0.        ],servo:[(1, 358), (2, 683), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[218.2          0.          43.99999999],已移动距离:25.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.59953332 -132.42554267    0.        ],servo:[(1, 369), (2, 679), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[223.2          0.          43.99999999],已移动距离:30.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[ 102.00665411 -130.50936703    0.        ],servo:[(1, 380), (2, 676), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[228.2          0.          43.99999999],已移动距离:35.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[  99.50221739 -128.53802552    0.        ],servo:[(1, 390), (2, 674), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[233.2   0.   44. ],已移动距离:40.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[  97.07734926 -126.51378284    0.        ],servo:[(1, 401), (2, 672), (3, 500)]
+2025-02-13 13:26:58 - DEBUG - (myManipulator) 正在直线运动,当前点:[238.2   0.   44. ],已移动距离:45.0
+2025-02-13 13:26:58 - DEBUG - (Joint_Angle_Ctrl)joint:[  94.72372671 -124.43834635    0.        ],servo:[(1, 410), (2, 671), (3, 500)]
+2025-02-13 13:26:59 - DEBUG - (myManipulator) 正在直线运动,当前点:[243.2   0.   44. ],已移动距离:50.0
+2025-02-13 13:26:59 - DEBUG - (Joint_Angle_Ctrl)joint:[  92.43357331 -122.31290846    0.        ],servo:[(1, 420), (2, 671), (3, 500)]
+2025-02-13 13:26:59 - DEBUG - (myManipulator) 正在直线运动,当前点:[248.2   0.   44. ],已移动距离:55.0
+2025-02-13 13:26:59 - DEBUG - (Joint_Angle_Ctrl)joint:[  90.19963378 -120.13818093    0.        ],servo:[(1, 429), (2, 670), (3, 500)]
+2025-02-13 13:26:59 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(250, 0, 44)
+2025-02-13 13:26:59 - DEBUG - (Joint_Angle_Ctrl)joint:[  89.40785847 -119.34327603    0.        ],servo:[(1, 432), (2, 670), (3, 500)]
+2025-02-13 13:28:11 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:28:11 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:28:11 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:28:11 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[4.7999999988538775, array([1.0000000e+00, 0.0000000e+00, 3.1078636e-09]), 7.5, 0.05]
+2025-02-13 13:28:11 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(198, 0, 44)
+2025-02-13 13:28:11 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.17380918 -139.53567768    0.        ],servo:[(1, 321), (2, 698), (3, 500)]
+2025-02-13 13:28:22 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:28:22 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:28:22 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[56.79999999885388, array([1.0000000e+00, 0.0000000e+00, 2.6263636e-10]), 10.0, 0.05]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 正在直线运动,当前点:[203.2          0.          43.99999999],已移动距离:10.0
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.00490468 -137.81097936    0.        ],servo:[(1, 334), (2, 692), (3, 500)]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 正在直线运动,当前点:[213.2          0.          43.99999999],已移动距离:20.0
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.29025222 -134.2836806     0.        ],servo:[(1, 358), (2, 683), (3, 500)]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 正在直线运动,当前点:[223.2          0.          43.99999999],已移动距离:30.0
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[ 102.00665411 -130.50936703    0.        ],servo:[(1, 380), (2, 676), (3, 500)]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 正在直线运动,当前点:[233.2   0.   44. ],已移动距离:40.0
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[  97.07734926 -126.51378284    0.        ],servo:[(1, 401), (2, 672), (3, 500)]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 正在直线运动,当前点:[243.2   0.   44. ],已移动距离:50.0
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[  92.43357331 -122.31290846    0.        ],servo:[(1, 420), (2, 671), (3, 500)]
+2025-02-13 13:28:22 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(250, 0, 44)
+2025-02-13 13:28:22 - DEBUG - (Joint_Angle_Ctrl)joint:[  89.40785847 -119.34327603    0.        ],servo:[(1, 432), (2, 670), (3, 500)]
+2025-02-13 13:29:12 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:29:12 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:29:12 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:29:12 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 10.0, 0.05]
+2025-02-13 13:29:12 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:29:12 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:29:52 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:29:52 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:29:52 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:29:52 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[75.6719234483836, array([ 0.75060865,  0.        , -0.66074705]), 10.0, 0.05]
+2025-02-13 13:29:52 - DEBUG - (myManipulator) 正在直线运动,当前点:[200.70608646   0.          37.39252951],已移动距离:10.0
+2025-02-13 13:29:52 - DEBUG - (Joint_Angle_Ctrl)joint:[ 112.51747719 -140.79003063    0.        ],servo:[(1, 336), (2, 677), (3, 500)]
+2025-02-13 13:29:52 - DEBUG - (myManipulator) 正在直线运动,当前点:[208.21217292   0.          30.78505904],已移动距离:20.0
+2025-02-13 13:29:52 - DEBUG - (Joint_Angle_Ctrl)joint:[ 105.70666553 -139.99726995    0.        ],servo:[(1, 365), (2, 652), (3, 500)]
+2025-02-13 13:29:52 - DEBUG - (myManipulator) 正在直线运动,当前点:[215.71825938   0.          24.17758856],已移动距离:30.0
+2025-02-13 13:29:52 - DEBUG - (Joint_Angle_Ctrl)joint:[  98.95666106 -138.70102706    0.        ],servo:[(1, 393), (2, 629), (3, 500)]
+2025-02-13 13:29:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[223.22434584   0.          17.57011809],已移动距离:40.0
+2025-02-13 13:29:53 - DEBUG - (Joint_Angle_Ctrl)joint:[  92.38988397 -136.93847613    0.        ],servo:[(1, 420), (2, 609), (3, 500)]
+2025-02-13 13:29:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[230.7304323    0.          10.96264762],已移动距离:50.0
+2025-02-13 13:29:53 - DEBUG - (Joint_Angle_Ctrl)joint:[  86.08623094 -134.75274794    0.        ],servo:[(1, 446), (2, 592), (3, 500)]
+2025-02-13 13:29:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[238.23651876   0.           4.35517714],已移动距离:60.0
+2025-02-13 13:29:53 - DEBUG - (Joint_Angle_Ctrl)joint:[  80.08572284 -132.18753868    0.        ],servo:[(1, 471), (2, 578), (3, 500)]
+2025-02-13 13:29:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[245.74260522   0.          -2.25229333],已移动距离:70.0
+2025-02-13 13:29:53 - DEBUG - (Joint_Angle_Ctrl)joint:[  74.39687744 -129.28312762    0.        ],servo:[(1, 495), (2, 566), (3, 500)]
+2025-02-13 13:29:53 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(250, 0, -6)
+2025-02-13 13:29:53 - DEBUG - (Joint_Angle_Ctrl)joint:[  71.3043325  -127.49839601    0.        ],servo:[(1, 508), (2, 561), (3, 500)]
+2025-02-13 13:32:31 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:32:31 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:32:31 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:32:31 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 10.0, 0.05]
+2025-02-13 13:32:31 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:32:31 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:32:37 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:32:37 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:32:37 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:32:37 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[1.4961709343970582e-08, array([-0.07660447,  0.        ,  0.99706156]), 10.0, 0.05]
+2025-02-13 13:32:37 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 0, 44)
+2025-02-13 13:32:37 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.23159548 -141.05393609    0.        ],servo:[(1, 308), (2, 704), (3, 500)]
+2025-02-13 13:32:53 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+2025-02-13 13:32:53 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([500.        ,   4.16666667])]
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: joint_angles:[119.23159548, -141.05393609, 0.0]
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: p1:[122.2         65.11999999   0.        ]
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: p1+p4:[193.2         43.99999999   0.        ]
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: x1:193.20000000114612,y1:43.999999985082255,z1:0.0
+2025-02-13 13:32:53 - DEBUG - Kinematics_3RAtype: p0:[193.2          0.          43.99999999]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 开始直线运动,当前点:[193.2          0.          43.99999999],参数:[100.0, array([-1.14613385e-11,  1.00000000e+00,  1.49177453e-10]), 10.0, 0.05]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         10.          43.99999999],已移动距离:10.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 119.06345034 -140.97403657    2.96297593],servo:[(1, 309), (2, 704), (3, 512)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         20.          43.99999999],已移动距离:20.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.56270064 -140.73365276    5.91018828],servo:[(1, 311), (2, 703), (3, 525)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         30.          43.99999999],已移动距离:30.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 117.74018542 -140.33081341    8.82637095],servo:[(1, 314), (2, 701), (3, 537)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         40.          43.99999999],已移动距离:40.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 116.6132568  -139.76250113   11.69721415],servo:[(1, 319), (2, 699), (3, 549)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         50.          43.99999999],已移动距离:50.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 115.20476222 -139.02500838   14.50975153],servo:[(1, 325), (2, 696), (3, 560)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2         60.          43.99999999],已移动距离:60.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.54172613 -138.11435337   17.25265217],servo:[(1, 332), (2, 693), (3, 572)]
+2025-02-13 13:32:53 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2  70.   44. ],已移动距离:70.0
+2025-02-13 13:32:53 - DEBUG - (Joint_Angle_Ctrl)joint:[ 111.65384045 -137.02669304   19.91640599],servo:[(1, 340), (2, 689), (3, 583)]
+2025-02-13 13:32:54 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2  80.   44. ],已移动距离:80.0
+2025-02-13 13:32:54 - DEBUG - (Joint_Angle_Ctrl)joint:[ 109.57189566 -135.75867512   22.49340301],servo:[(1, 348), (2, 686), (3, 594)]
+2025-02-13 13:32:54 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2  90.   44. ],已移动距离:90.0
+2025-02-13 13:32:54 - DEBUG - (Joint_Angle_Ctrl)joint:[ 107.32629    -134.30768648   24.97791676],servo:[(1, 358), (2, 683), (3, 604)]
+2025-02-13 13:32:54 - DEBUG - (myManipulator) 正在直线运动,当前点:[193.2 100.   44. ],已移动距离:100.0
+2025-02-13 13:32:54 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.94573764 -132.67197427   27.36600907],servo:[(1, 368), (2, 679), (3, 614)]
+2025-02-13 13:32:54 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(193.2, 100, 44)
+2025-02-13 13:32:54 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.94573764 -132.67197427   27.36600907],servo:[(1, 368), (2, 679), (3, 614)]

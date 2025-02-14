@@ -1,11 +1,10 @@
 import numpy as np
 import time
-from typing import List,Union,Callable,Any
+from typing import List,Union,Callable,Any,Tuple
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 
-
 from mission.Setup import MissionDef, MissionDef_t, MissionManager ,Correction_PosDef
-from subsystems import AGV
+from subsystems import AGV,Manipulator
 from subsystems.Computer_Vision import Video_Stream
 
 # from cv2 import VideoCapture, VideoWriter
@@ -19,6 +18,10 @@ from pyzbar.pyzbar import Decoded
 # 创建agv对象，指定串口
 agv=AGV.myAGV(0x01,"/dev/ttyAMA2",115200)
 
+# 创建舵机和机械臂对象
+myServo=Manipulator.Servo("/dev/ttyAMA4",9600)
+arm:Manipulator.myManipulator=None
+
 # 摄像头捕获图像
 frame_captured=None
 
@@ -28,6 +31,11 @@ key=None
 # 任务顺序码列表
 rgb_order_list=[]
 
+# 物块列表,表中的顺序决定物块的编号
+stuff_list=[]
+def Stuff_List_Init(stuffs:Tuple[Manipulator.myStuff]):
+    for stuff in stuffs:
+        stuff_list.append(stuff)
 
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
@@ -113,14 +121,20 @@ def Frame_Mark_Save_Trigger(self:MissionManager):
 def Standby_Func(self:MissionDef):
     """
     @功能：待机
-    @参数列表元素数: 1 [[待机时间(s)]],若待机时间为0,则点击ENTER键结束待机
+    @参数列表元素数: 2 [[待机时间(s)],[机械臂复位位置,复位时间]];
+        若待机时间为0,则点击ENTER键结束待机
     """
     wait_time=self.Para_List[0][0]
     global key
     if(self.Stage_Flag==0):
-        self.Change_Stage(1)
-        if(self.Verbose_Flag==True):
-            self.Output("Mission({}) 准备出发...".format(self.Name))
+        # 复位机械臂(为了更新关节角和防止动作干涉)
+        arm_pos,arm_reset_time=self.Para_List[1]
+        busy_flag=arm.Goto_Target_Pos(arm_pos,arm_reset_time)
+        if(busy_flag==False):
+            self.Change_Stage(1)
+            arm.Claw_Cmd(False)
+            if(self.Verbose_Flag==True):
+                self.Output("Mission({}) 准备出发...".format(self.Name))
     elif(self.Stage_Flag==1):
         if(wait_time!=0):
             if(time.time()-self.Start_Time>=wait_time):
@@ -129,6 +143,17 @@ def Standby_Func(self:MissionDef):
             if(key==kb.ENTER.value):
                 self.Change_Stage(2)
     elif(self.Stage_Flag==2):
+        # 进入扫码姿态
+        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.SCAN_QRCODE)
+        if(busy_flag==False):
+            self.Change_Stage(3)
+    elif(self.Stage_Flag==3):
+        # yaw轴转至扫码角度
+        arm_rotation_time=self.Para_List[2][0]
+        busy_flag=arm.Goto_Target_Pos((0,-100,0),arm_rotation_time,arm.Ctrl_Mode.YAW_ROTATION)
+        if(busy_flag==False):
+            self.Change_Stage(4)
+    elif(self.Stage_Flag==4):
         self.End()
 
 
@@ -233,7 +258,7 @@ def Scan_QRcode_Func(self:MissionDef):
                         data_decoded=code_data.decode()
                         if(self.Verbose_Flag==True):
                             self.Output("Mission({}) code_data: {}"
-                                        .format(self.Name,data_decoded))
+                                        .format(self.Name,data_decoded),INFO)
                         # 检查格式是否为???+???
                         if(data_decoded[3]=='+'):
                             str_list=data_decoded.split('+')
@@ -262,7 +287,7 @@ def Scan_QRcode_Func(self:MissionDef):
                                                         .format(self.Name,rgb_order_list),INFO)
                                             self.Change_Stage(2)
                 # 若检测到内容码，但内容未记录,说明不是二维码或者格式错误,输出警告信息
-                if(rgb_order_list==None):
+                if(len(rgb_order_list)==0):
                     self.Output("Mission({}) 内容码类型/格式错误".format(self.Name),WARNING)
         elif(self.Stage_Flag==2):
             self.End()
@@ -291,7 +316,7 @@ def QRcode_2_RawMaterial_Func(self:MissionDef_t):
     @参数: stop_wait_time, 制动等待时间
     """
 
-    stop_wait_time=0
+    stop_wait_time=2
 
     # 开始直走，计时
     if(self.Stage_Flag==0):
@@ -351,7 +376,31 @@ def RawMaterial_Picking_Func(self:MissionDef):
     """
     @功能: 原料区夹取(功能暂未开发,直接跳过)
     """
-    self.End()
+    global frame_captured
+    global key
+    global stuff_list
+    if(self.Stage_Flag==0):
+        stuff_detect_pos,action_time=self.Para_List[0]
+        busy_flag=arm.Goto_Target_Pos(stuff_detect_pos,action_time)
+        if(busy_flag==False):
+            self.Change_Stage(1)
+            if(self.Verbose_Flag==True):
+                self.Output("Mission({}) 检测图像中的圆形".format(self.Name))
+    elif(self.Stage_Flag==1):
+        current_stuff:Manipulator.myStuff=stuff_list[1]
+        circie_list,frame_processed=current_stuff.Detect(frame_captured,False)
+        num_circle=len(circie_list)
+        # if(num_circle!=0):
+        #     self.Output("Mission({}) 检测到圆形数: {}".format(self.Name,num_circle),INFO)
+        # for i in range(num_circle):
+            # self.Output("Mission({}) 发现圆形: {}".format(self.Name,circie_list[i]),INFO)
+        frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+        frame_processed=self.Video.Make_Thumbnails(frame_processed)
+        self.Video.Paste_Img(frame_captured,frame_processed)
+        if(key==kb.ESC.value):
+            self.Change_Stage(2)
+    elif(self.Stage_Flag==2):
+        self.End()
 
 
 def RawMaterial_2_Processing_Func(self:MissionDef_t):
@@ -706,7 +755,7 @@ def Thresholding_Test_Func(self:MissionDef):
         annote_pos=[3,300]
         annote_font=cv.FONT_HERSHEY_SIMPLEX
         annote_font_size=0.8
-        annote_font_color=(0,255,0)
+        annote_font_color=(0,50,0)
         annote_font_thickness=2
         front_mark_list=[' ',' ',' ',' ']
         front_mark_list[self.Stage_Flag-1]='*'

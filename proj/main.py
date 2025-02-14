@@ -6,6 +6,7 @@ import time
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 
 from subsystems.AGV import MOVJ_Drection
+from subsystems.Manipulator import myManipulator,myStuff
 from subsystems.Computer_Vision import Video_Setup
 from mission import Setup
 from mission.Setup import MissionManager, MissionDef, MissionDef_t
@@ -14,18 +15,18 @@ from mission import Mission_Function as MF
 
 
 
-Standby=MissionDef("待机",MF.Standby_Func,[[0]],True)
+Standby=MissionDef("待机",MF.Standby_Func,[[0],[(190,0,5),500],[300]],True)
 
-Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-350,400,0],[0,200,0]],[0.8,0],True)
+Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-350,400,0],[0,100,0]],[0.8,0],True)
 
-Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,5]],True)
+Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 
-QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[0.85],True)
+QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material]],True)
 
-RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,None,True)
+RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,[[(0,100,80),200]],True)
 
 RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Processing_Func,
                                       [[0,500,0],[MOVJ_Drection.Left_Forward,280,60],[0,900,0],
@@ -74,19 +75,47 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,3)
+                                   Home_Pos_Correction],[[0,0,1]],True,4)
 
 # 二值化调参任务定义
 # 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
-                             [[0,255],[0,144],[170,255],[True,True],[0]],True)
-# 测试任务管理器
-# 参数列表内容:1. 常驻任务触发条件(这里将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,100]],True,0)
+                             [[200,255],[20,180],[20,190],[True,True],[0]],True)
+# 测试任务管理器(视觉相关调试,只能在本地终端启动)
+# 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
+Partial_MIssion_Test=MissionManager([Standby,RawMaterial_Picking],[[0,0,0]],True,0)
 
-Mission_Code="调车0208_2356"
+Mission_Code="调车0214_1143"
 # 创建公共日志记录器
-Public_Logger=Setup.Logger_Setup(Mission_Code)
+Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,INFO,DEBUG])
+
+# 初始化机械臂对象
+MF.arm=myManipulator([(65,130,130),(71,-20-1.12,0)],Public_Logger,MF.myServo)
+MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
+                                    [[(180-90),420],[180-(90+19.2),500]],
+                                    [[0,500],[120,1000]]])
+MF.arm.Set_YawAccRatio(0.2,0.25)
+
+# 初始化物块对象
+arm_height=0                #机械臂坐标系原点距离地面高度
+stuff_claw_height=55        # 夹持时夹爪距离物料底部的距离
+material_plate_height=80    # 原料盘高度
+blue_stuff=myStuff("blue",[(200,20,20),(255,180,190)],
+                   [(176.46,82.28,-61+stuff_claw_height),
+                    (0,0,material_plate_height+stuff_claw_height-arm_height),
+                    (0,0,-arm_height)])
+blue_stuff.Set_Mixing_Portion((0,-3,3))
+green_stuff=myStuff("green",[(100,210,40),(250,255,180)],
+                    [(194.7,0,-61+stuff_claw_height),
+                     (0,0,material_plate_height+stuff_claw_height-arm_height),
+                     (0,0,-arm_height)])
+green_stuff.Set_Mixing_Portion((-1,2,-1))
+red_stuff=myStuff("red",[(70,60,180),(255,180,255)],
+                  [(176.46,-82.28,-61+stuff_claw_height),
+                   (0,0,material_plate_height+stuff_claw_height-arm_height),
+                   (0,0,-arm_height)])
+red_stuff.Set_Mixing_Portion((2,0,-2))
+MF.Stuff_List_Init((red_stuff,green_stuff,blue_stuff))
 
 # 初始化视频流
 myVideo=Video_Setup(Mission_Code,Public_Logger)
@@ -111,7 +140,7 @@ Frame_Save.Set_VideoStream(myVideo)
 Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
@@ -128,6 +157,7 @@ def main():
 def num_mission_test():
     print("Number of missions:",Logistics_Handling.Num_Mission)
 
+# 行走相关任务调试(可远程启动)
 def single_mission_test():
     Storage_Go_Home.Reset()
     end_flag=False

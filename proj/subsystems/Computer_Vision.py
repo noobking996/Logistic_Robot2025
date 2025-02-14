@@ -30,7 +30,7 @@ class Video_Stream:
         # 设置显示文字标记的位置、字体、大小、颜色、粗细
         self.Text_pos=(3,25)
         self.Text_font_size=0.8
-        self.Text_font_color=(0,255,0)
+        self.Text_font_color=(0,250,0)
         self.Text_font_thickness=2
 
         # cross_pos：(column,row)
@@ -83,9 +83,9 @@ class Video_Stream:
     def Mark_Cross(self,frame):
         # 设置十字准星的位置、长度、颜色(BGR)、粗细
         # frame_shape:(num_rows,num_cols,num_channels)
-        cross_color=(0,255,0)
+        cross_color=(0,50,0)
         cross_thickness=1
-        # 标记十字
+        # 标记十字(可以用cv::drawMarker()代替)
         cv.line(frame,self.CrossLine_vPoints[0],self.CrossLine_vPoints[1],cross_color,
                 cross_thickness,cv.LINE_AA)
         cv.line(frame,self.CrossLine_hPoints[0],self.CrossLine_hPoints[1],cross_color,
