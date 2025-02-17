@@ -3,14 +3,14 @@ import math
 import cv2 as cv
 
 class Average_Filter:
-    def __init__(self, sequence_len):
-        self.Sequence_Length=sequence_len
+    def __init__(self, sequence_len:np.uint8):
+        self.Sequence_Length=np.uint8(sequence_len)
         self.Sequence=[]
         self.Average=0
 
     def Get_Filtered_Value(self, value):
         """
-        @获得均值滤波后的值
+        * 获得均值滤波后的值
         @param value: 输入值,可以是单个值或numpy数组
         @return: 均值滤波后的值
         """

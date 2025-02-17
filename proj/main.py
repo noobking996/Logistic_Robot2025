@@ -25,7 +25,7 @@ Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Material],[0.25,(10,10),(30,30)]],True)
+                                      [[CP.Material],[100],[0.25,(10,10),(30,30)]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,50],[5],[100,100,300,150],[400,250]],True)
@@ -36,7 +36,8 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
                                        [0,0.95,1.45,1.35,1],True)
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Processing]],True)
+                                      [[CP.Processing],[200,200],[0.25,(10,10),(30,30)],
+                                       [0.25,(10,10),(30,30)],[0.25,2,30,0],[False,False]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    None,True)
@@ -45,7 +46,9 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
                                   [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-500,0]],
                                   [1.05,1.47,1.2],True)
 
-Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,[[CP.Storage]],True)
+Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
+                                   [[CP.Processing],[200,200],[0.25,(10,10),(30,30)],
+                                       [0.25,(10,10),(30,30)],[0.25,2,30,0],[False,False]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,None,True)
@@ -155,8 +158,9 @@ MF.Stuff_List_Init((red_stuff,green_stuff,blue_stuff))
 
 #####################################################################################
 
-MF.material_plate=myObject("ellipse",myVideo,[(210,210,210),(255,255,255)])
-MF.material_plate.Set_TransMatrix(0.15)
+MF.material_plate=myObject("circle",myVideo,[(210,210,210),(255,255,255)],
+                           [None,public_material_pos,None])
+# MF.material_plate.Set_TransMatrix(0.15)
 
 MF.green_ring=myObject("circle",myVideo,None,[None,None,(0,-250,200-arm_height)])
 MF.green_ring.Set_Mixing_Portion((-1,2,-1))

@@ -396,7 +396,8 @@ class myManipulator:
                         Mode:Ctrl_Mode=Ctrl_Mode.POINT_TO_POINT,
                         speed_mm_s:np.uint16=10)->bool:
         """
-        @返回: busu_flag: 忙碌标志,True表示机械臂正在工作,应保持当前任务状态,持续循环到返回false为止,
+        ## returns: 
+        busy_flag: 忙碌标志,True表示机械臂正在工作,应保持当前任务状态,持续循环到返回false为止,
                 False表示机械臂工作结束,可以改变任务状态,执行新任务
         """
         # 忙碌标志变量,由外部判断

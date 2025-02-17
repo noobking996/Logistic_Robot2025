@@ -37,9 +37,10 @@ class myAGV:
     def Velocity_Control(self,Velo_List:List[np.int16]):
 
         """
-        @参数Velo_List：广义速度列表[Vx_mm_s,Vy_mm_s,Omege_deg_s],int16类型
-        @作用：装载并发送数据帧，共使用8有效字节
-        @数据帧格式：命令声明+速度方向 + Vx_h + Vx_l + Vy_h + Vy_l + Omege_h + Omege_l
+        @param Velo_List: 广义速度列表[Vx_mm_s,Vy_mm_s,Omege_deg_s],int16类型
+        @return none
+        1. 功能:装载并发送数据帧,共使用8有效字节
+        2. 数据帧格式:命令声明+速度方向 + Vx_h + Vx_l + Vy_h + Vy_l + Omege_h + Omege_l
         """
 
         # 装载命令声明
