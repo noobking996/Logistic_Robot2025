@@ -1,6 +1,7 @@
 import os
-from typing import List, Callable, Any,Union
+from typing import List, Callable, Any,Union,Tuple
 import time
+import math
 import numpy as np
 from enum import Enum
 import logging
@@ -9,6 +10,7 @@ from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from cv2 import VideoCapture, VideoWriter
 import cv2 as cv
 from subsystems.Computer_Vision import Video_Stream
+import mission.Math_Tools as MT
 # import sys
 # import subprocess
 
@@ -56,6 +58,203 @@ def Logger_Setup(mission_code:str="Logistic_Handling",
     logger.addHandler(console_handler)
 
     return logger
+
+
+class myObject:
+    def __init__(self,shape,video:Video_Stream,
+                 color_range:List[Tuple]=None,pos_list:List[Tuple]=None):
+        """
+        @功能: 任务目标类,存储任务对象(物块\线条\原料盘)的的颜色和位置等信息
+        @参数: color_range: 物块颜色范围(BGR)[th_l,th_h]
+        @参数: pos_list: 物块(机械臂基座坐标系下)位置列表[物料盘位置,原料盘位置,加工/暂存区位置]
+        """
+        self.Name=shape
+        if(pos_list!=None):
+            for pos in pos_list:
+                if(pos!=None):
+                    x,y,z=pos
+                    if(x<170 and y>0):
+                        raise ValueError("({})Dangerous position: {}".format(shape,pos))
+        # if(color_range!=None):
+        #     if(len(color_range)!=2):
+        #         raise ValueError("{}: Invalid input".format(shape))
+        #     for th in color_range:
+        #         if(len(th)!=3):
+        #             raise ValueError("{}: (color_range)Invalid input".format(shape))
+        #         for th_val in th:
+        #             if(th_val<0 or th_val>255):
+        #                 raise ValueError("{}: (color_range)Invalid input".format(shape))
+        # if(pos_list!=None):
+        #     if(len(pos_list)!=3):
+        #         raise ValueError("{}: Invalid input".format(shape))
+        #     for pos in pos_list:
+        #         if(len(pos)!=3):
+        #             raise ValueError("{}: (pos_list)Invalid input".format(shape))
+        self.Color_Range=color_range
+        # 物块(机械臂基座坐标系下)位置列表[物料盘位置,原料盘位置,加工/暂存区位置]
+        self.Pos_List=pos_list
+        # 林氏通道混合法下的通道混合比例(RGB)
+        self.Mixing_Portion=None
+        # 视频流对象
+        self.Video=video
+        # 速度计算参数
+        self.Phase_Start_Time=time.time()  # 阶段开始时间
+        self.Vel_Sample_Interval=0.1  # 速度采样间隔(s)
+        self.Previous_Pos=np.array((0,0))   # 前一帧的位置
+        self.Velocity=np.array((0,0))   # 速度
+        # 透视变换矩阵(用于椭圆识别)
+        self.TransMatrix=None
+        # 位置滤波器
+        self.Pos_Filter=None
+
+    def Set_Pos_Filter(self,filter:MT.Average_Filter):
+        self.Pos_Filter=filter
+
+    def Clear_Velocity(self):
+        # 填充100防止误判静止
+        self.Velocity.fill(100)
+        self.Previous_Pos.fill(0)
+
+    def Get_StuffPlate_Pos(self)->Tuple[float,float,float]:
+        """
+        @功能: 获取物料盘位置
+        @返回值: 物料盘位置(x,y,z)
+        """
+        return self.Pos_List[0]
+    
+    def Get_Material_Pos(self)->Tuple[float,float,float]:
+        """
+        @功能: 获取原料盘位置
+        @返回值: 原料盘位置(x,y,z)
+        """
+        return self.Pos_List[1]
+    
+    def Get_Processing_Pos(self)->Tuple[float,float,float]:
+        """
+        @功能: 获取加工/暂存区位置
+        @返回值: 加工/暂存区位置(x,y,z)
+        """
+        return self.Pos_List[2]
+
+    def Set_Mixing_Portion(self,portion:Tuple[float,float,float]):
+        """
+        @功能: 设置林氏通道混合法下的通道混合比例(RGB)
+        @参数: portion: 通道混合比例(R,G,B)
+        """
+        self.Mixing_Portion=portion
+
+    def Set_TransMatrix(self,ratio:float):
+        """
+        @功能: 设置透视变换矩阵
+        @参数: ratio: 顶部边缘缩放比例
+        """
+        height,width=self.Video.Get_Frame_Shape()
+        width_decline_half=float(width)*ratio
+        pts_src=np.float32([[0,0],[0,height-1],[width-1,height-1],[width-1,0]])
+        # pts_dst=np.float32([[width_decline_half,0],[0,height-1],[width-1,height-1],[width-width_decline_half,0]])
+        pts_dst=np.float32([[width_decline_half,0],[width_decline_half,height-1],
+                            [width-width_decline_half,height-1],[width-width_decline_half,0]])
+        self.TransMatrix=cv.getPerspectiveTransform(pts_src,pts_dst)
+
+    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False):
+        """
+        @功能: 检测物块颜色范围内的物块,并返回物块中心坐标;该方法只适用于圆形物块
+        @参数: frame: 图像帧
+        @参数: use_linAlogrithm: 是否使用林算法二值化图像,默认为False
+        @返回: 
+            "circle":(List[(c,r)],二值化图像);
+            "ellipse":(List[(c,r)],二值化图像);
+            "line":(List[(pt1,angle)],二值化图像)<角度顺时针为正,与agv定义相反>;
+        """
+        frame_thresholded:np.ndarray=None
+        if(use_linAlogrithm==True):
+            b_, g_, r_ = cv.split(frame)
+            r_ = np.int16(r_)
+            b_ = np.int16(b_)
+            g_ = np.int16(g_)
+            kr,kg,kb=self.Mixing_Portion
+            frame_mixed = kr * r_ + kg * g_ + kb * b_
+            frame_mixed = np.clip(frame_mixed, 0, 254)
+            # 将数据类型变回uint8
+            frame_thresholded = np.uint8(frame_mixed)
+        else:
+            frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
+        # 可能需要滤波
+        frame_thresholded = cv.medianBlur(frame_thresholded, 3)  # 中值滤波
+        frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
+        if(self.Name=="circle"):
+            circle_centroid_list=[]
+            circles=cv.HoughCircles(frame_thresholded,cv.HOUGH_GRADIENT,1,300,param1=20,
+                                    param2=50,minRadius=100,maxRadius=200)
+            try:
+                for circle in circles[0,:]:
+                    c,r,rou=circle
+                    if(rou>100 or True):
+                        centroid=np.array((c,r))
+                        # 按照规定的间隔时间进行速度采样
+                        current_time=time.time()
+                        if(current_time-self.Phase_Start_Time>=self.Vel_Sample_Interval):
+                            self.Velocity=centroid-self.Previous_Pos
+                            self.Previous_Pos=centroid
+                            self.Phase_Start_Time=current_time
+                        vel=self.Velocity
+                        circle_centroid_list.append(centroid)
+                        # 标记
+                        annote_text="pos:({},{})".format(c,r)
+                        centroid=np.around(centroid).astype(int)
+                        rou=int(round(rou))
+                        cv.circle(frame,centroid,rou,(0,0,0),2)
+                        text_offset=np.array((rou-25,-rou+5))
+                        text_pos=centroid+text_offset
+                        frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
+                                        0.6,(0,0,0),2)
+                        annote_text="vel:({},{})".format(vel[0],vel[1])
+                        text_pos[1]+=25
+                        frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
+                                        0.6,(0,0,0),2)
+            except TypeError:
+                pass
+            return circle_centroid_list,frame_thresholded
+        elif(self.Name=="ellipse"):
+            M=self.TransMatrix
+            height,width=self.Video.Get_Frame_Shape()
+            frame_thresholded=cv.warpPerspective(frame_thresholded,M,(width,height))
+            circles=cv.HoughCircles(frame_thresholded,cv.HOUGH_GRADIENT,1,300,param1=20,
+                                param2=50,minRadius=100,maxRadius=1000)
+            circle_centroid_list=[]
+            try:
+                for circle in circles[0,:]:
+                    c,r,rou=circle
+                    circle_centroid_list.append((c,r))
+                    c=int(round(c))
+                    r=int(round(r))
+                    rou=int(round(rou))
+                    cv.circle(frame,(c,r),rou,(0,0,0),2)
+                    org=self.Video.Frame_Shape_Half
+                    org=org[::-1]
+                    cv.line(frame,(c,r),org,(0,0,0),2)
+            except TypeError:
+                pass
+            return circle_centroid_list,frame_thresholded
+        elif(self.Name=="line"):
+            point_angle_list=[]
+            frame_thresholded = cv.Canny(frame_thresholded, 90, 180)
+            lines=cv.HoughLinesP(frame_thresholded,1,math.radians(1),140,
+                                 minLineLength=200,maxLineGap=800)
+            try:
+                for line in lines:
+                    print("line={}".format(line))
+                    pts=line[0]
+                    pt1=np.array(pts[:2])
+                    pt2=np.array(pts[2:])
+                    delta=pt2-pt1
+                    angle=np.arctan2(delta[1],delta[0])
+                    angle=np.degrees(angle)
+                    # angle=-angle
+                    point_angle_list.append((pt1,angle))
+            except TypeError:
+                pass
+            return point_angle_list,frame_thresholded
 
 
 class Correction_PosDef(Enum):
@@ -121,8 +320,11 @@ class MissionDef():
     def Set_Logger(self,mission_logger:Logger):
         self.Logger = mission_logger
 
-    def Change_Stage(self,stage:np.uint8):
-        self.Stage_Flag = np.uint8(stage)
+    def Change_Stage(self,stage:np.uint8=None):
+        if(stage==None):
+            self.Stage_Flag=np.uint8(self.Stage_Flag+1)
+        else:
+            self.Stage_Flag = np.uint8(stage)
 
     def Output(self,output_str:str,output_level:int=DEBUG):
         '''

@@ -132,6 +132,8 @@ class myManipulator:
         self.End_Wait_Time=0
         # yaw轴加减速参数:[缓冲角度/°,加减速时间/ms,缓冲角度比率,加减速时间比率,目标yaw轴角]
         self.Yaw_AccParam=[float(0),np.uint16(0),float(0),float(0),float(0)]
+        # 夹爪张开/闭合角度(舵机微分值)
+        self.Claw_Angles=None
         try:
             link_lengths=arm_params_list[0]
             actuator_offsets=arm_params_list[1]
@@ -147,6 +149,12 @@ class myManipulator:
         except Exception:
             logger.error("Invalid params for {}({} manipulator)".format(name,type),exc_info=True)
             return None
+
+    def Set_Claw_Angles(self,open_closed_angles:Tuple[np.uint16,np.uint16]):
+        """
+        @功能: 设置夹爪张开/闭合角度(舵机微分值)
+        """
+        self.Claw_Angles=open_closed_angles
 
     def Store_Point_and_Distance(self,point:np.ndarray,distance:float):
         """
@@ -404,13 +412,13 @@ class myManipulator:
                 self.Joint_Angle_Ctrl([(1,theta1),(2,theta2),(3,theta3)],time_ms)
                 # 计算等待时间
                 self.End_Wait_Time=time.time()+0.001*time_ms
-                self.Logger.info("({}) 开始移动".format(self.Name))
+                self.Logger.debug("({}) 开始移动".format(self.Name))
             elif(self.Status_Flag==1):
                 # 等待机械臂到位
                 if(time.time()>=self.End_Wait_Time):
                     self.Change_Status(0)
                     busy_flag=False
-                    self.Logger.info("({}) 到达目标点:{}".format(self.Name,target_position))
+                    self.Logger.debug("({}) 到达目标点:{}".format(self.Name,target_position))
         elif(Mode==self.Ctrl_Mode.LINEAR):
             if(self.Status_Flag==0):
                 self.Change_Status(1)
@@ -536,7 +544,7 @@ class myManipulator:
         """
         SCAN_QRCODE=(1,300,"scan_qrcode")
         MATERIAL_CORRECTION=(2,200,"material_correction")
-        grp3=(3,300,"grp3")
+        HOLD_STUFF=(3,200,"hold_stuff")
 
     def Run_Preset_Action(self,action:ActionGroup)->bool:
         busy_flag=True
@@ -546,112 +554,45 @@ class myManipulator:
             action_run_time_ms=action.value[1]
             self.Servo.Run_ActionGroup(action_grp_code)
             self.End_Wait_Time=time.time()+0.001*action_run_time_ms
-            self.Logger.info("({}) 执行动作组:{}".format(self.Name,action.value[2]))
+            self.Logger.debug("({}) 执行动作组:{}".format(self.Name,action.value[2]))
         elif(self.Status_Flag==1):
             # 等待机械臂到位
             if(time.time()>=self.End_Wait_Time):
                 self.Change_Status(0)
-                self.Logger.info("({}) 动作组执行完毕".format(self.Name))
+                self.Logger.debug("({}) 动作组执行完毕".format(self.Name))
                 busy_flag=False
         return busy_flag
 
-    def Claw_Cmd(self,cmd:bool,time_ms:np.uint16=100):
+    def Claw_Cmd(self,cmd:bool,inloop_flag=True,time_ms:np.uint16=50):
         """
         @功能: 控制夹爪闭合/张开
         @参数: cmd: True为闭合,False为张开
+        @参数: inloop_flag 是否在循环中使用,默认true
+        @参数: time_ms 执行时间
         """
-        close_angle=980
-        open_angle=800
-        claw_angle_list=[open_angle,close_angle]
-        index=np.uint8(cmd)
-        self.Servo.Angle_Ctrl([(4,claw_angle_list[index])],time_ms)
-        if(cmd==True):
-            self.Logger.info("({}) 夹爪闭合".format(self.Name))
-        else:
-            self.Logger.info("({}) 夹爪张开".format(self.Name))
-
-
-class myStuff:
-    def __init__(self,name,color_range:List[Tuple],pos_list:List[Tuple]):
-        """
-        @功能: 物块类,存储物块的颜色和位置信息
-        @参数: color_range: 物块颜色范围(BGR)[th_l,th_h]
-        @参数: pos_list: 物块(机械臂基座坐标系下)位置列表[物料盘位置,原料盘位置,加工/暂存区位置]
-        """
-        self.Name=name
-        if(len(color_range)!=2 or len(pos_list)!=3):
-            raise ValueError("{}: Invalid input".format(name))
-        for pos in pos_list:
-            if(len(pos)!=3):
-                raise ValueError("{}: (pos_list)Invalid input".format(name))
-        for th in color_range:
-            if(len(th)!=3):
-                raise ValueError("{}: (color_range)Invalid input".format(name))
-            for th_val in th:
-                if(th_val<0 or th_val>255):
-                    raise ValueError("{}: (color_range)Invalid input".format(name))
-        self.Color_Range=color_range
-        self.Pos_List=pos_list
-        self.Mixing_Portion=None
-        # 存储前一帧的位置,用于计算速度
-        self.Previous_Pos=np.array((0,0))
-
-    def Set_Mixing_Portion(self,portion:Tuple[float,float,float]):
-        """
-        @功能: 设置林氏通道混合法下的通道混合比例(RGB)
-        @参数: portion: 通道混合比例(R,G,B)
-        """
-        self.Mixing_Portion=portion
-
-    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False)->Tuple[List[np.ndarray],np.ndarray]:
-        """
-        @功能: 检测物块颜色范围内的物块,并返回物块中心坐标;该方法只适用于圆形物块
-        @参数: frame: 图像帧
-        @参数: use_linAlogrithm: 是否使用林算法二值化图像,默认为False
-        @返回: 物块中心像素坐标(c,r)
-        """
-        frame_thresholded=None
-        circle_centroid_list=[]
-        if(use_linAlogrithm==True):
-            b_, g_, r_ = cv.split(frame)
-            r_ = np.int16(r_)
-            b_ = np.int16(b_)
-            g_ = np.int16(g_)
-            kr,kg,kb=self.Mixing_Portion
-            frame_mixed = kr * r_ + kg * g_ + kb * b_
-            frame_mixed = np.clip(frame_mixed, 0, 254)
-            # 将数据类型变回uint8
-            frame_thresholded = np.uint8(frame_mixed)
-        else:
-            frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
-        # 可能需要滤波
-        frame_thresholded = cv.medianBlur(frame_thresholded, 3)  # 中值滤波
-        frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
-        circles=cv.HoughCircles(frame_thresholded,cv.HOUGH_GRADIENT,1,300,param1=20,
-                                param2=50,minRadius=100,maxRadius=200)
-        try:
-            for circle in circles[0,:]:
-                c,r,rou=circle
-                if(rou>100 or True):
-                    centroid=np.array((c,r))
-                    vel=centroid-self.Previous_Pos
-                    self.Previous_Pos=centroid
-                    annote_text="pos:({},{})".format(c,r)
-                    circle_centroid_list.append((circle,vel))
-                    centroid=np.around(centroid).astype(int)
-                    rou=int(round(rou))
-                    cv.circle(frame,centroid,rou,(0,0,0),2)
-                    text_offset=np.array((rou-25,-rou+5))
-                    text_pos=centroid+text_offset
-                    frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
-                                     0.6,(0,0,0),2)
-                    annote_text="vel:({},{})".format(vel[0],vel[1])
-                    text_pos[1]+=25
-                    frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
-                                     0.6,(0,0,0),2)
-        except TypeError:
-            pass
-        return circle_centroid_list,frame_thresholded
+        busy_flag=True
+        if(self.Status_Flag==0):
+            if(inloop_flag==True):
+                self.Change_Status(1)
+            claw_angle_list:Tuple=self.Claw_Angles
+            index=np.uint8(cmd)
+            self.Servo.Angle_Ctrl([(4,claw_angle_list[index])],time_ms)
+            self.End_Wait_Time=time.time()+0.001*time_ms
+        elif(self.Status_Flag==1):
+            # 等待夹爪闭合/张开
+            if(time.time()>=self.End_Wait_Time):
+                self.Change_Status(2)
+                if(cmd==True):
+                    self.Logger.debug("({}) 夹爪闭合".format(self.Name))
+                else:
+                    self.Logger.debug("({}) 夹爪张开".format(self.Name))
+                self.End_Wait_Time=time.time()+0.05
+        elif(self.Status_Flag==2):
+            # 额外等待100ms
+            if(time.time()>=self.End_Wait_Time):
+                busy_flag=False
+                self.Change_Status(0)
+        return busy_flag
 
 
 def test_Manipulator():
