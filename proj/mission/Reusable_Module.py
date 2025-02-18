@@ -1,5 +1,7 @@
 import numpy as np
+import cv2 as cv
 from typing import Tuple
+from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from mission.Setup import MissionDef
 from subsystems.AGV import myAGV
 from subsystems.Manipulator import myManipulator
@@ -17,6 +19,36 @@ class Module_Stage_Counter:
 
 cnt=Module_Stage_Counter()
 
+def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff:myObject,
+                         vc_th,next_satge:np.uint8=None,lin_flag=True):
+    """
+    * 检测圆形物体,并判断是否静止\n
+    * 注意:该函数自带任务状态转换\n
+    @param self: Mission实例
+    @param frame_captured: 当前帧
+    @param current_stuff: 当前物体实例
+    @param vc_th: 静止阈值
+    @param next_satge: 判断静止后下一任务阶段号码,默认为None
+    @param lin_flag: 是否采用林算法二值化,默认为True
+    """
+    circie_list,frame_processed=current_stuff.Detect(frame_captured,lin_flag)
+    frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+    frame_processed=self.Video.Make_Thumbnails(frame_processed)
+    self.Video.Paste_Img(frame_captured,frame_processed)
+    num_circle=len(circie_list)
+    if(num_circle!=0):
+        if(num_circle>1):
+            self.Output("Mission({}) 检测到{}个圆".format(self.Name,num_circle),WARNING)
+        circle=circie_list[0]
+        c,r=circle
+        vc,vr=current_stuff.Velocity
+        self.Output("Mission({}),circle_params,{},{},{},{}".format(self.Name,c,r,vc,vr))
+        if(vc<vc_th and vc>-vc_th):
+            self.Change_Stage(next_satge)
+            self.Output("Mission({}) 目标静止,开始行动".format(self.Name))
+    else:
+        current_stuff.Clear_Velocity()
+
 def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple):
     """
     * xy方向分别纠正\n
@@ -30,6 +62,7 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple):
     if(cnt.Get()==0):
         vy=0
         delta=self.Video.Frame_Shape_Half[1]-c
+        self.Output("Mission({}),delta_y,{}".format(self.Name,delta))
         if(delta>thy):
             vy=v_adj_y
         elif(delta<-thy):
@@ -42,6 +75,7 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple):
     elif(cnt.Get()==1):
         vx=0
         delta=self.Video.Frame_Shape_Half[0]-r
+        self.Output("Mission({}),delta_x,{}".format(self.Name,delta))
         if(delta>thx):
             vx=v_adj_x
         elif(delta<-thx):

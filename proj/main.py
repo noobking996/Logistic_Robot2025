@@ -25,7 +25,8 @@ Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Material],[100],[0.25,(10,10),(30,30)]],True)
+                                      [[CP.Material],[100],[0.25,(5,5),(20,20),5],
+                                       None,None,[False]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,50],[5],[100,100,300,150],[400,250]],True)
@@ -86,15 +87,15 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
 # 二值化调参任务定义
 # 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
-                             [[200,255],[20,180],[20,190],[True,True],[0]],True)
+                             [[210,255],[210,255],[210,255],[True,True],[0]],True)
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([RawMaterial_Picking],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0216_1927"
+Mission_Code="debug_0218_1211"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])

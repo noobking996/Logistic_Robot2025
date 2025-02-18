@@ -366,7 +366,7 @@ def Pos_Correction_Func(self:MissionDef):
     [\n
     0. [纠正位置]
     1. [动作就位时间/ms:t0,t1...],\n
-    2. [(高)纠正参数:adjInterval, stop_th, v_adj],\n
+    2. [(高)纠正参数:adjInterval, stop_th, v_adj, vc_th],\n
     3. [低纠正参数:adjInterval, stop_th, v_adj],\n
     4. [角度纠正参数:adjInterval, stop_th, omg_adj, angle_compensation],\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
@@ -419,8 +419,10 @@ def Pos_Correction_Func(self:MissionDef):
                 self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==100):
             # 若纠正位置为加工/暂存区,则进行角度纠正
+            # 若纠正位置为原料区,则检测原料盘圆形物块阴影并判断是否静止
             if(correction_pos==CP.Material):
-                self.Change_Stage(1)
+                vc_th=self.Para_List[2][3]
+                RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False)
             else:
                 adjInterval,stop_th,omg_adj,angle_compensation=self.Para_List[4]
                 line_list,frame_processed=edge_line.Detect(frame_captured)
@@ -463,7 +465,7 @@ def Pos_Correction_Func(self:MissionDef):
             v_adj=None
             if(self.Stage_Flag==1):
                 # 原料区纠正||加工/暂存区高纠正参数
-                adjInterval,stop_th,v_adj=self.Para_List[2]
+                adjInterval,stop_th,v_adj,_=self.Para_List[2]
             else:
                 # 加工/暂存区低纠正参数
                 adjInterval,stop_th,v_adj=self.Para_List[3]
@@ -476,16 +478,20 @@ def Pos_Correction_Func(self:MissionDef):
             self.Video.Paste_Img(frame_captured,frame_processed)
             # 位置取样(+滤波)
             # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
-            center=center_list[0]
-            filter_flag=self.Para_List[5][0]
-            if(filter_flag==True):
-                center=myfilter.Get_Filtered_Value(center)
+            miss_flag=False
+            if(len(center_list)!=0):
+                center=center_list[0]
+                filter_flag=self.Para_List[5][0]
+                if(filter_flag==True):
+                    center=myfilter.Get_Filtered_Value(center)
+            else:
+                miss_flag=True
             # 按照规定时间间隔:判断距离,调整速度
             current_time=time.time()
             if(current_time-self.Phase_Start_Time>=adjInterval):
                 self.Output("Mission({}) correction_para: {},{},{}"
                             .format(self.Name,adjInterval,stop_th,v_adj))
-                if(len(center_list)==0):
+                if(miss_flag==True):
                     self.Output("Mission({}) 未检测到目标对象".format(self.Name),WARNING)
                     agv.Velocity_Control([0,0,0])
                 else:
@@ -542,23 +548,7 @@ def RawMaterial_Picking_Func(self:MissionDef):
         # 获取任务参数1
         vc_th=self.Para_List[1][0]
         # 检测圆形
-        circie_list,frame_processed=current_stuff.Detect(frame_captured,True)
-        frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
-        frame_processed=self.Video.Make_Thumbnails(frame_processed)
-        self.Video.Paste_Img(frame_captured,frame_processed)
-        num_circle=len(circie_list)
-        if(num_circle!=0):
-            if(num_circle>1):
-                self.Output("Mission({}) 检测到{}个圆".format(self.Name,num_circle),WARNING)
-            circle=circie_list[0]
-            c,r=circle
-            vc,vr=current_stuff.Velocity
-            # self.Output("Mission({}),circle_params,{},{},{},{}".format(self.Name,c,r,vc,vr))
-            if(vc<vc_th and vc>-vc_th):
-                self.Change_Stage()
-                self.Output("Mission({}) 目标静止,开始夹取".format(self.Name))
-        else:
-            current_stuff.Clear_Velocity()
+        RM.Circle_Detect_Stable(self,frame_captured,current_stuff,vc_th)
     elif(self.Stage_Flag in [1,6,11]):
         RM.Material_FetchStuff(self,arm,current_stuff)
     elif(self.Stage_Flag in [2,7,12]):
