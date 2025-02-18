@@ -61,7 +61,7 @@ def Logger_Setup(mission_code:str="Logistic_Handling",
 
 
 class myObject:
-    def __init__(self,shape,video:Video_Stream,
+    def __init__(self,shape:str,video:Video_Stream,
                  color_range:List[Tuple]=None,pos_list:List[Tuple]=None):
         """
         * 创建任务目标类,存储任务对象(物块\线条\原料盘)的的颜色和位置等信息
@@ -406,11 +406,11 @@ class MissionManager(MissionDef):
                  para_list:List[Any]=[[]],
                  verbose_flag:bool=False,num_mission:np.uint8=0):
         """
-        @功能：任务管理器，用于管理多个任务调用顺序和切换
-        @参数: para_list, 任务参数列表,存储全局参数
-        @参数: mission_list, 任务列表,存储任务定义
-        @参数: verbose_flag, 是否输出详细信息
-        @参数: num_mission, 执行到的任务数量(从1开始),若不指定或赋0则表示自动获取任务总量
+        * 创建任务管理器，用于管理多个任务调用顺序和切换
+        @param para_list: 任务参数列表,存储全局参数
+        @param mission_list: 任务列表,存储任务定义
+        @param verbose_flag: 是否输出详细信息
+        @param num_mission: 执行到的任务数量(从1开始),若不指定或赋0则表示自动获取任务总量
         """
         super().__init__("MissionManager",None,para_list,verbose_flag)
         self.Mission_List = mission_list

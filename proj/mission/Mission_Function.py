@@ -49,7 +49,13 @@ def Stuff_List_Init(stuffs:Tuple[myObject]):
     for stuff in stuffs:
         stuff_list.append(stuff)
 
+# 均值滤波器
 myfilter=MT.Average_Filter(5)
+
+# 物料夹取任务计数器
+stuff_index_counter=RM.Module_Stage_Counter()
+# 轮次计数器
+round_counter=RM.Module_Stage_Counter()
 
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
@@ -493,9 +499,10 @@ def Pos_Correction_Func(self:MissionDef):
                 self.End()
             else:
                 # 原料/加工区低纠正就位
-                pos=green_ring.Get_Processing_Pos()
+                x,y,z=green_ring.Get_Processing_Pos()
+                z-=100
                 action_time=self.Para_List[1][1]
-                busy_flag=arm.Goto_Target_Pos(pos,action_time)
+                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
                 if(busy_flag==False):
                     self.Change_Stage()
                     self.Output("Mission({}) 低纠姿态就位".format(self.Name))
@@ -516,8 +523,10 @@ def RawMaterial_Picking_Func(self:MissionDef):
     """
     global frame_captured
     global stuff_list
-    current_stuff:myObject=stuff_list[2]
-    if(self.Stage_Flag==0):
+    global stuff_index_counter
+    stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
+    current_stuff:myObject=stuff_list[stuff_index]
+    if(self.Stage_Flag in [4,9]):
         # 获取任务参数0
         material_height_offset=self.Para_List[0][0]
         t0=self.Para_List[2][0]
@@ -528,8 +537,8 @@ def RawMaterial_Picking_Func(self:MissionDef):
         if(busy_flag==False):
             self.Change_Stage(1)
             if(self.Verbose_Flag==True):
-                self.Output("Mission({}) 检测图像中的圆形".format(self.Name))
-    elif(self.Stage_Flag==1):
+                self.Output("Mission({}) 机械臂就位,开始扫描物块{}".format(self.Name,stuff_index))
+    elif(self.Stage_Flag in [0,5,10]):
         # 获取任务参数1
         vc_th=self.Para_List[1][0]
         # 检测圆形
@@ -544,97 +553,28 @@ def RawMaterial_Picking_Func(self:MissionDef):
             circle=circie_list[0]
             c,r=circle
             vc,vr=current_stuff.Velocity
-            self.Output("Mission({}),circle_params,{},{},{},{}".format(self.Name,c,r,vc,vr))
+            # self.Output("Mission({}),circle_params,{},{},{},{}".format(self.Name,c,r,vc,vr))
             if(vc<vc_th and vc>-vc_th):
                 self.Change_Stage()
                 self.Output("Mission({}) 目标静止,开始夹取".format(self.Name))
         else:
             current_stuff.Clear_Velocity()
-    elif(self.Stage_Flag==2):
-        # 获取任务参数2
-        t1=self.Para_List[2][1]
-        # 获取任务参数0
-        y_offset=self.Para_List[0][1]
-        x,y,z=current_stuff.Get_Material_Pos()
-        y+=y_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t1)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 准备前进夹取".format(self.Name))
-    elif(self.Stage_Flag==3):
-        # 获取任务参数3
-        progression_speed=self.Para_List[3][0]
-        x,y,z=current_stuff.Get_Material_Pos()
-        busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,progression_speed)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 到达夹取位置".format(self.Name))
-    elif(self.Stage_Flag==4):
-        busy_flag=arm.Claw_Cmd(True)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 机械臂夹取".format(self.Name))
-    elif(self.Stage_Flag==5):
-        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 提起物块".format(self.Name))
-    elif(self.Stage_Flag==6):
-        # 获取任务参数2
-        t2=self.Para_List[2][2]
-        pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 朝向物料盘".format(self.Name))
-    elif(self.Stage_Flag==7):
-        # 获取任务参数2
-        t3=self.Para_List[2][3]
-        # 获取任务参数0
-        stuff_height_offset=self.Para_List[0][2]
-        x,y,z=current_stuff.Get_StuffPlate_Pos()
-        z+=stuff_height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t3)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 到达物料盘上方".format(self.Name))
-    elif(self.Stage_Flag==8):
-        put_speed=self.Para_List[3][1]
-        pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,put_speed)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 放入物料盘".format(self.Name))
-    elif(self.Stage_Flag==9):
-        busy_flag=arm.Claw_Cmd(False)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 物块释放".format(self.Name))
-    elif(self.Stage_Flag==10):
-        # 可以取消垂直回升阶段,直接收缩
-        # put_speed=self.Para_List[3][1]
-        # t3=self.Para_List[2][3]
-        # stuff_height_offset=self.Para_List[0][2]
-        # x,y,z=current_stuff.Get_StuffPlate_Pos()
-        # z+=stuff_height_offset
-        # busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,put_speed)
-        # if(busy_flag==False):
-        #     self.Change_Stage()
-        #     self.Output("Mission({}) 垂直回升".format(self.Name))
-        self.Change_Stage()
-    elif(self.Stage_Flag==11):
-        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
-        if(busy_flag==False):
-            self.Change_Stage()
-            self.Output("Mission({}) 姿态收缩".format(self.Name))
-    elif(self.Stage_Flag==12):
+    elif(self.Stage_Flag in [1,6,11]):
+        RM.Material_FetchStuff(self,arm,current_stuff)
+    elif(self.Stage_Flag in [2,7,12]):
+        RM.StuffPlate_PutOn(self,arm,current_stuff)
+    elif(self.Stage_Flag in [3,8,13]):
         t2=self.Para_List[2][2]
         pos=current_stuff.Get_Material_Pos()
         busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
         if(busy_flag==False):
+            # 每次将物料放上车后的回转是完成物料夹取的标志,索引自增,进行下一个物料的夹取
+            stuff_index_counter.Increment()
             self.Change_Stage()
-            self.Output("Mission({}) 朝向原料盘".format(self.Name))
-    elif(self.Stage_Flag==13):
+            self.Output("Mission({}) 已朝向原料盘".format(self.Name))
+    elif(self.Stage_Flag==14):
+        # 完成所有夹取任务后,复位物料索引计数器
+        stuff_index_counter.Reset()
         self.End()
 
 
