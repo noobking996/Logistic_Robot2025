@@ -25,7 +25,7 @@ Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Material],[100],[0.25,(5,5),(20,20),5],
+                                      [[CP.Material],[100],[0.25,(20,20),(20,20),5,None],
                                        None,None,[False]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
@@ -37,8 +37,9 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
                                        [0,0.95,1.45,1.35,1],True)
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Processing],[200,200],[0.25,(10,10),(30,30)],
-                                       [0.25,(10,10),(30,30)],[0.25,2,30,0],[False,False]],True)
+                                      [[CP.Processing],[200,200],[0.2,(10,10),(20,20),0,(125,140)],
+                                       [0.25,(5,5),(5,5),(160,200)],[0.2,1.5,3,0,None],
+                                       [True,True]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    None,True)
@@ -48,8 +49,8 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
                                   [1.05,1.47,1.2],True)
 
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
-                                   [[CP.Processing],[200,200],[0.25,(10,10),(30,30)],
-                                       [0.25,(10,10),(30,30)],[0.25,2,30,0],[False,False]],True)
+                                   [[CP.Processing],[200,200],[0.25,(10,10),(30,30),0,(125,140)],
+                                       [0.25,(10,10),(30,30),(160,200)],[0.25,2,30,0],[False,False]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,None,True)
@@ -87,15 +88,15 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
 # 二值化调参任务定义
 # 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
-                             [[210,255],[210,255],[210,255],[True,True],[0]],True)
+                             [[205,255],[200,255],[195,255],[True,True],[0]],True)
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0218_1211"
+Mission_Code="debug_0218_1745"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -166,7 +167,7 @@ MF.material_plate=myObject("circle",myVideo,[(210,210,210),(255,255,255)],
 MF.green_ring=myObject("circle",myVideo,None,[None,None,(0,-250,200-arm_height)])
 MF.green_ring.Set_Mixing_Portion((-1,2,-1))
 
-MF.edge_line=myObject("line",myVideo,[(210,220,210),(255,255,255)])
+MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 
 #####################################################################################
 

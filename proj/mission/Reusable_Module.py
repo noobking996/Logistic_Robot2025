@@ -49,14 +49,17 @@ def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff
     else:
         current_stuff.Clear_Velocity()
 
-def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple):
+def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
     """
     * xy方向分别纠正\n
     * 注意:该函数自带任务状态转换\n
     @param self: Mission实例
     @param agv: AGV实例
     @param adj_params: 纠正参数(c,r,thy,thx,v_adj_y,v_adj_x)
+    @returns: 
+    complete_flag: 完成标志
     """
+    complete_flag=False
     c,r,thy,thx,v_adj_y,v_adj_x=adj_params
      # 场地横向纠正({agv}y)
     if(cnt.Get()==0):
@@ -83,8 +86,10 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple):
         else:
             cnt.Reset()
             self.Change_Stage()
+            complete_flag=True
             self.Output("Mission({}) 纵向纠正完毕".format(self.Name))
         agv.Velocity_Control([vx,0,0])
+    return complete_flag
 
 
 def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject):

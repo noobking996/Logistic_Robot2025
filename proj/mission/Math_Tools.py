@@ -6,7 +6,6 @@ class Average_Filter:
     def __init__(self, sequence_len:np.uint8):
         self.Sequence_Length=np.uint8(sequence_len)
         self.Sequence=[]
-        self.Average=0
 
     def Get_Filtered_Value(self, value):
         """
@@ -17,9 +16,8 @@ class Average_Filter:
         self.Sequence.append(value)
         if len(self.Sequence)>self.Sequence_Length:
             self.Sequence.pop(0)
-        self.Average=np.mean(self.Sequence, axis=0)
-        return self.Average
+        Average=np.mean(self.Sequence, axis=0)
+        return Average
     
     def Reset(self):
         self.Sequence.clear()
-        self.Average=0

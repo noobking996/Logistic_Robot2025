@@ -156,16 +156,23 @@ class myObject:
                             [width-width_decline_half,height-1],[width-width_decline_half,0]])
         self.TransMatrix=cv.getPerspectiveTransform(pts_src,pts_dst)
 
-    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False):
+    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False,detail_params:Tuple=None):
         """
         * 功能: 检测物块颜色范围内的物块,并返回物块中心坐标;
         * 该方法适用于圆形物块\场地边缘线条\椭圆物块
         @param frame: 图像帧
         @param use_linAlogrithm: 是否使用林算法二值化图像,默认为False
-        @return: 
-        "circle":(List[(c,r)],二值化图像);
+        @param detail_params:
+            1. 圆形物块识别参数,默认为(100,200),即半径范围[100,200]\n
+            2. 场地边缘识别参数,默认为(90,180),是canny边缘检测的阈值范围\n
+        @return: \n
+        "circle":(List[(c,r)],二值化图像);\n
         "ellipse":(List[(c,r)],二值化图像);\n
-        "line":(List[(pt1,angle)],二值化图像)<角度顺时针为正,与agv定义相反>;
+        "line":(List[(pt1,pt2)],二值化图像)
+            * delta_vector=pt2-pt1;
+            * angle=np.arctan2(vector_delta[1],vector_delta[0]);
+            * angle=np.degrees(angle);
+            * <角度顺时针为正,与agv定义相反>;
         """
         frame_thresholded:np.ndarray=None
         if(use_linAlogrithm==True):
@@ -185,40 +192,46 @@ class myObject:
         frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
         if(self.Name=="circle"):
             circle_centroid_list=[]
+            if(detail_params==None):
+                detail_params=(100,200)
+            minR,maxR=detail_params
             circles=cv.HoughCircles(frame_thresholded,cv.HOUGH_GRADIENT,1,300,param1=20,
-                                    param2=50,minRadius=100,maxRadius=200)
+                                    param2=50,minRadius=minR,maxRadius=maxR)
             try:
                 for circle in circles[0,:]:
                     c,r,rou=circle
-                    if(rou>100 or True):
-                        centroid=np.array((c,r))
-                        # 按照规定的间隔时间进行速度采样
-                        current_time=time.time()
-                        if(current_time-self.Phase_Start_Time>=self.Vel_Sample_Interval):
-                            self.Velocity=centroid-self.Previous_Pos
-                            self.Previous_Pos=centroid
-                            self.Phase_Start_Time=current_time
-                        vel=self.Velocity
-                        circle_centroid_list.append(centroid)
-                        # 标记
-                        annote_text="pos:({},{})".format(c,r)
-                        centroid=np.around(centroid).astype(int)
-                        rou=int(round(rou))
-                        cv.circle(frame,centroid,rou,(0,0,0),2)
-                        text_offset=np.array((rou-25,-rou+5))
-                        text_pos=centroid+text_offset
-                        frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
-                                        0.6,(0,0,0),2)
-                        annote_text="vel:({},{})".format(vel[0],vel[1])
-                        text_pos[1]+=25
-                        frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
-                                        0.6,(0,0,0),2)
+                    centroid=np.array((c,r))
+                    # 按照规定的间隔时间进行速度采样
+                    current_time=time.time()
+                    if(current_time-self.Phase_Start_Time>=self.Vel_Sample_Interval):
+                        self.Velocity=centroid-self.Previous_Pos
+                        self.Previous_Pos=centroid
+                        self.Phase_Start_Time=current_time
+                    vel=self.Velocity
+                    circle_centroid_list.append(centroid)
+                    # 标记
+                    # annote_text="pos:({},{}),R={}".format(c,r,rou)
+                    annote_text="pos:({},{})".format(c,r)
+                    centroid=np.around(centroid).astype(int)
+                    rou=int(round(rou))
+                    cv.circle(frame,centroid,rou,(0,0,0),2)
+                    text_offset=np.array((rou-25,-rou+5))
+                    text_pos=centroid+text_offset
+                    frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
+                                    0.6,(0,0,0),2)
+                    annote_text="vel:({},{})".format(vel[0],vel[1])
+                    text_pos[1]+=25
+                    frame=cv.putText(frame,annote_text,text_pos,cv.FONT_HERSHEY_SIMPLEX,
+                                    0.6,(0,0,0),2)
             except TypeError:
                 pass
             return circle_centroid_list,frame_thresholded
         elif(self.Name=="line"):
             point_angle_list=[]
-            frame_thresholded = cv.Canny(frame_thresholded, 90, 180)
+            if(detail_params==None):
+                detail_params=(90,180)
+            th_l,th_h=detail_params
+            frame_thresholded = cv.Canny(frame_thresholded, th_l, th_h)
             lines=cv.HoughLinesP(frame_thresholded,1,math.radians(1),140,
                                  minLineLength=200,maxLineGap=800)
             try:
@@ -227,11 +240,7 @@ class myObject:
                     pts=line[0]
                     pt1=np.array(pts[:2])
                     pt2=np.array(pts[2:])
-                    delta=pt2-pt1
-                    angle=np.arctan2(delta[1],delta[0])
-                    angle=np.degrees(angle)
-                    # angle=-angle
-                    point_angle_list.append((pt1,angle))
+                    point_angle_list.append((pt1,pt2))
             except TypeError:
                 pass
             return point_angle_list,frame_thresholded

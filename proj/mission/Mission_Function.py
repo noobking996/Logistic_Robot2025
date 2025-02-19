@@ -366,13 +366,15 @@ def Pos_Correction_Func(self:MissionDef):
     [\n
     0. [纠正位置]
     1. [动作就位时间/ms:t0,t1...],\n
-    2. [(高)纠正参数:adjInterval, stop_th, v_adj, vc_th],\n
-    3. [低纠正参数:adjInterval, stop_th, v_adj],\n
-    4. [角度纠正参数:adjInterval, stop_th, omg_adj, angle_compensation],\n
+    2. [(高)纠正参数:adjInterval, stop_th, v_adj, vc_th, detail_params],\n
+    3. [低纠正参数:adjInterval, stop_th, v_adj, detail_params],\n
+    4. [角度纠正参数:adjInterval, stop_th, omg_adj, angle_compensation, detail_params],\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
+    * detail_params[tuple] = circle:(minR,maxR) || line_canny:(th_l,th_h)
+        * 默认值:(100,200) || (90,180)
     """
     global frame_captured
     correction_pos:CP=self.Para_List[0][0]
@@ -409,8 +411,9 @@ def Pos_Correction_Func(self:MissionDef):
                 z+=120
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
-                pos=green_ring.Get_Processing_Pos()
-                busy_flag=arm.Goto_Target_Pos(pos,action_time)
+                x,y,z=green_ring.Get_Processing_Pos()
+                y+=30
+                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
                 self.Change_Stage(100)
                 if(self.Verbose_Flag==True):
@@ -424,64 +427,90 @@ def Pos_Correction_Func(self:MissionDef):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False)
             else:
-                adjInterval,stop_th,omg_adj,angle_compensation=self.Para_List[4]
-                line_list,frame_processed=edge_line.Detect(frame_captured)
+                adjInterval,stop_th,omg_adj,angle_compensation,detail_params=self.Para_List[4]
+                line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params)
+                # 角度取样(+滤波)
+                # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
+                miss_flag=False
+                if(len(line_list)!=0):
+                    pt1,pt2=line_list[0]
+                    cv.line(frame_captured,pt1,pt2,(0,0,0),2)
+                    vector_delta=pt2-pt1
+                    angle=np.arctan2(vector_delta[1],vector_delta[0])
+                    angle=np.degrees(angle)
+                    vector_delta[1]=0
+                    pt2=pt1+vector_delta
+                    cv.line(frame_captured,pt1,pt2,(0,0,255),2)
+                    filter_flag=self.Para_List[5][1]
+                    if(filter_flag==True):
+                        angle=myfilter.Get_Filtered_Value(angle)
+                else:
+                    miss_flag=True
                 frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
                 frame_processed=self.Video.Make_Thumbnails(frame_processed)
                 self.Video.Paste_Img(frame_captured,frame_processed)
-                # 角度取样(+滤波)
-                # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
-                point,angle=line_list[0]
-                filter_flag=self.Para_List[5][1]
-                if(filter_flag==True):
-                    angle=myfilter.Get_Filtered_Value(angle)
                 # 按照规定时间间隔:判断角度,调整转动角速度
                 current_time=time.time()
                 if(current_time-self.Phase_Start_Time>=adjInterval):
-                    self.Output("Mission({}) correction_para: {},{},{},{}"
-                                .format(self.Name,adjInterval,stop_th,omg_adj,angle_compensation))
-                    if(len(line_list)==0):
+                    if(miss_flag==True):
                         self.Output("Mission({}) 未检测到场地边缘".format(self.Name),WARNING)
                         agv.Velocity_Control([0,0,0])
                     else:
                         if(len(line_list)>1):
                             self.Output("Mission({}) 发现多个边缘".format(self.Name),WARNING)
                         self.Output("Mission({}) (point,angle)({},{})"
-                                    .format(self.Name,point,angle))
+                                    .format(self.Name,pt1,angle))
                         delta=angle+angle_compensation
                         omg=0
                         if(delta>stop_th):
-                            omg=omg_adj
-                        elif(delta<-stop_th):
                             omg=-omg_adj
+                        elif(delta<-stop_th):
+                            omg=omg_adj
                         else:
-                            self.Change_Stage(1)
+                            self.Change_Stage(200)
+                            # 复位滤波器,准备进行高纠
+                            myfilter.Reset()
                             self.Output("Mission({}) 角度纠正完毕".format(self.Name))
                         agv.Velocity_Control([0,0,omg])
                     self.Phase_Start_Time=time.time()
+        elif(self.Stage_Flag==200):
+            # 加工\暂存区专属,调整机械臂姿态,进行高纠
+            action_time=self.Para_List[1][0]
+            pos=green_ring.Get_Processing_Pos()
+            busy_flag=arm.Goto_Target_Pos(pos,action_time)
+            if(busy_flag==False):
+                self.Change_Stage(1)
+                self.Output("Mission({}) 开始高纠".format(self.Name))
         elif(self.Stage_Flag in [1,3]):
             adjInterval=None
             stop_th=None
             v_adj=None
+            detail_params=None
             if(self.Stage_Flag==1):
                 # 原料区纠正||加工/暂存区高纠正参数
-                adjInterval,stop_th,v_adj,_=self.Para_List[2]
+                adjInterval,stop_th,v_adj,_,detail_params=self.Para_List[2]
             else:
                 # 加工/暂存区低纠正参数
-                adjInterval,stop_th,v_adj=self.Para_List[3]
+                adjInterval,stop_th,v_adj,detail_params=self.Para_List[3]
             thy,thx=stop_th
             v_adj_y,v_adj_x=v_adj
             # 若在原料区,则检测物料盘;若在加工/暂存区,则检测绿色环
-            center_list,frame_processed=target_object.Detect(frame_captured,lin_flag)
+            center_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
+                                                             detail_params)
             frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
             frame_processed=self.Video.Make_Thumbnails(frame_processed)
             self.Video.Paste_Img(frame_captured,frame_processed)
             # 位置取样(+滤波)
             # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
             miss_flag=False
+            c=None;r=None
             if(len(center_list)!=0):
-                center=center_list[0]
+                center:np.ndarray=center_list[0]
                 filter_flag=self.Para_List[5][0]
+                c,r=center
+                org=self.Video.Frame_Shape_Half
+                org=np.array(org[::-1])
+                cv.line(frame_captured,center.astype(int),org,(0,0,255),2)
                 if(filter_flag==True):
                     center=myfilter.Get_Filtered_Value(center)
             else:
@@ -489,32 +518,37 @@ def Pos_Correction_Func(self:MissionDef):
             # 按照规定时间间隔:判断距离,调整速度
             current_time=time.time()
             if(current_time-self.Phase_Start_Time>=adjInterval):
-                self.Output("Mission({}) correction_para: {},{},{}"
-                            .format(self.Name,adjInterval,stop_th,v_adj))
                 if(miss_flag==True):
                     self.Output("Mission({}) 未检测到目标对象".format(self.Name),WARNING)
                     agv.Velocity_Control([0,0,0])
                 else:
                     if(len(center_list)>1):
                         self.Output("Mission({}) 发现多个目标对象".format(self.Name),WARNING)
-                    c,r=center
                     RM.Correction_xyResp(self,agv,(c,r,thy,thx,v_adj_y,v_adj_x))
                 self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==2):
             if(correction_pos==CP.Material):
+                # 复位滤波器,准备后续任务
+                myfilter.Reset()
                 self.End()
             else:
                 # 原料/加工区低纠正就位
                 x,y,z=green_ring.Get_Processing_Pos()
-                z-=100
+                z-=50
                 action_time=self.Para_List[1][1]
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
                 if(busy_flag==False):
+                    # 复位滤波器,准备进行低纠
+                    myfilter.Reset()
                     self.Change_Stage()
                     self.Output("Mission({}) 低纠姿态就位".format(self.Name))
                     self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==4):
-            self.End()
+            # 等待2秒,评估结果
+            if(time.time()-self.Phase_Start_Time>=2):
+                # 复位滤波器,准备后续任务
+                myfilter.Reset()
+                self.End()
 
 
 def RawMaterial_Picking_Func(self:MissionDef):
