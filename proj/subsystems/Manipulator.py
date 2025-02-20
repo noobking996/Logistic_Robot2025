@@ -101,13 +101,13 @@ class myManipulator:
     def __init__(self,arm_params_list:List[Tuple],logger:Logger,servo:Servo,
                  type:str="3R_Articulated",name:str="myManipulator"):
         """
-        @功能: 创建机械臂对象,存储关节长度、执行器偏移量等参数
-        @参数: arm_params_list: 机械臂参数列表, 格式为[(link_lengths:l0,l1,l2...),
+        * 创建机械臂对象,存储关节长度、执行器偏移量等参数
+        @param arm_params_list: 机械臂参数列表, 格式为[(link_lengths:l0,l1,l2...),
         (actuator_offsets:x4,y4,z4)]
-        @参数: logger: 日志记录器
-        @参数: servo: 舵机对象
-        @参数: type: 机械臂类型
-        @参数: name: 机械臂名称
+        @param logger: 日志记录器
+        @param servo: 舵机对象
+        @param type: 机械臂类型
+        @param name: 机械臂名称
         """
         self.Name=name
         self.Type=type
@@ -149,18 +149,26 @@ class myManipulator:
         except Exception:
             logger.error("Invalid params for {}({} manipulator)".format(name,type),exc_info=True)
             return None
+        # 执行器退出径向偏移量(加工区放置用)
+        self.Radial_Offset=None
+
+    def Set_Radial_Offset(self,offset:float):
+        """
+        * 设置执行器径向偏移量((加工区放置用))
+        """
+        self.Radial_Offset=offset
 
     def Set_Claw_Angles(self,open_closed_angles:Tuple[np.uint16,np.uint16]):
         """
-        @功能: 设置夹爪张开/闭合角度(舵机微分值)
+        * 设置夹爪张开/闭合角度(舵机微分值)
         """
         self.Claw_Angles=open_closed_angles
 
     def Store_Point_and_Distance(self,point:np.ndarray,distance:float):
         """
-        @功能: 存储中间点和距离初始点距离,用于直线插补
-        @参数: point: 点坐标
-        @参数: distance: 距离初始点距离
+        * 存储中间点和距离初始点距离,用于直线插补
+        @param point: 点坐标
+        @param distance: 距离初始点距离
         """
         if(len(point)!=3):
             raise ValueError("Point should be 3 dimensional")
@@ -169,7 +177,8 @@ class myManipulator:
     
     def Get_Point_and_Distance(self)->List:
         """
-        @返回: [点,距离]
+        * 获取中间点和距离初始点距离,用于直线插补
+        ### returns: [点,距离]
         """
         return self.Linear_Interpolation_Storager
 
@@ -308,7 +317,8 @@ class myManipulator:
                 angle=np.uint16(round(x[1]*alpha+x[0]))
                 servo_angles.append((joint_code,angle))
         self.Servo.Angle_Ctrl(servo_angles,time_ms)
-        self.Logger.debug("(Joint_Angle_Ctrl)joint:{},servo:{}".format(self.Current_JointAngles,servo_angles))
+        self.Logger.debug("(Joint_Angle_Ctrl)joint:{},servo:{}"
+                          .format(self.Current_JointAngles,servo_angles))
 
     def Kinematics_3RAtype(self,joint_angles:List[float],use_radian=False):
         """
@@ -396,13 +406,14 @@ class myManipulator:
                         Mode:Ctrl_Mode=Ctrl_Mode.POINT_TO_POINT,
                         speed_mm_s:np.uint16=10)->bool:
         """
+        @param target_position: 目标位置(x,y,z)/mm
+        @param time_ms: 在直线模式下为微分运动到位时间;其它模式下为动作到位时间,单位ms
+        @param Mode: 控制模式
+        @param speed_mm_s: 直线模式下的运动速度,单位mm/s,默认10,推荐50-300\n
         ## returns: 
         busy_flag: 忙碌标志,True表示机械臂正在工作,应保持当前任务状态,持续循环到返回false为止,
                 False表示机械臂工作结束,可以改变任务状态,执行新任务
         """
-        # 忙碌标志变量,由外部判断
-        # True表示机械臂正在工作,应保持当前任务状态,持续循环到返回false为止
-        # False表示机械臂工作结束,可以改变任务状态,执行新任务
         busy_flag=True
         if(Mode==self.Ctrl_Mode.POINT_TO_POINT):
             if(self.Status_Flag==0):
@@ -566,10 +577,10 @@ class myManipulator:
 
     def Claw_Cmd(self,cmd:bool,inloop_flag=True,time_ms:np.uint16=50):
         """
-        @功能: 控制夹爪闭合/张开
-        @参数: cmd: True为闭合,False为张开
-        @参数: inloop_flag 是否在循环中使用,默认true
-        @参数: time_ms 执行时间
+        * 控制夹爪闭合/张开
+        @param cmd: True为闭合,False为张开
+        @param inloop_flag: 是否在循环中使用,默认true
+        @param time_ms: 执行时间,默认50ms
         """
         busy_flag=True
         if(self.Status_Flag==0):
@@ -589,7 +600,7 @@ class myManipulator:
                     self.Logger.debug("({}) 夹爪张开".format(self.Name))
                 self.End_Wait_Time=time.time()+0.05
         elif(self.Status_Flag==2):
-            # 额外等待100ms
+            # 额外等待50ms
             if(time.time()>=self.End_Wait_Time):
                 busy_flag=False
                 self.Change_Status(0)

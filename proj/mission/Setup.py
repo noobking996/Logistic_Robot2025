@@ -22,13 +22,13 @@ def Logger_Setup(mission_code:str="Logistic_Handling",
                  level_list:List[int]=[DEBUG,INFO,DEBUG])->Logger:
 
     '''
-    @功能：初始化公用日志记录器
-    @参数:mission_code, 任务代码,决定文件名
-    @参数:level_list, 日志级别列表,规定logger,file_handler,console_handler的日志级别
-        可选值:[logging.DEBUG,logging.INFO,logging.WARNING,logging.ERROR,logging.CRITICAL]
-        参数顺序:[level_logger, level_file_handler, level_console_handler]
-        默认值:[logging.DEBUG, logging.DEBUG, logging.INFO]
-    @返回值:Logger对象
+    * 初始化公用日志记录器
+    @param mission_code: 任务代码,决定文件名
+    @param level_list: 日志级别列表,规定logger,file_handler,console_handler的日志级别\n
+        * 可选值:[DEBUG, INFO, WARNING, ERROR, CRITICAL]\n
+        * 参数顺序:[level_logger, level_file_handler, level_console_handler]\n
+        * 默认值:[logging.DEBUG, logging.DEBUG, logging.INFO]\n
+    @returns: Logger对象
     '''
 
     level_logger,level_file_handler,level_console_handler=level_list
@@ -100,12 +100,21 @@ class myObject:
         # 速度计算参数
         self.Phase_Start_Time=time.time()  # 阶段开始时间
         self.Vel_Sample_Interval=0.1  # 速度采样间隔(s)
-        self.Previous_Pos=np.array((0,0))   # 前一帧的位置
+        r0,c0=self.Video.Frame_Shape_Half
+        self.Previous_Pos=np.array((c0,r0))   # 前一帧的位置
         self.Velocity=np.array((0,0))   # 速度
         # 透视变换矩阵(用于椭圆识别)
         self.TransMatrix=None
         # 位置滤波器
         self.Pos_Filter=None
+        # 物体高度
+        self.Height=None
+        
+    def Set_Height(self,height:float):
+        """
+        * 设置物体高度,目前可用于物块码垛
+        """
+        self.Height=height
 
     def Set_Pos_Filter(self,filter:MT.Average_Filter):
         self.Pos_Filter=filter
@@ -113,7 +122,8 @@ class myObject:
     def Clear_Velocity(self):
         # 填充100防止误判静止
         self.Velocity.fill(100)
-        self.Previous_Pos.fill(0)
+        r0,c0=self.Video.Frame_Shape_Half
+        self.Previous_Pos=np.array((c0,r0))   # 前一帧的位置
 
     def Get_StuffPlate_Pos(self)->Tuple[float,float,float]:
         """

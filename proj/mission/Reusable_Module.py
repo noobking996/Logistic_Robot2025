@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import math
 from typing import Tuple
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from mission.Setup import MissionDef
@@ -45,7 +46,7 @@ def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff
         self.Output("Mission({}),circle_params,{},{},{},{}".format(self.Name,c,r,vc,vr))
         if(vc<vc_th and vc>-vc_th):
             self.Change_Stage(next_satge)
-            self.Output("Mission({}) 目标静止,开始行动".format(self.Name))
+            self.Output("Mission({}) 目标静止,开始行动".format(self.Name),INFO)
     else:
         current_stuff.Clear_Velocity()
 
@@ -92,7 +93,46 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
     return complete_flag
 
 
-def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject):
+# 回撤目标位置
+x_retreat=None;y_retreat=None
+# 是否进行计算
+calculate_flag=True
+def EndActuatot_Retreat(arm:myManipulator,current_pos:Tuple,speed:np.uint16,
+                        self:MissionDef)->bool:
+    """
+    * 机械臂末端回撤,防止放置完成后夹爪与物块相撞\n
+        * 建议在复用模块中调用,通过返回值判断回撤完成后自增模块计数器
+    ## returns
+    complete_flag: 完成标志
+    """
+    global x_retreat,y_retreat,calculate_flag
+    complete_flag=False
+    x,y,z=current_pos
+    if(calculate_flag==True):
+        theta3=math.radians(arm.Current_JointAngles[2])
+        delta_r=arm.Radial_Offset
+        delta_x=delta_r*np.cos(theta3)
+        delta_y=delta_r*np.sin(theta3)
+        x_retreat=x-delta_x
+        y_retreat=y-delta_y
+        # 计算完成,反转标志,开始回撤
+        calculate_flag=False
+        self.Output("Mission({}),retreat_pos,{},{}".format(self.Name,x_retreat,y_retreat))
+    else:
+        z+=40
+        busy_flag=arm.Goto_Target_Pos((x_retreat,y_retreat,z),50,arm.Ctrl_Mode.LINEAR,speed)
+        if(busy_flag==False):
+            complete_flag=True
+            calculate_flag=True
+    return complete_flag
+
+
+
+def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject,
+                        stuff_index=None):
+    """
+    * 从原料区夹取物料
+    """
     if(cnt.Get()==0):
         # 获取任务参数2
         t1=self.Para_List[2][1]
@@ -124,30 +164,48 @@ def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject
             self.Change_Stage()
             self.Output("Mission({}) 提起物块".format(self.Name))
 
-def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject):
+def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,legacy_flag=True,
+                     stuff_index=None)->bool:
+    """
+    * 将物块放到车载物料盘
+    @param legacy_flag: 是否采用老版本原料区夹取的参数设置模式,默认为True
+    @param stuff_index: 新参数模式下的物料索引号,用于选取yaw轴转动时间
+    """
+    complete_flag=False
+    t_turn,t_aim,speed_down,height_offset=(None,None,None,None)
+    if(legacy_flag==False):
+        t_turn=self.Para_List[0][stuff_index]
+        t_aim,speed_down,height_offset=self.Para_List[4]
     if(cnt.Get()==0):
         # 获取任务参数2
-        t2=self.Para_List[2][2]
+        if(legacy_flag==True):
+            t2=self.Para_List[2][2]
+            t_turn=t2
         pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
+        busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已朝向物料盘".format(self.Name))
     elif(cnt.Get()==1):
-        # 获取任务参数2
-        t3=self.Para_List[2][3]
-        # 获取任务参数0
-        stuff_height_offset=self.Para_List[0][2]
+        if(legacy_flag==True):
+            # 获取任务参数2
+            t3=self.Para_List[2][3]
+            t_aim=t3
+            # 获取任务参数0
+            stuff_height_offset=self.Para_List[0][2]
+            height_offset=stuff_height_offset
         x,y,z=current_stuff.Get_StuffPlate_Pos()
-        z+=stuff_height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t3)
+        z+=height_offset
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 到达物料盘上方".format(self.Name))
     elif(cnt.Get()==2):
-        put_speed=self.Para_List[3][1]
+        if(legacy_flag==True):
+            put_speed=self.Para_List[3][1]
+            speed_down=put_speed
         pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,put_speed)
+        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 放入物料盘".format(self.Name))
@@ -157,13 +215,14 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject):
             cnt.Increment()
             self.Output("Mission({}) 物块已释放".format(self.Name))
     elif(cnt.Get()==4):
-        # 可以取消垂直回升阶段,直接收缩
-        # put_speed=self.Para_List[3][1]
-        # t3=self.Para_List[2][3]
-        # stuff_height_offset=self.Para_List[0][2]
+        # if(legacy_flag==True):
+        #     put_speed=self.Para_List[3][1]
+        #     stuff_height_offset=self.Para_List[0][2]
+        #     speed_down=put_speed
+        #     height_offset=stuff_height_offset
         # x,y,z=current_stuff.Get_StuffPlate_Pos()
-        # z+=stuff_height_offset
-        # busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,put_speed)
+        # z+=height_offset
+        # busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,2*speed_down)
         # if(busy_flag==False):
         #     cnt.Increment()
         #     self.Output("Mission({}) 垂直回升".format(self.Name))
@@ -172,5 +231,174 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject):
         busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
         if(busy_flag==False):
             cnt.Reset()
+            complete_flag=True
             self.Change_Stage()
             self.Output("Mission({}) 姿态收缩".format(self.Name))
+    return complete_flag
+
+
+def StuffPlate_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
+                     stuff_index=None):
+    """
+    * 取出车上的物料
+    """
+    # 参数获取
+    t_aim,speed_down,speed_up,height_offset=self.Para_List[1]
+    # 决定是否进行对准动作
+    aim_flag=False
+    if(t_aim!=0):
+        aim_flag=True
+    if(cnt.Get()==0):
+        pos=current_stuff.Get_StuffPlate_Pos()
+        t_turn=self.Para_List[0][stuff_index]
+        busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已朝向物料盘".format(self.Name))
+    elif(cnt.Get()==1):
+        x,y,z=current_stuff.Get_StuffPlate_Pos()
+        z+=height_offset
+        if(aim_flag==True):
+            busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
+            if(busy_flag==False):
+                cnt.Increment()
+                self.Output("Mission({}) 已对准物料盘".format(self.Name))
+        else:
+            cnt.Increment()
+    elif(cnt.Get()==2):
+        pos=current_stuff.Get_StuffPlate_Pos()
+        busy_flag=None
+        if(aim_flag==True):
+            busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
+        else:
+            t_down=speed_down
+            busy_flag=arm.Goto_Target_Pos(pos,t_down)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已到达物料位置".format(self.Name))
+    elif(cnt.Get()==3):
+        busy_flag=arm.Claw_Cmd(True)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 机械臂夹取".format(self.Name))
+    elif(cnt.Get()==4):
+        x,y,z=current_stuff.Get_StuffPlate_Pos()
+        z+=height_offset
+        busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,speed_up)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 物料已提起".format(self.Name))
+    elif(cnt.Get()==5):
+        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
+        if(busy_flag==False):
+            cnt.Reset()
+            self.Change_Stage()
+            self.Output("Mission({}) 姿态收缩,夹取完毕".format(self.Name))
+
+
+def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
+                     stuff_index=None,stacking_flag=False)->bool:
+    """
+    * 将物块放到加工区/暂存区
+    @param stucking_flag: 是否码垛,默认为False\n
+    ## Returns
+    complete_flag: 完成放置标志
+    """
+    complete_flag=False
+    # 获取任务参数
+    t_aim,speed_down,speed_up,height_offset=self.Para_List[2]
+    up_flag=False
+    if(speed_up!=0):
+        up_flag=True
+    if(cnt.Get()==0):
+        pos=current_stuff.Get_Processing_Pos()
+        turn_time=self.Para_List[0][stuff_index]
+        busy_flag=arm.Goto_Target_Pos(pos,turn_time,arm.Ctrl_Mode.YAW_ROTATION)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已朝向加工区圆环".format(self.Name))
+    elif(cnt.Get()==1):
+        x,y,z=current_stuff.Get_Processing_Pos()
+        if(stacking_flag==True):
+            z+=current_stuff.Height
+        z+=height_offset
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已对准圆环".format(self.Name))
+    elif(cnt.Get()==2):
+        x,y,z=current_stuff.Get_Processing_Pos()
+        if(stacking_flag==True):
+            z+=current_stuff.Height
+        busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,speed_down)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 物块到达地面".format(self.Name))
+    elif(cnt.Get()==3):
+        busy_flag=arm.Claw_Cmd(False)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 物块已释放".format(self.Name))
+    elif(cnt.Get()==4):
+        pos=current_stuff.Get_Processing_Pos()
+        if(up_flag==True):
+            retreat_cpltFlag=EndActuatot_Retreat(arm,pos,speed_up,self)
+            if(retreat_cpltFlag==True):
+                cnt.Increment()
+                self.Output("Mission({}) 夹爪已回撤".format(self.Name))
+        else:
+            cnt.Increment()
+    elif(cnt.Get()==5):
+        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
+        if(busy_flag==False):
+            cnt.Reset()
+            complete_flag=True
+            self.Change_Stage()
+            self.Output("Mission({}) 姿态收缩,放置完毕".format(self.Name))
+    return complete_flag
+
+
+def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
+                     stuff_index=None):
+    """
+    * 从加工区夹取物块
+    """
+    # 获取任务参数
+    t_first_turn,t_aim,speed_down=self.Para_List[3]
+    # 与加工区放置共用一个height_offset
+    height_offset=self.Para_List[2][3]
+    if(cnt.Get()==0):
+        pos=current_stuff.Get_Processing_Pos()
+        t_turn=None
+        if(self.Stage_Flag==10):
+            t_turn=t_first_turn
+        else:
+            t_turn=self.Para_List[0][stuff_index]
+        busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已朝向加工区物料".format(self.Name))
+    elif(cnt.Get()==1):
+        x,y,z=current_stuff.Get_Processing_Pos()
+        z+=height_offset
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已对准物料".format(self.Name))
+    elif(cnt.Get()==2):
+        pos=current_stuff.Get_Processing_Pos()
+        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 已到达夹取位置".format(self.Name))
+    elif(cnt.Get()==3):
+        busy_flag=arm.Claw_Cmd(True)
+        if(busy_flag==False):
+            cnt.Increment()
+            self.Output("Mission({}) 机械臂夹取".format(self.Name))
+    elif(cnt.Get()==4):
+        busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
+        if(busy_flag==False):
+            cnt.Reset()
+            self.Change_Stage()
+            self.Output("Mission({}) 姿态收缩,夹取完毕".format(self.Name))

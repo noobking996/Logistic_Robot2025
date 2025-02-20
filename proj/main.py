@@ -42,7 +42,8 @@ Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                        [True,True]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
-                                   None,True)
+                                   [[200,200,200],[150,250,300,50],[200,150,350,40],
+                                    [150,200,200],[150,200,40]],True)
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-500,0]],
@@ -53,14 +54,16 @@ Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                        [0.25,(10,10),(30,30),(160,200)],[0.25,2,30,0],[False,False]],True)
 
 # 第一轮专属任务
-Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,None,True)
+Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
+                                                        [200,150,350,40],[False]],True)
 
 Storage_2_RawMaterial=MissionDef_t("暂存区->原料区",MF.Three_Section_Turn_Func,
                                     [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-300,0]],
                                     [1.1,1.7,0.8],True)
 
 # 第二轮专属任务
-Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Stacking_Func,None,True)
+Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[150,250,350],[150,250,250,50],
+                                                           [200,100,0,40],[True]],True)
 
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
                              [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],
@@ -89,14 +92,16 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
 # 参数列表内容: [b_th],[g_th],[r_th],[th_HighOrLow,th_CoarseOrPrecise],[图片编号]
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
                              [[205,255],[200,255],[195,255],[True,True],[0]],True)
+
+MF.rgb_order_list=[[3,2,1],[3,2,1]]
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Thresholding_Test],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Storage_Place,Storage_Stacking],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0218_1745"
+Mission_Code="debug_0220_1116"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -128,34 +133,42 @@ Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 
 # 初始化机械臂对象
 yaw_compensation=5
-x4_conpensation=10
+x4_conpensation=15
 MF.arm=myManipulator([(65,130,130),(71+x4_conpensation,-20-1.12,0)],Public_Logger,MF.myServo)
 MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
                                     [[(180-90),420],[180-(90+19.2),500]],
                                     [[0,500+yaw_compensation],[120,1000+yaw_compensation]]])
 MF.arm.Set_YawAccRatio(0.2,0.25)
 MF.arm.Set_Claw_Angles((800,980))
+MF.arm.Set_Radial_Offset(50)
 
 # 初始化物块对象
 arm_height=148.33           #机械臂坐标系原点距离地面高度
 stuff_claw_height=55+3        # 夹持时夹爪距离物料底部的距离
+stuff_height=70              # 物块高度
 material_plate_height=80    # 原料盘高度
-public_material_pos=(0,-240-x4_conpensation,material_plate_height+stuff_claw_height-arm_height) # 原料区夹取位置
+# 原料区夹取位置
+public_material_pos=(0,-240-x4_conpensation,material_plate_height+stuff_claw_height-arm_height)
+# 加工区放置距离(abs(y))
+public_processing_distance=320
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
                    [(176.46,82.28,-61+stuff_claw_height),
                     public_material_pos,
-                    (0,0,stuff_claw_height-arm_height)])
+                    (160,-public_processing_distance,stuff_claw_height-arm_height)])
 blue_stuff.Set_Mixing_Portion((0,-3,3))
+blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
                     [(194.7,0,-61+stuff_claw_height),
                      public_material_pos,
-                     (0,0,stuff_claw_height-arm_height)])
+                     (0,-public_processing_distance,stuff_claw_height-arm_height)])
 green_stuff.Set_Mixing_Portion((-1,2,-1))
+green_stuff.Set_Height(stuff_height)
 red_stuff=myObject("circle",myVideo,[(70,60,180),(255,180,255)],
                   [(176.46,-82.28-6,-61+stuff_claw_height),
                    public_material_pos,
-                   (0,0,stuff_claw_height-arm_height)])
+                   (-160,-public_processing_distance,stuff_claw_height-arm_height)])
 red_stuff.Set_Mixing_Portion((2,0,-2))
+red_stuff.Set_Height(stuff_height)
 MF.Stuff_List_Init((red_stuff,green_stuff,blue_stuff))
 
 #####################################################################################
