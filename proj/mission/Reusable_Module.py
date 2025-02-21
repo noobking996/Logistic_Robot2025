@@ -21,7 +21,7 @@ class Module_Stage_Counter:
 cnt=Module_Stage_Counter()
 
 def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff:myObject,
-                         vc_th,next_satge:np.uint8=None,lin_flag=True):
+                         vc_th,next_satge:np.uint8=None,lin_flag=True,grey_flag=False):
     """
     * 检测圆形物体,并判断是否静止\n
     * 注意:该函数自带任务状态转换\n
@@ -32,7 +32,7 @@ def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff
     @param next_satge: 判断静止后下一任务阶段号码,默认为None
     @param lin_flag: 是否采用林算法二值化,默认为True
     """
-    circie_list,frame_processed=current_stuff.Detect(frame_captured,lin_flag)
+    circie_list,frame_processed=current_stuff.Detect(frame_captured,lin_flag,None,grey_flag)
     frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
     frame_processed=self.Video.Make_Thumbnails(frame_processed)
     self.Video.Paste_Img(frame_captured,frame_processed)
@@ -66,7 +66,6 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
     if(cnt.Get()==0):
         vy=0
         delta=self.Video.Frame_Shape_Half[1]-c
-        self.Output("Mission({}),delta_y,{}".format(self.Name,delta))
         if(delta>thy):
             vy=v_adj_y
         elif(delta<-thy):
@@ -75,11 +74,11 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
             cnt.Increment()
             self.Output("Mission({}) 横向纠正完毕".format(self.Name))
         agv.Velocity_Control([0,vy,0])
+        self.Output("Mission({}),delta_y,{},vy,{}".format(self.Name,delta,vy))
     # 场地纵向纠正({agv}x)
     elif(cnt.Get()==1):
         vx=0
         delta=self.Video.Frame_Shape_Half[0]-r
-        self.Output("Mission({}),delta_x,{}".format(self.Name,delta))
         if(delta>thx):
             vx=v_adj_x
         elif(delta<-thx):
@@ -90,6 +89,7 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
             complete_flag=True
             self.Output("Mission({}) 纵向纠正完毕".format(self.Name))
         agv.Velocity_Control([vx,0,0])
+        self.Output("Mission({}),delta_x,{},vx,{}".format(self.Name,delta,vx))
     return complete_flag
 
 

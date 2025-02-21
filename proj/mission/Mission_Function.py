@@ -397,8 +397,10 @@ def Pos_Correction_Func(self:MissionDef):
         # 若在原料区,则检测物料盘;若在加工/暂存区,则检测绿色环
         target_object=None
         lin_flag=False
+        grey_flag=False
         if(correction_pos==CP.Material):
             target_object=material_plate
+            grey_flag=True
         else:
             target_object=green_ring
             lin_flag=True
@@ -415,17 +417,33 @@ def Pos_Correction_Func(self:MissionDef):
                 y+=30
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
-                self.Change_Stage(100)
+                self.Change_Stage(99)
                 if(self.Verbose_Flag==True):
                     correction_name=correction_pos.value[1]
                     self.Output("Mission({}) 开始{}".format(self.Name,correction_name))
+        elif(self.Stage_Flag==99):
+            if(correction_pos==CP.Material):
+                circie_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
+                                                                 None,True)
+                frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+                frame_processed=self.Video.Make_Thumbnails(frame_processed)
+                self.Video.Paste_Img(frame_captured,frame_processed)
+                num_circle=len(circie_list)
+                # 如果一开始就发现目标,则持续监视,等到其消失为止才进入原料区纠正
+                # 此举是为了为纠正保留足够的时间
+                if(num_circle==0):
+                    self.Change_Stage()
+                    self.Output("Mission({}) 目标消失,开始纠正".format(self.Name))
+                    self.Phase_Start_Time=time.time()
+            else:
+                self.Change_Stage()
                 self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==100):
             # 若纠正位置为加工/暂存区,则进行角度纠正
             # 若纠正位置为原料区,则检测原料盘圆形物块阴影并判断是否静止
             if(correction_pos==CP.Material):
                 vc_th=self.Para_List[2][3]
-                RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False)
+                RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
             else:
                 adjInterval,stop_th,omg_adj,angle_compensation,detail_params=self.Para_List[4]
                 line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params)
@@ -496,7 +514,7 @@ def Pos_Correction_Func(self:MissionDef):
             v_adj_y,v_adj_x=v_adj
             # 若在原料区,则检测物料盘;若在加工/暂存区,则检测绿色环
             center_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
-                                                             detail_params)
+                                                             detail_params,grey_flag)
             frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
             frame_processed=self.Video.Make_Thumbnails(frame_processed)
             self.Video.Paste_Img(frame_captured,frame_processed)
@@ -532,7 +550,7 @@ def Pos_Correction_Func(self:MissionDef):
                 myfilter.Reset()
                 self.End()
                 stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
-                self.Output("Mission({}) 机械臂就位,开始扫描物块{}"
+                self.Output("Mission({}) 开始扫描物块{}"
                             .format(self.Name,stuff_index+1),INFO)
             else:
                 # 原料/加工区低纠正就位

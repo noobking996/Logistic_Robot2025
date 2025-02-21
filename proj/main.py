@@ -96,12 +96,12 @@ Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
 MF.rgb_order_list=[[3,2,1],[3,2,1]]
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Storage_Place,Storage_Stacking],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0220_1116"
+Mission_Code="debug_0220_2113"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -203,11 +203,11 @@ def num_mission_test():
     print("Number of missions:",Logistics_Handling.Num_Mission)
 
 # 行走相关任务调试(可远程启动)
-def single_mission_test():
-    Storage_Go_Home.Reset()
+def single_mission_test(mission:MissionDef_t):
+    mission.Reset()
     end_flag=False
     while(True):
-        end_flag=Storage_Go_Home.Run()
+        end_flag=mission.Run()
         if(end_flag==True):
             print("Mission Complete")
             break
@@ -216,5 +216,5 @@ def single_mission_test():
 if(__name__=="__main__"):
     main()
     # num_mission_test()
-    # single_mission_test()
+    # single_mission_test(Departure)
     # GM.main()

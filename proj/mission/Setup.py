@@ -166,15 +166,17 @@ class myObject:
                             [width-width_decline_half,height-1],[width-width_decline_half,0]])
         self.TransMatrix=cv.getPerspectiveTransform(pts_src,pts_dst)
 
-    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False,detail_params:Tuple=None):
+    def Detect(self,frame:np.ndarray,use_linAlogrithm:bool=False,detail_params:Tuple=None,
+               greyscale_mode=False):
         """
-        * 功能: 检测物块颜色范围内的物块,并返回物块中心坐标;
+        * 功能: 检测物块颜色范围内的目标物,并返回物块中心坐标;
         * 该方法适用于圆形物块\场地边缘线条\椭圆物块
         @param frame: 图像帧
         @param use_linAlogrithm: 是否使用林算法二值化图像,默认为False
         @param detail_params:
             1. 圆形物块识别参数,默认为(100,200),即半径范围[100,200]\n
             2. 场地边缘识别参数,默认为(90,180),是canny边缘检测的阈值范围\n
+        @param greyscale_mode: 是否开启灰度识别模式(目前原料区纠正在用),默认为false
         @return: \n
         "circle":(List[(c,r)],二值化图像);\n
         "ellipse":(List[(c,r)],二值化图像);\n
@@ -185,19 +187,21 @@ class myObject:
             * <角度顺时针为正,与agv定义相反>;
         """
         frame_thresholded:np.ndarray=None
-        if(use_linAlogrithm==True):
-            b_, g_, r_ = cv.split(frame)
-            r_ = np.int16(r_)
-            b_ = np.int16(b_)
-            g_ = np.int16(g_)
-            kr,kg,kb=self.Mixing_Portion
-            frame_mixed = kr * r_ + kg * g_ + kb * b_
-            frame_mixed = np.clip(frame_mixed, 0, 254)
-            # 将数据类型变回uint8
-            frame_thresholded = np.uint8(frame_mixed)
+        if(greyscale_mode==False):
+            if(use_linAlogrithm==True):
+                b_, g_, r_ = cv.split(frame)
+                r_ = np.int16(r_)
+                b_ = np.int16(b_)
+                g_ = np.int16(g_)
+                kr,kg,kb=self.Mixing_Portion
+                frame_mixed = kr * r_ + kg * g_ + kb * b_
+                frame_mixed = np.clip(frame_mixed, 0, 254)
+                # 将数据类型变回uint8
+                frame_thresholded = np.uint8(frame_mixed)
+            else:
+                frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
         else:
-            frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
-        # 可能需要滤波
+            frame_thresholded=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
         frame_thresholded = cv.medianBlur(frame_thresholded, 3)  # 中值滤波
         frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
         if(self.Name=="circle"):
