@@ -151,7 +151,18 @@ class myManipulator:
             return None
         # 执行器退出径向偏移量(加工区放置用)
         self.Radial_Offset=None
+        # 中间点坐标
+        self.Intermediate_Point=None
 
+    def Store_Intermediate_Point(self,point:Tuple):
+        """
+        * 存储中间点坐标(通用)
+        """
+        self.Intermediate_Point=point
+
+    def Get_Intermediat_Point(self)->Tuple:
+        return self.Intermediate_Point
+    
     def Set_Radial_Offset(self,offset:float):
         """
         * 设置执行器径向偏移量((加工区放置用))
@@ -252,12 +263,13 @@ class myManipulator:
 
     def Set_Joint_to_Actuator_Matrix(self,mapping_groups:List[List[List[float]]]):
         """
-        @功能: 通过每个关节两个[关节角*,舵机角度值]映射组确定关节角度到舵机角度值的线性映射关系
-        @参数: mapping_groups: 映射关系列表, 格式为[[alpha1,servo_angle1],[alpha2,Servo_angle2],...]
-        @警告: 1. 这里得出的矩阵反映的是alpha与servo_angle的关系(所以并非严格意义上的joint space->
-        actuator space),已知theta,想要求servo_angle,应先通过加减运算求出alpha,
-        再通过映射关系求出servo_angle;
-        2. 所以上面提到的关节角并非theta而是alpha
+        * 通过每个关节两个[关节角*,舵机角度值]映射组确定关节角度到舵机角度值的线性映射关系
+        @param mapping_groups: 映射关系列表, 格式为[[alpha1,servo_angle1],[alpha2,Servo_angle2],...]\n
+        ### 警告:\n
+            1. 这里得出的矩阵反映的是alpha与servo_angle的关系(所以并非严格意义上的joint space->
+            actuator space),已知theta,想要求servo_angle,
+            应先通过加减运算求出alpha,再通过映射关系求出servo_angle;\n
+            2. 所以上面提到的关节角并非theta而是alpha\n
         """
         for grp in mapping_groups:
             if(len(grp)!=2):

@@ -46,8 +46,9 @@ def Logger_Setup(mission_code:str="Logistic_Handling",
     console_handler.setLevel(level_console_handler)
 
     # 创建格式化器
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', 
-                                  datefmt='%Y-%m-%d %H:%M:%S')
+    # 如需显示日期,datefmt可使用'%Y-%m-%d %H:%M:%S'
+    formatter = logging.Formatter('%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s', 
+                                  datefmt='%H:%M:%S')
 
     # 设置格式化器
     file_handler.setFormatter(formatter)
@@ -73,7 +74,7 @@ class myObject:
             for pos in pos_list:
                 if(pos!=None):
                     x,y,z=pos
-                    if(x<170 and y>0):
+                    if(x<150 and y>0):
                         raise ValueError("({})Dangerous position: {}".format(shape,pos))
         # if(color_range!=None):
         #     if(len(color_range)!=2):
@@ -202,9 +203,9 @@ class myObject:
                 frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
         else:
             frame_thresholded=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
-        frame_thresholded = cv.medianBlur(frame_thresholded, 3)  # 中值滤波
-        frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
         if(self.Name=="circle"):
+            frame_thresholded = cv.medianBlur(frame_thresholded, 3)  # 中值滤波
+            frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
             circle_centroid_list=[]
             if(detail_params==None):
                 detail_params=(100,200)

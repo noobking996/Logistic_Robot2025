@@ -34,6 +34,10 @@ key=None
 # 任务顺序码列表
 rgb_order_list=[]
 
+# 任务码显示窗口
+show_missionCode=True
+missionCode_window="mission_code"
+
 # 原料盘对象
 material_plate:myObject=None
 
@@ -299,6 +303,10 @@ def Scan_QRcode_Func(self:MissionDef):
                                             self.Output("Mission({}) 装载任务码: {}"
                                                         .format(self.Name,rgb_order_list),INFO)
                                             self.Change_Stage(2)
+                                            if(show_missionCode==True):
+                                                cv.namedWindow(missionCode_window)
+                                                RM.Show_MissionCode(missionCode_window,
+                                                                    data_decoded)
                 # 若检测到内容码，但内容未记录,说明不是二维码或者格式错误,输出警告信息
                 if(len(rgb_order_list)==0):
                     self.Output("Mission({}) 内容码类型/格式错误".format(self.Name),WARNING)
@@ -329,7 +337,7 @@ def QRcode_2_RawMaterial_Func(self:MissionDef_t):
     @参数: stop_wait_time, 制动等待时间
     """
 
-    stop_wait_time=2
+    stop_wait_time=1
 
     # 开始直走，计时
     if(self.Stage_Flag==0):
@@ -370,6 +378,7 @@ def Pos_Correction_Func(self:MissionDef):
     3. [低纠正参数:adjInterval, stop_th, v_adj, detail_params],\n
     4. [角度纠正参数:adjInterval, stop_th, omg_adj, angle_compensation, detail_params],\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
+    6. [纠正时机械臂y轴补偿:y_compensation_h, y_compensation_l]\n
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
@@ -414,27 +423,17 @@ def Pos_Correction_Func(self:MissionDef):
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
                 x,y,z=green_ring.Get_Processing_Pos()
-                y+=30
+                y-=30
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
                 self.Change_Stage(99)
                 if(self.Verbose_Flag==True):
                     correction_name=correction_pos.value[1]
                     self.Output("Mission({}) 开始{}".format(self.Name,correction_name))
+                self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==99):
             if(correction_pos==CP.Material):
-                circie_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
-                                                                 None,True)
-                frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
-                frame_processed=self.Video.Make_Thumbnails(frame_processed)
-                self.Video.Paste_Img(frame_captured,frame_processed)
-                num_circle=len(circie_list)
-                # 如果一开始就发现目标,则持续监视,等到其消失为止才进入原料区纠正
-                # 此举是为了为纠正保留足够的时间
-                if(num_circle==0):
-                    self.Change_Stage()
-                    self.Output("Mission({}) 目标消失,开始纠正".format(self.Name))
-                    self.Phase_Start_Time=time.time()
+                RM.Monitor_andAbandon(frame_captured,target_object,lin_flag,self)
             else:
                 self.Change_Stage()
                 self.Phase_Start_Time=time.time()
@@ -446,7 +445,8 @@ def Pos_Correction_Func(self:MissionDef):
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
             else:
                 adjInterval,stop_th,omg_adj,angle_compensation,detail_params=self.Para_List[4]
-                line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params)
+                line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
+                                                           True)
                 # 角度取样(+滤波)
                 # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
                 miss_flag=False
@@ -494,8 +494,10 @@ def Pos_Correction_Func(self:MissionDef):
         elif(self.Stage_Flag==200):
             # 加工\暂存区专属,调整机械臂姿态,进行高纠
             action_time=self.Para_List[1][0]
-            pos=green_ring.Get_Processing_Pos()
-            busy_flag=arm.Goto_Target_Pos(pos,action_time)
+            y_compensation=self.Para_List[6][0]
+            x,y,z=green_ring.Get_Processing_Pos()
+            y+=y_compensation
+            busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
                 self.Change_Stage(1)
                 self.Output("Mission({}) 开始高纠".format(self.Name))
@@ -556,6 +558,9 @@ def Pos_Correction_Func(self:MissionDef):
                 # 原料/加工区低纠正就位
                 x,y,z=green_ring.Get_Processing_Pos()
                 z-=50
+                # 试验中物块在机械臂系下的y值会大于纠正位置,纠正时需要补偿
+                y_compensation=self.Para_List[6][1]
+                y+=y_compensation
                 action_time=self.Para_List[1][1]
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
                 if(busy_flag==False):
@@ -642,7 +647,7 @@ def RawMaterial_2_Processing_Func(self:MissionDef_t):
     @时间列表元素数: 5 [直走时间,圆弧转弯时间,直走时间,圆弧转弯时间,直走时间]
     @参数: stop_wait_time, 制动等待时间
     """
-    stop_wait_time=0
+    stop_wait_time=0.5
 
     # 开始直走，计时
     if(self.Stage_Flag==0):
@@ -771,7 +776,7 @@ def Three_Section_Turn_Func(self:MissionDef_t):
     @时间列表元素数: 3 [直走时间,圆弧转弯时间,直走时间]
     @参数: stop_wait_time, 制动等待时间
     """
-    stop_wait_time=0
+    stop_wait_time=0.5
 
     # 开始直走，计时
     if(self.Stage_Flag==0):

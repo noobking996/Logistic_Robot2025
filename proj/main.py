@@ -3,6 +3,7 @@ import numpy as np
 import os
 import Generic_Mission as GM
 import time
+from math import sin,cos,radians
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 
 from subsystems.AGV import MOVJ_Drection
@@ -18,48 +19,49 @@ from mission import Mission_Function as MF
 
 Standby=MissionDef("待机",MF.Standby_Func,[[0],[(190,0,5),500],[300]],True)
 
-Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-350,400,0],[0,100,0]],[0.8,0],True)
+Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-200,0,0],[0,100,0]],[0.86,0],True)
 
 Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 
-QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1],True)
+QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1.1],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Material],[100],[0.25,(20,20),(20,20),5,None],
+                                      [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
                                        None,None,[False]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,50],[5],[100,100,300,150],[400,250]],True)
 
 RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Processing_Func,
-                                      [[0,500,0],[MOVJ_Drection.Left_Forward,280,60],[0,900,0],
-                                       [MOVJ_Drection.Left_Forward,120,140],[0,500,0]],
-                                       [0,0.95,1.45,1.35,1],True)
+                                      [[0,500,0],[MOVJ_Drection.Left_Forward,100,100],[0,800,0],
+                                       [MOVJ_Drection.Left_Forward,80,150],[0,500,0]],
+                                       [0.27,0.46,1.77,1.26,1],True)
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
-                                      [[CP.Processing],[200,200],[0.2,(10,10),(20,20),0,(125,140)],
-                                       [0.25,(5,5),(5,5),(160,200)],[0.2,1.5,3,0,None],
-                                       [True,True]],True)
+                                      [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.5,1,0,None],
+                                       [True,True],[30,18]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
-                                   [[200,200,200],[150,250,300,50],[200,150,350,40],
+                                   [[200,200,200],[150,250,300,50],[200,150,350,60],
                                     [150,200,200],[150,200,40]],True)
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-500,0]],
-                                  [1.05,1.47,1.2],True)
+                                  [1.05,1.45,1.2],True)
 
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
-                                   [[CP.Processing],[200,200],[0.25,(10,10),(30,30),0,(125,140)],
-                                       [0.25,(10,10),(30,30),(160,200)],[0.25,2,30,0],[False,False]],True)
+                                   [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.5,1,0,None],
+                                       [True,True],[30,18]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
-                                                        [200,150,350,40],[False]],True)
+                                                        [200,150,350,60],[False]],True)
 
 Storage_2_RawMaterial=MissionDef_t("暂存区->原料区",MF.Three_Section_Turn_Func,
                                     [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-300,0]],
-                                    [1.1,1.7,0.8],True)
+                                    [1.1,1.7,0.5],True)
 
 # 第二轮专属任务
 Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[150,250,350],[150,250,250,50],
@@ -85,7 +87,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,4)
+                                   Home_Pos_Correction],[[0,0,1]],True,0)
 
 
 # 二值化调参任务定义
@@ -93,20 +95,23 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
 Thresholding_Test=MissionDef("二值化调参",MF.Thresholding_Test_Func,
                              [[205,255],[200,255],[195,255],[True,True],[0]],True)
 
-MF.rgb_order_list=[[3,2,1],[3,2,1]]
+# MF.rgb_order_list=[[1,2,3],[2,3,1]]
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([RawMaterial_2_Processing],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0220_2113"
+Mission_Code="debug_0224_1213"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
 
 #####################################################################################
+
+# 是否显示任务码
+MF.show_missionCode=False
 
 # 初始化视频流
 myVideo=Video_Setup(Mission_Code,Public_Logger)
@@ -132,12 +137,11 @@ Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 #####################################################################################
 
 # 初始化机械臂对象
-yaw_compensation=5
-x4_conpensation=15
-MF.arm=myManipulator([(65,130,130),(71+x4_conpensation,-20-1.12,0)],Public_Logger,MF.myServo)
+yaw_compensation=0
+MF.arm=myManipulator([(65,130,130),(71,-20-1.12,0)],Public_Logger,MF.myServo)
 MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
                                     [[(180-90),420],[180-(90+19.2),500]],
-                                    [[0,500+yaw_compensation],[120,1000+yaw_compensation]]])
+                                    [[0,750+yaw_compensation],[60,1000+yaw_compensation]]])
 MF.arm.Set_YawAccRatio(0.2,0.25)
 MF.arm.Set_Claw_Angles((800,980))
 MF.arm.Set_Radial_Offset(50)
@@ -148,25 +152,31 @@ stuff_claw_height=55+3        # 夹持时夹爪距离物料底部的距离
 stuff_height=70              # 物块高度
 material_plate_height=80    # 原料盘高度
 # 原料区夹取位置
-public_material_pos=(0,-240-x4_conpensation,material_plate_height+stuff_claw_height-arm_height)
+public_material_pos=(0,-260,material_plate_height+stuff_claw_height-arm_height)
 # 加工区放置距离(abs(y))
-public_processing_distance=320
+public_processing_distance=280
+# 物料盘位置误差补偿
+x4_conpensation=18
+plate_angle=radians(25)
+x_delta=x4_conpensation*cos(plate_angle)
+y_delta=x4_conpensation*sin(plate_angle)
+y_delta_minus=-y_delta
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
-                   [(176.46,82.28,-61+stuff_claw_height),
+                   [(176.46-x_delta,82.28-y_delta-5,-61+stuff_claw_height),
                     public_material_pos,
-                    (160,-public_processing_distance,stuff_claw_height-arm_height)])
+                    (150+20,-public_processing_distance-10,stuff_claw_height-arm_height)])
 blue_stuff.Set_Mixing_Portion((0,-3,3))
 blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
-                    [(194.7,0,-61+stuff_claw_height),
+                    [(194.7-x4_conpensation+5,-6,-61+stuff_claw_height),
                      public_material_pos,
-                     (0,-public_processing_distance,stuff_claw_height-arm_height)])
+                     (0+5,-public_processing_distance,stuff_claw_height-arm_height)])
 green_stuff.Set_Mixing_Portion((-1,2,-1))
 green_stuff.Set_Height(stuff_height)
 red_stuff=myObject("circle",myVideo,[(70,60,180),(255,180,255)],
-                  [(176.46,-82.28-6,-61+stuff_claw_height),
+                  [(176.46-x_delta,-82.28-y_delta_minus,-61+stuff_claw_height),
                    public_material_pos,
-                   (-160,-public_processing_distance,stuff_claw_height-arm_height)])
+                   (-150+10,-public_processing_distance-8,stuff_claw_height-arm_height)])
 red_stuff.Set_Mixing_Portion((2,0,-2))
 red_stuff.Set_Height(stuff_height)
 MF.Stuff_List_Init((red_stuff,green_stuff,blue_stuff))
@@ -177,7 +187,8 @@ MF.material_plate=myObject("circle",myVideo,[(210,210,210),(255,255,255)],
                            [None,public_material_pos,None])
 # MF.material_plate.Set_TransMatrix(0.15)
 
-MF.green_ring=myObject("circle",myVideo,None,[None,None,(0,-250,200-arm_height)])
+MF.green_ring=myObject("circle",myVideo,None,[None,None,(0,-public_processing_distance,
+                                                         200-arm_height)])
 MF.green_ring.Set_Mixing_Portion((-1,2,-1))
 
 MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
@@ -185,7 +196,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Partial_MIssion_Test
+    mission_manager=Logistics_Handling
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
@@ -199,22 +210,6 @@ def main():
             print("End of All Missions")
             break
 
-def num_mission_test():
-    print("Number of missions:",Logistics_Handling.Num_Mission)
-
-# 行走相关任务调试(可远程启动)
-def single_mission_test(mission:MissionDef_t):
-    mission.Reset()
-    end_flag=False
-    while(True):
-        end_flag=mission.Run()
-        if(end_flag==True):
-            print("Mission Complete")
-            break
-
 
 if(__name__=="__main__"):
     main()
-    # num_mission_test()
-    # single_mission_test(Departure)
-    # GM.main()

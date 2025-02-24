@@ -1,5 +1,18 @@
 import serial
+import time
+from subsystems.AGV import myAGV
 
-# uart2=serial.Serial("/dev/ttyAMA2",115200,timeout=0.5)
-uart4=serial.Serial("/dev/ttyAMA4",115200,timeout=0.5)
-uart4.write("Hello, world!\n".encode('utf-8'))
+agv_test=myAGV(0x01,"/dev/ttyAMA4",115200)
+
+interval=0.1
+num=0
+num_end=20
+while(True):
+    agv_test.Velocity_Control([0,100,0])
+    time.sleep(interval)
+    agv_test.Velocity_Control([0,0,0])
+    time.sleep(interval)
+    num+=1
+    print(num)
+    if(num>=num_end):
+        break

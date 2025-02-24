@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 import math
+import time
 from typing import Tuple
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from mission.Setup import MissionDef
@@ -19,6 +20,43 @@ class Module_Stage_Counter:
         self.stage_count=np.uint8(0)
 
 cnt=Module_Stage_Counter()
+
+def Show_MissionCode(winname:str,mission_code:str):
+    """
+    * 显示任务码
+    """
+    img=np.zeros((400,730),np.uint8)
+    img=cv.putText(img,mission_code,(0,250),cv.FONT_ITALIC,5,(255,255,255),10,cv.LINE_AA)
+    cv.moveWindow(winname,65,0)
+    cv.imshow(winname,img)
+
+def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag,self:MissionDef):
+    """
+    * 持续监视目标,等到其消失后,进入位置纠正阶段
+    * 为纠正保留足够的时间
+    """
+    if(cnt.Get()==0):
+        cnt.Increment()
+        self.Output("Mission({}) 开始等待".format(self.Name))
+    elif(cnt.Get()==1):
+        # 额外等待0.5s
+        if(time.time()-self.Phase_Start_Time>=0.5):
+            cnt.Increment()
+            self.Output("Mission({}) 等待结束,开始监视".format(self.Name))
+    elif(cnt.Get()==2):
+        circie_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
+                                                                    None,True)
+        frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+        frame_processed=self.Video.Make_Thumbnails(frame_processed)
+        self.Video.Paste_Img(frame_captured,frame_processed)
+        num_circle=len(circie_list)
+        # 如果一开始就发现目标,则持续监视,等到其消失为止才进入原料区纠正
+        # 此举是为了为纠正保留足够的时间
+        if(num_circle==0):
+            self.Change_Stage()
+            cnt.Reset()
+            self.Output("Mission({}) 目标消失,开始纠正".format(self.Name))
+            self.Phase_Start_Time=time.time()
 
 def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff:myObject,
                          vc_th,next_satge:np.uint8=None,lin_flag=True,grey_flag=False):
@@ -97,7 +135,7 @@ def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:
 x_retreat=None;y_retreat=None
 # 是否进行计算
 calculate_flag=True
-def EndActuatot_Retreat(arm:myManipulator,current_pos:Tuple,speed:np.uint16,
+def EndActuator_Retreat(arm:myManipulator,current_pos:Tuple,speed:np.uint16,
                         self:MissionDef)->bool:
     """
     * 机械臂末端回撤,防止放置完成后夹爪与物块相撞\n
@@ -127,6 +165,18 @@ def EndActuatot_Retreat(arm:myManipulator,current_pos:Tuple,speed:np.uint16,
     return complete_flag
 
 
+def Get_Radial_Offset_Pos(arm:myManipulator,target_pos:Tuple,delta_r:float)->bool:
+    """
+    * 根据目标位置和给定的径向偏移量,计算偏移后的位置\n
+        * 用于加工区夹取,计算就位位置\n
+    """
+    x,y,z=target_pos
+    theta3=math.radians(arm.Current_JointAngles[2])
+    delta_x=delta_r*np.cos(theta3)
+    delta_y=delta_r*np.sin(theta3)
+    x1=x-delta_x
+    y1=y-delta_y        
+    return x1,y1,z
 
 def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject,
                         stuff_index=None):
@@ -148,6 +198,8 @@ def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject
         # 获取任务参数3
         progression_speed=self.Para_List[3][0]
         x,y,z=current_stuff.Get_Material_Pos()
+        y_offset=self.Para_List[0][1]
+        y-=y_offset
         busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,progression_speed)
         if(busy_flag==False):
             cnt.Increment()
@@ -342,7 +394,7 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
     elif(cnt.Get()==4):
         pos=current_stuff.Get_Processing_Pos()
         if(up_flag==True):
-            retreat_cpltFlag=EndActuatot_Retreat(arm,pos,speed_up,self)
+            retreat_cpltFlag=EndActuator_Retreat(arm,pos,speed_up,self)
             if(retreat_cpltFlag==True):
                 cnt.Increment()
                 self.Output("Mission({}) 夹爪已回撤".format(self.Name))
@@ -379,24 +431,30 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             cnt.Increment()
             self.Output("Mission({}) 已朝向加工区物料".format(self.Name))
     elif(cnt.Get()==1):
-        x,y,z=current_stuff.Get_Processing_Pos()
-        z+=height_offset
+        # 计算径向偏移后的就位位置坐标,并存储
+        pos=current_stuff.Get_Processing_Pos()
+        pos=Get_Radial_Offset_Pos(arm,pos,60)
+        arm.Store_Intermediate_Point(pos)
+        cnt.Increment()
+    elif(cnt.Get()==2):
+        x,y,z=arm.Get_Intermediat_Point()
+        # z+=height_offset
         busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已对准物料".format(self.Name))
-    elif(cnt.Get()==2):
+    elif(cnt.Get()==3):
         pos=current_stuff.Get_Processing_Pos()
         busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已到达夹取位置".format(self.Name))
-    elif(cnt.Get()==3):
+    elif(cnt.Get()==4):
         busy_flag=arm.Claw_Cmd(True)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 机械臂夹取".format(self.Name))
-    elif(cnt.Get()==4):
+    elif(cnt.Get()==5):
         busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
         if(busy_flag==False):
             cnt.Reset()

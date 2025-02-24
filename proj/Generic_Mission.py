@@ -14,6 +14,30 @@ from typing import Sized,List
 # target_directory = '/home/zhang/Logistic_Robot2025'
 # os.chdir(target_directory)
 
+def Show_Code_Test():
+    t0=time.time()
+    flag=0
+    while(True):
+        key=(0xff & cv.pollKey())
+        if(key==ord('q')):
+            break
+        if(time.time()-t0>=1):
+            flag+=1
+            t0=time.time()
+            print(flag)
+        if(flag==1):
+            img=np.zeros((400,730),np.uint8)
+            img=cv.putText(img,"123+321",(0,250),cv.FONT_ITALIC,5,(255,255,255),10,cv.LINE_AA)
+            cv.namedWindow("window",cv.WINDOW_AUTOSIZE)
+            cv.moveWindow("window",65,0)
+            cv.imshow("window",img)
+        elif(flag==10):
+            cv.destroyAllWindows()
+            break
+    # cv.waitKey(0)
+    # cv.imwrite("img_saved.png",img)
+    # cv.destroyAllWindows()
+
 def Send_Cmd():
     # 使用端口为uart3(tx=gpio4,rx=gpio5)
     uartPort="/dev/ttyAMA2"
@@ -454,7 +478,8 @@ def main():
     # Overlay_Test2()
     # QRcode_Test()
     # str_test()
-    Ellipse_Test()
+    # Ellipse_Test()
+    Show_Code_Test()
 
 # 作为主函数文件运行时运行main()，作为库导入时不运行
 if(__name__=="__main__"):
