@@ -19,7 +19,8 @@ from mission import Mission_Function as MF
 
 Standby=MissionDef("待机",MF.Standby_Func,[[0],[(190,0,5),500],[300]],True)
 
-Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-100,0,0],[0,100,0]],[1.72,0],True)
+Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-100,0,0],[0,400,0],[0,100,0]],
+                       [1.5,1,0.1],True)
 
 Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 
@@ -90,7 +91,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,0)
+                                   Home_Pos_Correction],[[0,0,1]],True,5)
 
 
 # 二值化调参任务定义
@@ -202,7 +203,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Partial_MIssion_Test
+    mission_manager=Logistics_Handling
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
