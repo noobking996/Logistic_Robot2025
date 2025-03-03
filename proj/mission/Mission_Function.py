@@ -376,14 +376,15 @@ def Pos_Correction_Func(self:MissionDef):
     1. [动作就位时间/ms:t0,t1...],\n
     2. [(高)纠正参数:adjInterval, stop_th, v_adj, vc_th, detail_params],\n
     3. [低纠正参数:adjInterval, stop_th, v_adj, detail_params],\n
-    4. [角度纠正参数:adjInterval, stop_th, omg_adj, angle_compensation, detail_params],\n
+    4. [角度纠正参数:adjInterval,stop_th,omg_adj,angle_compensation,detail_params,y_offset],\n
+    * detail_params[tuple] = circle:(minR,maxR) || line_canny:(th_l,th_h)
+        * 默认值:(100,200) || (90,180)
+    * y_offset为角度纠正时机械臂y轴位置偏移(为了确保场地边缘在视野中),以场外方向为正\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
     6. [纠正时机械臂y轴补偿:y_compensation_h, y_compensation_l]\n
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
-    * detail_params[tuple] = circle:(minR,maxR) || line_canny:(th_l,th_h)
-        * 默认值:(100,200) || (90,180)
     """
     global frame_captured
     correction_pos:CP=self.Para_List[0][0]
@@ -422,8 +423,10 @@ def Pos_Correction_Func(self:MissionDef):
                 z+=120
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
+                # 获得角度纠正y轴位置偏移(为了确保场地边缘在视野中)
+                y_offset=self.Para_List[4][5]
                 x,y,z=green_ring.Get_Processing_Pos()
-                y-=30
+                y-=y_offset
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
                 self.Change_Stage(99)
@@ -444,7 +447,7 @@ def Pos_Correction_Func(self:MissionDef):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
             else:
-                adjInterval,stop_th,omg_adj,angle_compensation,detail_params=self.Para_List[4]
+                adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
                 line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
                                                            True)
                 # 角度取样(+滤波)

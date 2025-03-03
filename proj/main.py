@@ -39,7 +39,7 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
-                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,30],
                                        [True,True],[30,18]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
@@ -53,7 +53,7 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
-                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,30],
                                        [True,True],[30,18]],True)
 
 # 第一轮专属任务
@@ -103,12 +103,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_2_RawMaterial,RawMaterial_Pos_Correction],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Processing_Pos_Correction],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0301_1858"
+Mission_Code="debug_0303_1223"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -202,7 +202,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
