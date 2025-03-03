@@ -21,6 +21,29 @@ class Module_Stage_Counter:
 
 cnt=Module_Stage_Counter()
 
+def Pos_Compensation(pos:Tuple[float,float,float],self:MissionDef,compensation_index:int=None,
+                     stuff_index=None):
+    """
+    * 独立位置补偿(目前用于加放)
+    @param pos: 物块原放置位置
+    @param self: 任务实例
+    @param compensation_index: 位置补偿列表在任务参数列表中的索引值
+    @param stuff_index: 物块在任务参数列表中的索引值
+    @returns: 补偿后的位置
+    """
+    x,y,z=pos
+    x_comp,y_comp,z_comp=(0,0,0)
+    if(compensation_index!=None and stuff_index!=None):
+        x_comp,y_comp,z_comp=self.Para_List[compensation_index][stuff_index]
+    else:
+        raise Warning("Mission({}) 位置补偿参数位置缺失,补偿为0".format(self.Name))
+    x0,y0,z0=x,y,z
+    x+=x_comp
+    y+=y_comp
+    z+=z_comp
+    # self.Output("Mission({}) 独立位置补偿:({},{},{})->({},{},{})".format(self.Name,x0,y0,z0,x,y,z))
+    return x,y,z
+
 def Show_MissionCode(winname:str,mission_code:str):
     """
     * 显示任务码
@@ -308,16 +331,22 @@ def StuffPlate_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             cnt.Increment()
             self.Output("Mission({}) 已朝向物料盘".format(self.Name))
     elif(cnt.Get()==1):
-        x,y,z=current_stuff.Get_StuffPlate_Pos()
+        # 计算就位位置,并存储
+        pos=current_stuff.Get_StuffPlate_Pos()
+        pos=Get_Radial_Offset_Pos(arm,pos,40)
+        arm.Store_Intermediate_Point(pos)
+        cnt.Increment()
+    elif(cnt.Get()==2):
+        x,y,z=arm.Get_Intermediat_Point()
         z+=height_offset
         if(aim_flag==True):
             busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
             if(busy_flag==False):
                 cnt.Increment()
-                self.Output("Mission({}) 已对准物料盘".format(self.Name))
+                self.Output("Mission({}) 已就位".format(self.Name))
         else:
             cnt.Increment()
-    elif(cnt.Get()==2):
+    elif(cnt.Get()==3):
         pos=current_stuff.Get_StuffPlate_Pos()
         busy_flag=None
         if(aim_flag==True):
@@ -328,19 +357,19 @@ def StuffPlate_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已到达物料位置".format(self.Name))
-    elif(cnt.Get()==3):
+    elif(cnt.Get()==4):
         busy_flag=arm.Claw_Cmd(True)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 机械臂夹取".format(self.Name))
-    elif(cnt.Get()==4):
+    elif(cnt.Get()==5):
         x,y,z=current_stuff.Get_StuffPlate_Pos()
         z+=height_offset
         busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,speed_up)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 物料已提起".format(self.Name))
-    elif(cnt.Get()==5):
+    elif(cnt.Get()==6):
         busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
         if(busy_flag==False):
             cnt.Reset()
@@ -349,28 +378,34 @@ def StuffPlate_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
 
 
 def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
-                     stuff_index=None,stacking_flag=False)->bool:
+                     stuff_index=None,stacking_flag=False,compensation_index=None)->bool:
     """
     * 将物块放到加工区/暂存区
+    @param self: MissionDef实例\n
+    @param arm: 机械臂实例\n
+    @param current_stuff: 要放置的物块\n
+    @param stuff_index: 物料索引号,用于选取yaw轴转动时间和独立位置补偿\n
     @param stucking_flag: 是否码垛,默认为False\n
+    @param compensation_index: 位置补偿列表在任务参数列表中的索引值\n
     ## Returns
     complete_flag: 完成放置标志
     """
     complete_flag=False
     # 获取任务参数
     t_aim,speed_down,speed_up,height_offset=self.Para_List[2]
+    pos=current_stuff.Get_Processing_Pos()
+    pos=Pos_Compensation(pos,self,compensation_index,stuff_index)
     up_flag=False
     if(speed_up!=0):
         up_flag=True
     if(cnt.Get()==0):
-        pos=current_stuff.Get_Processing_Pos()
         turn_time=self.Para_List[0][stuff_index]
         busy_flag=arm.Goto_Target_Pos(pos,turn_time,arm.Ctrl_Mode.YAW_ROTATION)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已朝向加工区圆环".format(self.Name))
     elif(cnt.Get()==1):
-        x,y,z=current_stuff.Get_Processing_Pos()
+        x,y,z=pos
         if(stacking_flag==True):
             z+=current_stuff.Height
         z+=height_offset
@@ -379,7 +414,7 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             cnt.Increment()
             self.Output("Mission({}) 已对准圆环".format(self.Name))
     elif(cnt.Get()==2):
-        x,y,z=current_stuff.Get_Processing_Pos()
+        x,y,z=pos
         if(stacking_flag==True):
             z+=current_stuff.Height
         busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,speed_down)
@@ -392,7 +427,6 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             cnt.Increment()
             self.Output("Mission({}) 物块已释放".format(self.Name))
     elif(cnt.Get()==4):
-        pos=current_stuff.Get_Processing_Pos()
         if(up_flag==True):
             retreat_cpltFlag=EndActuator_Retreat(arm,pos,speed_up,self)
             if(retreat_cpltFlag==True):
@@ -411,16 +445,22 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
 
 
 def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
-                     stuff_index=None):
+                     stuff_index=None,compensation_index=None):
     """
     * 从加工区夹取物块
+    @param self: MissionDef实例\n
+    @param arm: 机械臂实例\n
+    @param current_stuff: 要取回的物块\n
+    @param stuff_index: 物料索引号,用于选取yaw轴转动时间和独立位置补偿\n
+    @param compensation_index: 位置补偿列表在任务参数列表中的索引值
     """
     # 获取任务参数
     t_first_turn,t_aim,speed_down=self.Para_List[3]
+    pos=current_stuff.Get_Processing_Pos()
+    pos=Pos_Compensation(pos,self,compensation_index,stuff_index)
     # 与加工区放置共用一个height_offset
     height_offset=self.Para_List[2][3]
     if(cnt.Get()==0):
-        pos=current_stuff.Get_Processing_Pos()
         t_turn=None
         if(self.Stage_Flag==10):
             t_turn=t_first_turn
@@ -432,9 +472,8 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             self.Output("Mission({}) 已朝向加工区物料".format(self.Name))
     elif(cnt.Get()==1):
         # 计算径向偏移后的就位位置坐标,并存储
-        pos=current_stuff.Get_Processing_Pos()
-        pos=Get_Radial_Offset_Pos(arm,pos,60)
-        arm.Store_Intermediate_Point(pos)
+        pos_offset=Get_Radial_Offset_Pos(arm,pos,60)
+        arm.Store_Intermediate_Point(pos_offset)
         cnt.Increment()
     elif(cnt.Get()==2):
         x,y,z=arm.Get_Intermediat_Point()
@@ -444,7 +483,6 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             cnt.Increment()
             self.Output("Mission({}) 已对准物料".format(self.Name))
     elif(cnt.Get()==3):
-        pos=current_stuff.Get_Processing_Pos()
         busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
         if(busy_flag==False):
             cnt.Increment()

@@ -725,6 +725,8 @@ def Processing_PickAndPlace_Func(self:MissionDef):
         * t_first_turn是首次回收的转动时间,此时机械臂末端转动前后都在加工区\n
         * height_offset参数与加放共用\n
     4. [车放参数: t_aim, speed_down, height_offset]\n
+    5. [加放独立位置补偿(RGB)(round 1): (x_comp, y_comp, z_comp),(...),(...)]\n
+    6. [加放独立位置补偿(RGB)(round 2): (x_comp, y_comp, z_comp),(...),(...)]
     ]
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
@@ -737,7 +739,12 @@ def Processing_PickAndPlace_Func(self:MissionDef):
         RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
     elif(self.Stage_Flag in [2,5,8]):
         # 加放
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index)
+        comp=None
+        if(round_counter.Get()==0):
+            comp=5
+        else:
+            comp=6
+        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,False,comp)
         # 每次完成放置后,索引计数器自增或重置
         if(cplt_flag==True):
             if(self.Stage_Flag!=9):
@@ -750,8 +757,13 @@ def Processing_PickAndPlace_Func(self:MissionDef):
         self.Change_Stage()
         self.Output("Mission({}) 回收物块{}".format(self.Name,stuff_index+1),INFO)
     elif(self.Stage_Flag in [10,13,16]):
-        # 加取            
-        RM.Processing_Fetch(self,arm,current_stuff,stuff_index)
+        # 加取
+        comp=None
+        if(round_counter.Get()==0):
+            comp=5
+        else:
+            comp=6            
+        RM.Processing_Fetch(self,arm,current_stuff,stuff_index,comp)
     elif(self.Stage_Flag in [11,14,17]):
         # 车放
         cplt_flag=RM.StuffPlate_PutOn(self,arm,current_stuff,False,stuff_index)
@@ -832,7 +844,8 @@ def Storage_Place_Func(self:MissionDef):
         * 若t_aim==0,则不进行对准动作,直接到位,到位时间为t_down=speed_down\n
     2. [加放参数: t_aim, speed_down, speed_up, height_offset]\n
         * 若speed_up==0,则不进行中间动作,直接复位至HOLD姿态\n
-    3. [码垛标志: stacking_flag]
+    3. [码垛标志: stacking_flag]\n
+    4. [加方独立位置补偿(RGB): (x_comp, y_comp, z_comp),(...),(...)]
     ]
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
@@ -846,7 +859,7 @@ def Storage_Place_Func(self:MissionDef):
     elif(self.Stage_Flag in [2,5,8]):
         # 加放
         stacking_flag=self.Para_List[3][0]
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag)
+        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag,4)
         # 每次完成放置后,索引计数器自增或重置
         if(cplt_flag==True):
             if(self.Stage_Flag!=9):
