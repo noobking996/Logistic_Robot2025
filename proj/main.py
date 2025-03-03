@@ -39,7 +39,7 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
-                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,30],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
                                        [True,True],[30,18]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
@@ -53,7 +53,7 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
-                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,30],
+                                       [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
                                        [True,True],[30,18]],True)
 
 # 第一轮专属任务
