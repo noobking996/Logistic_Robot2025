@@ -31,7 +31,7 @@ RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                        None,None,[False]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
-                               [[120,40,50],[5],[100,100,300,150],[400,250]],True)
+                               [[120,40,40],[5],[100,100,300,150],[400,250]],True)
 
 RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Processing_Func,
                                       [[0,500,0],[MOVJ_Drection.Left_Forward,100,100],[0,800,0],
@@ -46,7 +46,7 @@ Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
                                     [150,200,200],[150,200,40],[(0,0,0),(2,0,0),(0,0,0)],
-                                    [(-1,0,0),(-6,0,0),(-7,0,0)]],True)
+                                    [(-1,0,0),(-1,0,0),(-1,0,0)]],True)
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-500,0]],
@@ -74,7 +74,7 @@ Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[200,200,20
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
                              [[0,-700,0],[MOVJ_Drection.Left_Backward,190,73],
                               [0,-700,0],[200,-200,0]],
-                             [1.05,1.05,2.2,1.1],True)
+                             [1.05,1.1,2.2,1.1],True)
 
 Home_Pos_Correction=MissionDef("启停区位置纠正",MF.Home_Pos_Correction_Func,None,True)
 
@@ -91,7 +91,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,5)
+                                   Home_Pos_Correction],[[0,0,1]],True,0)
 
 
 # 二值化调参任务定义
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([Processing_Pos_Correction],[[0,0,0]],True,0
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0303_1223"
+Mission_Code="debug_0304_1324"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
