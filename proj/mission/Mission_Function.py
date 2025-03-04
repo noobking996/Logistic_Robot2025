@@ -7,6 +7,8 @@ from mission.Setup import MissionDef,MissionDef_t,MissionManager,myObject
 from mission.Setup import Correction_PosDef as CP
 from subsystems import AGV,Manipulator
 from subsystems.Computer_Vision import Video_Stream
+from subsystems.Buttom import myButtom
+
 import mission.Math_Tools as MT
 import mission.Reusable_Module as RM
 
@@ -30,6 +32,9 @@ frame_captured=None
 
 # 键盘按键状态
 key=None
+
+# 车载启动按键
+buttom=myButtom(14,0.1)
 
 # 任务顺序码列表
 rgb_order_list=[]
@@ -164,7 +169,7 @@ def Standby_Func(self:MissionDef):
             if(time.time()-self.Start_Time>=wait_time):
                 self.Change_Stage(2)
         else:
-            if(key==kb.ENTER.value):
+            if((key==kb.ENTER.value)or(buttom.Poll()==True)):
                 self.Change_Stage(2)
     elif(self.Stage_Flag==2):
         # 进入扫码姿态
