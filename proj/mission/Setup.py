@@ -199,6 +199,8 @@ class myObject:
                 frame_mixed = np.clip(frame_mixed, 0, 254)
                 # 将数据类型变回uint8
                 frame_thresholded = np.uint8(frame_mixed)
+                # 添加二次二值化以防红蓝色盲
+                _,frame_thresholded=cv.threshold(frame_thresholded,50,255,cv.THRESH_TOZERO)
             else:
                 frame_thresholded=cv.inRange(frame,self.Color_Range[0],self.Color_Range[1])
         else:

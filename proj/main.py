@@ -104,12 +104,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Processing_Pos_Correction],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Picking],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0304_1324"
+Mission_Code="debug_0306_1514"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])

@@ -595,8 +595,9 @@ def RawMaterial_Picking_Func(self:MissionDef):
     ## 参数列表:\n    
     [\n
     0. [material_height_offset,claw_y_offset,stuff_height_offset],\n
-    1. [vc_th],[t0_lookdown,t1_inplace,t2_turn,t3_readyPut,...],\n
-    2. [progression_speed,put_speed]\n
+    1. [vc_th],\n
+    2. [t0_lookdown,t1_inplace,t2_turn,t3_readyPut,...],\n
+    3. [progression_speed,put_speed]\n
     ]\n
     """
     global frame_captured
