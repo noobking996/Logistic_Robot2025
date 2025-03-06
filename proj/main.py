@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Pick
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0304_2105"
+Mission_Code="debug_0306_1514"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -203,7 +203,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Partial_MIssion_Test
+    mission_manager=Logistics_Handling
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
