@@ -24,7 +24,7 @@ Departure=MissionDef_t("启停区出发",MF.Departure_Func,[[-100,0,0],[0,400,0]
 
 Scan_QRcode=MissionDef("扫码",MF.Scan_QRcode_Func,[[True,0]],True)
 
-QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1.1],True)
+QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,[[0,700,0]],[1.07],True)
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
@@ -36,7 +36,7 @@ RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
 RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Processing_Func,
                                       [[0,500,0],[MOVJ_Drection.Left_Forward,100,100],[0,800,0],
                                        [MOVJ_Drection.Left_Forward,80,150],[0,500,0]],
-                                       [0.27,0.46,1.77,1.26,1],True)
+                                       [0.27,0.46,1.77,1.25,1],True)
 
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Pick
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0306_1514"
+Mission_Code="debug_0306_1632"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])

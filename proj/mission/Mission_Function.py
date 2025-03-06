@@ -576,7 +576,7 @@ def Pos_Correction_Func(self:MissionDef):
                     self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==4):
             # 等待2秒,评估结果
-            assumption_time=1.5
+            assumption_time=0
             if(time.time()-self.Phase_Start_Time>=assumption_time):
                 self.Change_Stage()
                 self.Output("Mission({}) 评估完成".format(self.Name))
