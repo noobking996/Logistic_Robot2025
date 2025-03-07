@@ -111,14 +111,15 @@ def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff
     else:
         current_stuff.Clear_Velocity()
 
-def RawMaterial_ErrorHandler(self:MissionDef,agv:myAGV,move_time:float,next_stage=100):
+def RawMaterial_ErrorHandler(self:MissionDef,agv:myAGV,move_time:float,next_stage=99):
     """
     * 原料区超时错误时(一般第二轮),调用该函数,像x方向走一段距离
+        * 之后回到监视-放弃阶段
     """
     if(cnt.Get()==0):
         cnt.Increment()
         self.Output("Mission({}) 原料区超时,开始强制位置纠正".format(self.Name),WARNING)
-        agv.Velocity_Control([200,0,0])
+        agv.Velocity_Control([150,0,0])
         self.Phase_Start_Time=time.time()
     elif(cnt.Get()==1):
         if(time.time()-self.Phase_Start_Time>=move_time):
@@ -131,7 +132,7 @@ def RawMaterial_ErrorHandler(self:MissionDef,agv:myAGV,move_time:float,next_stag
         if(time.time()-self.Phase_Start_Time>=0.3):
             cnt.Reset()
             self.Change_Stage(next_stage)
-            self.Output("Mission({}) 制动完毕,开始检测圆".format(self.Name),WARNING)
+            self.Output("Mission({}) 制动完毕,重新开始监视".format(self.Name),WARNING)
             self.Phase_Start_Time=time.time()
 
 def Correction_xyResp(self:MissionDef,agv:myAGV,adj_params:Tuple)->bool:

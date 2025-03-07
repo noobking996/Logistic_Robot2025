@@ -203,7 +203,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
