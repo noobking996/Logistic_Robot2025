@@ -448,6 +448,8 @@ def Pos_Correction_Func(self:MissionDef):
             if(correction_pos==CP.Material):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
+                if(time.time()-self.Phase_Start_Time>=20):
+                    raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
                 adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
                 line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
@@ -496,6 +498,9 @@ def Pos_Correction_Func(self:MissionDef):
                             self.Output("Mission({}) 角度纠正完毕".format(self.Name))
                         agv.Velocity_Control([0,0,omg])
                     self.Phase_Start_Time=time.time()
+        elif(self.Stage_Flag==101):
+            # 原料区专用:超时错误处理
+            RM.RawMaterial_ErrorHandler(self,agv,1)
         elif(self.Stage_Flag==200):
             # 加工\暂存区专属,调整机械臂姿态,进行高纠
             action_time=self.Para_List[1][0]

@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Pick
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0306_1632"
+Mission_Code="debug_0306_1021"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
