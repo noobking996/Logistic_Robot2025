@@ -395,7 +395,7 @@ class MissionDef():
         except Exception as e:
             tb=traceback.format_exc()
             self.Output("Mission({}) Run Error\n{}".format(self.Name,tb),ERROR)
-            self.End(False)
+            # self.End(False)
             return None
         
     def Run_Triggered_By(self,condition)->bool:
@@ -479,7 +479,14 @@ class MissionManager(MissionDef):
     # 子任务错误处理
     def Error_Handler(self,mission_code:np.uint8=255):
         error_mission_code=np.uint8(mission_code)
-        self.End(False)
+        if(error_mission_code!=255):
+            error_mission=self.Mission_List[error_mission_code]
+            if(error_mission.Name=="原料区纠正"):
+                error_mission.Change_Stage(101)
+            else:
+                self.End(False)
+        else:
+            self.End()
 
     def Run(self):
         # 执行部分常驻任务
