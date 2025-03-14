@@ -7,6 +7,8 @@ from mission.Setup import MissionDef,MissionDef_t,MissionManager,myObject
 from mission.Setup import Correction_PosDef as CP
 from subsystems import AGV,Manipulator
 from subsystems.Computer_Vision import Video_Stream
+from subsystems.Buttom import myButtom
+
 import mission.Math_Tools as MT
 import mission.Reusable_Module as RM
 
@@ -30,6 +32,9 @@ frame_captured=None
 
 # 键盘按键状态
 key=None
+
+# 车载启动按键
+buttom=myButtom(14,0.1)
 
 # 任务顺序码列表
 rgb_order_list=[]
@@ -164,7 +169,7 @@ def Standby_Func(self:MissionDef):
             if(time.time()-self.Start_Time>=wait_time):
                 self.Change_Stage(2)
         else:
-            if(key==kb.ENTER.value):
+            if((key==kb.ENTER.value)or(buttom.Poll()==True)):
                 self.Change_Stage(2)
     elif(self.Stage_Flag==2):
         # 进入扫码姿态
@@ -183,54 +188,51 @@ def Standby_Func(self:MissionDef):
 
 def Departure_Func(self:MissionDef_t):
     """
-    @功能：启停区出发
-    @参数列表元素数: 2 [[斜走速度],[直走速度]]
-    @时间列表元素数: 2 [[斜走时间],[直走时间]]
-    @参数(在函数体中修改):stop_flag, 是否采用静止扫码方案,若不采用,则参数列表元素数为1
-    @参数(在函数体中修改):wait_time, 制动等待时间
+    * 启停区出发
+        * 包含横走,制动,直走,直走2(移动扫码)/制动(静止扫码)
+    ### 参数列表\n
+    * para_list:[[横走速度],[直走速度],[直走速度2]]
+        * 若直走速度2==[0,0,0],则采用静止扫码方案
+    * time_list:[横走时间,直走时间,制动等待时间]
     """
-    # 是否采用静止扫码方案
-    stop_flag=False
-    # 等待时间：静止扫码方案中为制动等待时间
-    wait_time=0
     # 开始斜走，计时
     if(self.Stage_Flag==0):
-        self.Change_Stage(1)
+        self.Change_Stage()
         agv.Velocity_Control(self.Para_List[0])
         self.Phase_Start_Time=time.time()
         if(self.Verbose_Flag==True):
-            self.Output("Mission({})开始斜走".format(self.Name))
-    # 等待斜走完成，开始直走
+            self.Output("Mission({})开始横走".format(self.Name))
+    # 等待横走完成，开始制动
     elif(self.Stage_Flag==1):
         if((time.time()-self.Phase_Start_Time)>=self.Time_List[0]):
-            self.Change_Stage(2)
-            agv.Velocity_Control(self.Para_List[1])
-            self.Phase_Start_Time=time.time()
-            if(self.Verbose_Flag==True):
-                self.Output("Mission({})开始直走".format(self.Name))
-    # 方案一：采用直走后停止方案，静止扫码
-    if(stop_flag==True):
-        # 等待直走完成，停止
-        if(self.Stage_Flag==2):
-            if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
-                self.Change_Stage(3)
+                self.Change_Stage()
                 agv.Velocity_Control([0,0,0])
                 self.Phase_Start_Time=time.time()
                 self.Output("Mission({}) 开始制动".format(self.Name))
-
-        # 等待制动完成，结束
-        elif(self.Stage_Flag==3):
-            if((time.time()-self.Phase_Start_Time)>=wait_time):
-                self.Change_Stage(5)
-                self.Output("Mission({}) 制动等待完成".format(self.Name))
-
-        elif(self.Stage_Flag==4):
+    # 等待制动完成,开始直走
+    elif(self.Stage_Flag==2):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[1])
+            self.Phase_Start_Time=time.time()
+            if(self.Verbose_Flag==True):
+                self.Output("Mission({})制动完成,开始直走".format(self.Name))
+    # 等待直走完成，停止
+    if(self.Stage_Flag==3):
+        # 若直走时间不为0,采用直走后停止方案，静止扫码
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[2])
+            self.Phase_Start_Time=time.time()
+            self.Output("Mission({}) 开始直走/制动".format(self.Name))
+    # 等待制动完成，结束
+    elif(self.Stage_Flag==4):
+        if(self.Para_List[2]==[0,0,0]):
             self.End()
-    # 方案二：采用边走边扫码方案
-    else:
-        # 开始直走后直接结束任务
-        if(self.Stage_Flag==2):
-            self.End()
+        else:
+            if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+                self.End()
+                self.Output("Mission({}) 制动完成".format(self.Name))
 
 
 def Scan_QRcode_Func(self:MissionDef):
@@ -446,6 +448,8 @@ def Pos_Correction_Func(self:MissionDef):
             if(correction_pos==CP.Material):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
+                if(time.time()-self.Phase_Start_Time>=16):
+                    raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
                 adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
                 line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
@@ -494,6 +498,9 @@ def Pos_Correction_Func(self:MissionDef):
                             self.Output("Mission({}) 角度纠正完毕".format(self.Name))
                         agv.Velocity_Control([0,0,omg])
                     self.Phase_Start_Time=time.time()
+        elif(self.Stage_Flag==101):
+            # 原料区专用:超时错误处理
+            RM.RawMaterial_ErrorHandler(self,agv,0.3)
         elif(self.Stage_Flag==200):
             # 加工\暂存区专属,调整机械臂姿态,进行高纠
             action_time=self.Para_List[1][0]
@@ -574,7 +581,7 @@ def Pos_Correction_Func(self:MissionDef):
                     self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==4):
             # 等待2秒,评估结果
-            assumption_time=1.5
+            assumption_time=0
             if(time.time()-self.Phase_Start_Time>=assumption_time):
                 self.Change_Stage()
                 self.Output("Mission({}) 评估完成".format(self.Name))
@@ -593,8 +600,9 @@ def RawMaterial_Picking_Func(self:MissionDef):
     ## 参数列表:\n    
     [\n
     0. [material_height_offset,claw_y_offset,stuff_height_offset],\n
-    1. [vc_th],[t0_lookdown,t1_inplace,t2_turn,t3_readyPut,...],\n
-    2. [progression_speed,put_speed]\n
+    1. [vc_th],\n
+    2. [t0_lookdown,t1_inplace,t2_turn,t3_readyPut,...],\n
+    3. [progression_speed,put_speed]\n
     ]\n
     """
     global frame_captured
