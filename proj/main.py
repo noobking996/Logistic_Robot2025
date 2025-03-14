@@ -45,8 +45,8 @@ Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
-                                    [150,200,200],[150,200,40],[(0,0,0),(2,0,0),(0,0,0)],
-                                    [(-1,0,0),(-1,0,0),(-1,0,0)]],True)
+                                    [150,200,200],[150,200,40],[(2,-3,0),(2,0,0),(0,0,0)],
+                                    [(2,0.5,0),(3.5,0,0),(3,0,0)]],True)
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-700,0],[MOVJ_Drection.Left_Backward,190,70],[0,-500,0]],
@@ -60,7 +60,7 @@ Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
                                                         [200,150,350,60],[False],
-                                                        [(0,0,0),(0,0,0),(0,0,0)]],True)
+                                                        [(3,-1,0),(0,-1,0),(0,-1,0)]],True)
 
 Storage_2_RawMaterial=MissionDef_t("暂存区->原料区",MF.Three_Section_Turn_Func,
                                     [[0,-700,0],[MOVJ_Drection.Left_Backward,150,70],[0,-300,0]],
@@ -74,7 +74,7 @@ Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[200,200,20
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
                              [[0,-700,0],[MOVJ_Drection.Left_Backward,190,73],
                               [0,-700,0],[200,-200,0]],
-                             [1.05,1.1,2.2,1.1],True)
+                             [1.05,1.08,2.2,1.1],True)
 
 Home_Pos_Correction=MissionDef("启停区位置纠正",MF.Home_Pos_Correction_Func,None,True)
 
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Pick
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0306_1021"
+Mission_Code="school_race_0"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -117,7 +117,7 @@ Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
 #####################################################################################
 
 # 是否显示任务码
-MF.show_missionCode=False
+MF.show_missionCode=True
 
 # 初始化视频流
 myVideo=Video_Setup(Mission_Code,Public_Logger)
@@ -203,7 +203,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Partial_MIssion_Test
+    mission_manager=Logistics_Handling
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
