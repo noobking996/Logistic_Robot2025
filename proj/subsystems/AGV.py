@@ -11,6 +11,7 @@ AGV_Data_Frame=bytearray(data_frame_size)
 class AGVCommand(Enum):
     VELOCITY_CONTROL=0x00
     MOVJ_CONTROL=0x01
+    POS_CTRL=0x02
 
 class MOVJ_Drection(Enum):
     Left_Forward=0x00
@@ -37,8 +38,7 @@ class myAGV:
     def Velocity_Control(self,Velo_List:List[np.int16]):
 
         """
-        @param Velo_List: 广义速度列表[Vx_mm_s,Vy_mm_s,Omege_deg_s],int16类型
-        @return none
+        @param Velo_List: 广义速度列表[Vx_mm_s,Vy_mm_s,Omege_deg_s],int16类型\n
         1. 功能:装载并发送数据帧,共使用8有效字节
         2. 数据帧格式:命令声明+速度方向 + Vx_h + Vx_l + Vy_h + Vy_l + Omege_h + Omege_l
         """
@@ -87,17 +87,17 @@ class myAGV:
     def MOVJ_control(self,param_list:List[Union[MOVJ_Drection, np.uint16]]):
 
         """
-        @参数param_list：圆弧运动参数列表[direction,rou_mm,omega_deg_s],
-            direction为MOVJ_Drection类型，rou_mm,omega_deg_s为uint16类型
-        @作用：装载并发送数据帧，共使用6有效字节
-        @数据帧格式：命令声明+方向 + rou_h + rou_l + omega_h + omega_l
+        @param Movj_Param_List:圆弧运动参数列表[direction,rou_mm,omega_deg_s],
+            direction为MOVJ_Drection类型,rou_mm,omega_deg_s为uint16类型
+        1. 功能:装载并发送数据帧,共使用6有效字节
+        2. 数据帧格式:命令声明+方向 + rou_h + rou_l + omega_h + omega_l
         """
 
         # 校验参数列表
         if len(param_list) != 3:
-            raise ValueError("param_list必须包含3个元素：MOVJ_Drection 和 两个 np.uint16 类型的元素")
+            raise ValueError("param_list必须包含3个元素:MOVJ_Drection 和 两个 np.uint16 类型的元素")
 
-        direction = param_list[0]
+        direction:MOVJ_Drection = param_list[0]
         rou_mm = np.uint16(param_list[1])
         omega_deg_s = np.uint16(param_list[2])
 
