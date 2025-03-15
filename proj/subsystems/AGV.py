@@ -87,7 +87,7 @@ class myAGV:
     def MOVJ_control(self,param_list:List[Union[MOVJ_Drection, np.uint16]]):
 
         """
-        @param Movj_Param_List:圆弧运动参数列表[direction,rou_mm,omega_deg_s],
+        @param param_list:圆弧运动参数列表[direction,rou_mm,omega_deg_s],
             direction为MOVJ_Drection类型,rou_mm,omega_deg_s为uint16类型
         1. 功能:装载并发送数据帧,共使用6有效字节
         2. 数据帧格式:命令声明+方向 + rou_h + rou_l + omega_h + omega_l
@@ -124,6 +124,50 @@ class myAGV:
         # 1.下位机暂无回应帧
         # 2.阻塞方式读取回应数据可能影响实时性，故暂时不处理，等待后续版本  
 
+
+    def Position_Control(self,pos_param_list:List[np.int16]):
+        """
+        * 底盘位置控制
+        @param pos_param_list: 位置控制参数列表[x_mm,y_mm,z_mm,theta_degx10],int16类型
+        1. 功能:装载并发送数据帧,共使用8有效字节
+        2. 数据帧格式: 命令声明 + 位移方向 + x_h + x_l + y_h + y_l + theta_h + theta_l
+        """
+        # 装载命令声明
+        AGV_Data_Frame[0]=AGVCommand.POS_CTRL.value
+
+        x_mm=np.int16(pos_param_list[0])
+        y_mm=np.int16(pos_param_list[1])
+        # 参数theta_degx10为转动角度值*10,目的是实现小角度转动(分辨率0.1度)
+        theta_degx10=np.int16(pos_param_list[2])
+
+        # 设置广义速度方向标志位
+        sign_flag=np.uint8(0x00)
+        if(x_mm<0):
+            sign_flag|=(0x01<<0)
+        if(y_mm<0):
+            sign_flag|=(0x01<<1)
+        if(theta_degx10<0):
+            sign_flag|=(0x01<<2)
+        AGV_Data_Frame[1]=sign_flag
+
+        # 装载速度大小
+        x=np.uint16(abs(x_mm))
+        y=np.uint16(abs(y_mm))
+        theta=np.uint16(abs(theta_degx10))
+        x_bytes=x.tobytes('C')
+        y_bytes=y.tobytes('C')
+        theta_bytes=theta.tobytes('C')
+        # 发送顺序为高位在前，低位在后
+        AGV_Data_Frame[2]=x_bytes[1]
+        AGV_Data_Frame[3]=x_bytes[0]
+        AGV_Data_Frame[4]=y_bytes[1]
+        AGV_Data_Frame[5]=y_bytes[0]
+        AGV_Data_Frame[6]=theta_bytes[1]
+        AGV_Data_Frame[7]=theta_bytes[0]
+        # 一共使用8字节数据
+
+        # 发送数据帧
+        self.uartPort.write(AGV_Data_Frame)
 
 
 ###################################################测试代码
