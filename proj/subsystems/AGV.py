@@ -12,6 +12,8 @@ class AGVCommand(Enum):
     VELOCITY_CONTROL=0x00
     MOVJ_CONTROL=0x01
     POS_CTRL=0x02
+    SET_PARAMs=0x03
+    ANGLE_CORRECTION=0x04
 
 class MOVJ_Drection(Enum):
     Left_Forward=0x00
@@ -165,6 +167,32 @@ class myAGV:
         AGV_Data_Frame[6]=theta_bytes[1]
         AGV_Data_Frame[7]=theta_bytes[0]
         # 一共使用8字节数据
+
+        # 发送数据帧
+        self.uartPort.write(AGV_Data_Frame)
+
+    
+    def Angle_Correction(self,target_angle_deg:np.int16):
+        """
+        * 角度校准
+        @param target_angle_deg: 目标角度值,int16类型,范围为(-180,180]
+        1. 功能:装载并发送数据帧,共使用3有效字节
+        2. 数据帧格式: 命令声明 + 角度正负值标志位 + 目标角度值
+        """
+        # 校验目标角度值
+        if(target_angle_deg<=-180 or target_angle_deg>180):
+            raise ValueError("角度值必须在(-180,180]范围内")
+        # 装载命令声明
+        AGV_Data_Frame[0]=AGVCommand.ANGLE_CORRECTION.value
+        minus_flag=np.uint8(0x00)
+        # 设置角度正负值标志位
+        if(target_angle_deg<0):
+            minus_flag=np.uint8(0x01)
+        AGV_Data_Frame[1]=minus_flag
+        # 装载角度大小
+        angle=np.uint8(abs(target_angle_deg))
+        AGV_Data_Frame[2]=angle
+        # 一共使用3字节数据
 
         # 发送数据帧
         self.uartPort.write(AGV_Data_Frame)
