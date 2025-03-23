@@ -66,6 +66,12 @@ stuff_index_counter=RM.Module_Stage_Counter()
 # 轮次计数器
 round_counter=RM.Module_Stage_Counter()
 
+# 跳过夹取/放置任务标志
+skip_picking_flag=None
+def Skip_All_PickPlace(skip_flag:bool=True):
+    global skip_picking_flag
+    skip_picking_flag=skip_flag
+
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
     video:Video_Stream=self.Video
@@ -558,14 +564,25 @@ def Pos_Correction_Func(self:MissionDef):
                 self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==2):
             if(correction_pos==CP.Material):
-                # 复位滤波器,准备后续任务
-                myfilter.Reset()
-                self.End()
-                stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
-                self.Output("Mission({}) 开始扫描物块{}"
-                            .format(self.Name,stuff_index+1),INFO)
+                # 若skip_picking_flag为True,则复位机械臂再结束任务
+                global skip_picking_flag
+                if(skip_picking_flag==True):
+                    busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
+                    if(busy_flag==False):
+                        myfilter.Reset()
+                        self.End()
+                        self.Output("Mission({}) 机械臂复位,即将跳过夹取".format(self.Name))
+                # 若skip_picking_flag为False,则直接结束,并衔接夹取任务
+                else:
+                    # 复位滤波器,准备后续任务
+                    myfilter.Reset()
+                    self.End()
+                    # 衔接原料区夹取任务,仅有信息输出作用
+                    stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
+                    self.Output("Mission({}) 开始扫描物块{}"
+                                .format(self.Name,stuff_index+1),INFO)
             else:
-                # 原料/加工区低纠正就位
+                # 加工/暂存区低纠正就位
                 x,y,z=green_ring.Get_Processing_Pos()
                 z-=50
                 # 试验中物块在机械臂系下的y值会大于纠正位置,纠正时需要补偿
@@ -610,45 +627,52 @@ def RawMaterial_Picking_Func(self:MissionDef):
     global stuff_index_counter
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [4,9]):
-        # 获取任务参数0
-        material_height_offset=self.Para_List[0][0]
-        t0=self.Para_List[2][0]
-        # 移动到物块上方
-        x,y,z=current_stuff.Get_Material_Pos()
-        z+=material_height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t0)
-        if(busy_flag==False):
-            self.Change_Stage()
-            if(self.Verbose_Flag==True):
-                self.Output("Mission({}) 机械臂就位,开始扫描物块{}"
-                            .format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [0,5,10]):
-        # 获取任务参数1
-        vc_th=self.Para_List[1][0]
-        # 检测圆形
-        RM.Circle_Detect_Stable(self,frame_captured,current_stuff,vc_th)
-    elif(self.Stage_Flag in [1,6,11]):
-        RM.Material_FetchStuff(self,arm,current_stuff)
-    elif(self.Stage_Flag in [2,7,12]):
-        RM.StuffPlate_PutOn(self,arm,current_stuff)
-    elif(self.Stage_Flag in [3,8,13]):
-        t2=self.Para_List[2][2]
-        pos=current_stuff.Get_Material_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            # 每次将物料放上车后的回转是完成物料夹取的标志,索引自增,进行下一个物料的夹取
-            # 最后一次回转后标志所有夹取结束,索引重置
-            if(self.Stage_Flag!=13):
-                stuff_index_counter.Increment()
-            else:
-                stuff_index_counter.Reset()
-            self.Change_Stage()
-            self.Output("Mission({}) 已朝向原料盘".format(self.Name))
-    elif(self.Stage_Flag==14):
-        # 完成所有夹取任务后,复位物料索引计数器
-        stuff_index_counter.Reset()
+    # 若skip_picking_flag为True,则跳过夹取过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
         self.End()
+        self.Output("Mission({}) 跳过夹取".format(self.Name))
+    # 若skip_picking_flag为False,则正常夹取
+    else:
+        if(self.Stage_Flag in [4,9]):
+            # 获取任务参数0
+            material_height_offset=self.Para_List[0][0]
+            t0=self.Para_List[2][0]
+            # 移动到物块上方
+            x,y,z=current_stuff.Get_Material_Pos()
+            z+=material_height_offset
+            busy_flag=arm.Goto_Target_Pos((x,y,z),t0)
+            if(busy_flag==False):
+                self.Change_Stage()
+                if(self.Verbose_Flag==True):
+                    self.Output("Mission({}) 机械臂就位,开始扫描物块{}"
+                                .format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [0,5,10]):
+            # 获取任务参数1
+            vc_th=self.Para_List[1][0]
+            # 检测圆形
+            RM.Circle_Detect_Stable(self,frame_captured,current_stuff,vc_th)
+        elif(self.Stage_Flag in [1,6,11]):
+            RM.Material_FetchStuff(self,arm,current_stuff)
+        elif(self.Stage_Flag in [2,7,12]):
+            RM.StuffPlate_PutOn(self,arm,current_stuff)
+        elif(self.Stage_Flag in [3,8,13]):
+            t2=self.Para_List[2][2]
+            pos=current_stuff.Get_Material_Pos()
+            busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                # 每次将物料放上车后的回转是完成物料夹取的标志,索引自增,进行下一个物料的夹取
+                # 最后一次回转后标志所有夹取结束,索引重置
+                if(self.Stage_Flag!=13):
+                    stuff_index_counter.Increment()
+                else:
+                    stuff_index_counter.Reset()
+                self.Change_Stage()
+                self.Output("Mission({}) 已朝向原料盘".format(self.Name))
+        elif(self.Stage_Flag==14):
+            # 完成所有夹取任务后,复位物料索引计数器
+            stuff_index_counter.Reset()
+            self.End()
 
 
 def RawMaterial_2_Processing_Func(self:MissionDef_t):
@@ -742,54 +766,61 @@ def Processing_PickAndPlace_Func(self:MissionDef):
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [0,3,6]):
-        self.Change_Stage()
-        self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [1,4,7]):
-        # 车取
-        RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
-    elif(self.Stage_Flag in [2,5,8]):
-        # 加放
-        comp=None
-        if(round_counter.Get()==0):
-            comp=5
-        else:
-            comp=6
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,False,comp)
-        # 每次完成放置后,索引计数器自增或重置
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=9):
-                stuff_index_counter.Increment()
-                self.Output("Mission({}) 索引自增".format(self.Name))
+    # 若skip_picking_flag为True,则跳过夹取过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
+        self.End()
+        self.Output("Mission({}) 跳过夹取".format(self.Name))
+    # 若skip_picking_flag为False,则正常夹取
+    else:
+        if(self.Stage_Flag in [0,3,6]):
+            self.Change_Stage()
+            self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [1,4,7]):
+            # 车取
+            RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
+        elif(self.Stage_Flag in [2,5,8]):
+            # 加放
+            comp=None
+            if(round_counter.Get()==0):
+                comp=5
             else:
+                comp=6
+            cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,False,comp)
+            # 每次完成放置后,索引计数器自增或重置
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=9):
+                    stuff_index_counter.Increment()
+                    self.Output("Mission({}) 索引自增".format(self.Name))
+                else:
+                    stuff_index_counter.Reset()
+                    self.Output("Mission({}) 开始回收".format(self.Name))
+        elif(self.Stage_Flag in [9,12,15]):
+            self.Change_Stage()
+            self.Output("Mission({}) 回收物块{}".format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [10,13,16]):
+            # 加取
+            comp=None
+            if(round_counter.Get()==0):
+                comp=5
+            else:
+                comp=6            
+            RM.Processing_Fetch(self,arm,current_stuff,stuff_index,comp)
+        elif(self.Stage_Flag in [11,14,17]):
+            # 车放
+            cplt_flag=RM.StuffPlate_PutOn(self,arm,current_stuff,False,stuff_index)
+            # 除最后一次,每次完成回收后,索引计数器自增
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=18):
+                    stuff_index_counter.Increment()
+        elif(self.Stage_Flag==18):
+            t_turn=self.Para_List[0][stuff_index]
+            busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                self.End()
+                # 回收结束后重置索引计数器
                 stuff_index_counter.Reset()
-                self.Output("Mission({}) 开始回收".format(self.Name))
-    elif(self.Stage_Flag in [9,12,15]):
-        self.Change_Stage()
-        self.Output("Mission({}) 回收物块{}".format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [10,13,16]):
-        # 加取
-        comp=None
-        if(round_counter.Get()==0):
-            comp=5
-        else:
-            comp=6            
-        RM.Processing_Fetch(self,arm,current_stuff,stuff_index,comp)
-    elif(self.Stage_Flag in [11,14,17]):
-        # 车放
-        cplt_flag=RM.StuffPlate_PutOn(self,arm,current_stuff,False,stuff_index)
-        # 除最后一次,每次完成回收后,索引计数器自增
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=18):
-                stuff_index_counter.Increment()
-    elif(self.Stage_Flag==18):
-        t_turn=self.Para_List[0][stuff_index]
-        busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            self.End()
-            # 回收结束后重置索引计数器
-            stuff_index_counter.Reset()
-            self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
+                self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
 
 
 def Three_Section_Turn_Func(self:MissionDef_t):
@@ -861,33 +892,40 @@ def Storage_Place_Func(self:MissionDef):
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [0,3,6]):
-        self.Change_Stage()
-        self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1))
-    elif(self.Stage_Flag in [1,4,7]):
-        # 车取
-        RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
-    elif(self.Stage_Flag in [2,5,8]):
-        # 加放
-        stacking_flag=self.Para_List[3][0]
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag,4)
-        # 每次完成放置后,索引计数器自增或重置
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=9):
-                stuff_index_counter.Increment()
-            else:
+    # 若skip_picking_flag为True,则跳过放置过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
+        self.End()
+        self.Output("Mission({}) 跳过放置".format(self.Name))
+    # 若skip_picking_flag为False,则正常放置
+    else:
+        if(self.Stage_Flag in [0,3,6]):
+            self.Change_Stage()
+            self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1))
+        elif(self.Stage_Flag in [1,4,7]):
+            # 车取
+            RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
+        elif(self.Stage_Flag in [2,5,8]):
+            # 加放
+            stacking_flag=self.Para_List[3][0]
+            cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag,4)
+            # 每次完成放置后,索引计数器自增或重置
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=9):
+                    stuff_index_counter.Increment()
+                else:
+                    stuff_index_counter.Reset()
+        elif(self.Stage_Flag==9):
+            t_turn=self.Para_List[0][stuff_index]
+            busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                self.End()
+                # 回收结束后重置索引计数器
                 stuff_index_counter.Reset()
-    elif(self.Stage_Flag==9):
-        t_turn=self.Para_List[0][stuff_index]
-        busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            self.End()
-            # 回收结束后重置索引计数器
-            stuff_index_counter.Reset()
-            # 暂存区放置完成后第一轮结束,进入第二轮
-            # 注意此处第二轮暂存区码垛结束后也会自增,可能有bug
-            round_counter.Increment()
-            self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
+                # 暂存区放置完成后第一轮结束,进入第二轮
+                # 注意此处第二轮暂存区码垛结束后也会自增,可能有bug
+                round_counter.Increment()
+                self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
 
 
 # 第二轮专属

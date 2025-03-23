@@ -104,12 +104,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Picking],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_Stacking],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="school_race_0"
+Mission_Code="debug_0323_1151"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -118,6 +118,11 @@ Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
 
 # 是否显示任务码
 MF.show_missionCode=True
+
+# 是否在完整任务流中跳过夹取/放置(行走调试用)
+MF.Skip_All_PickPlace(True)
+
+#####################################################################################
 
 # 初始化视频流
 myVideo=Video_Setup(Mission_Code,Public_Logger)
@@ -203,7 +208,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
