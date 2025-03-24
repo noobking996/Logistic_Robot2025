@@ -20,7 +20,7 @@ agv_test=myAGV(0x01,"/dev/ttyAMA2",115200)
 
 # agv_test.Velocity_Control([0,400,0])
 # time.sleep(0.5)
-# agv_test.MOVJ_control([md.Left_Forward,200,89])
+agv_test.MOVJ_control([md.Left_Forward,200,89])
 # time.sleep(1)
 # agv_test.Velocity_Control([0,400,0])
 # time.sleep(0.5)
