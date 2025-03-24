@@ -178,6 +178,7 @@ class myAGV:
         @param target_angle_deg: 目标角度值,int16类型,范围为(-180,180]
         1. 功能:装载并发送数据帧,共使用3有效字节
         2. 数据帧格式: 命令声明 + 角度正负值标志位 + 目标角度值
+        3.注意: 函数内部没有声明target_angle_deg为int16型,可能有bug
         """
         # 校验目标角度值
         if(target_angle_deg<=-180 or target_angle_deg>180):

@@ -53,6 +53,26 @@ def Show_MissionCode(winname:str,mission_code:str):
     cv.moveWindow(winname,65,0)
     cv.imshow(winname,img)
 
+def Gyro_Angle_Correction(self:MissionDef,agv:myAGV,target_angle:np.int16,timeout:float=1)->bool:
+    """
+    * 陀螺仪角度校准
+        * 不自带状态转换,通过判断返回的标志位判断是否完成
+    ## return \n
+    busy_flag: 校准是否完成\n
+    """
+    busy_flag=True
+    if(cnt.Get()==0):
+        cnt.Increment()
+        agv.Angle_Correction(target_angle)
+        self.Output("Mission({}) 开始惯性角度校准".format(self.Name))
+        self.Phase_Start_Time=time.time()
+    elif(cnt.Get()==1):
+        if(time.time()-self.Phase_Start_Time>=timeout):
+            cnt.Reset()
+            busy_flag=False
+            self.Output("Mission({}) 角度校准结束".format(self.Name))
+    return busy_flag
+
 def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag,self:MissionDef):
     """
     * 持续监视目标,等到其消失后,进入位置纠正阶段

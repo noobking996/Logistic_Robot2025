@@ -28,7 +28,7 @@ QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
-                                       None,None,[False]],True)
+                                       None,None,[False],None,[False,0,0.7]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,40],[5],[100,100,300,150],[400,250]],True)
@@ -41,7 +41,7 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18]],True)
+                                       [True,True],[30,18],[False,180,0.7]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
@@ -55,7 +55,7 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18]],True)
+                                       [True,True],[30,18],[False,90,0.7]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
@@ -91,7 +91,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,0)
+                                   Home_Pos_Correction],[[0,0,1]],True,5)
 
 
 # 二值化调参任务定义
@@ -104,12 +104,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_Stacking],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Processing_Pos_Correction],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0323_1151"
+Mission_Code="debug_0324_1856"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -121,6 +121,9 @@ MF.show_missionCode=True
 
 # 是否在完整任务流中跳过夹取/放置(行走调试用)
 MF.Skip_All_PickPlace(True)
+
+# 是否使用陀螺仪全局代替视觉方案进行角度纠正
+MF.use_gyro_flag=True
 
 #####################################################################################
 

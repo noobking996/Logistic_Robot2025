@@ -72,6 +72,10 @@ def Skip_All_PickPlace(skip_flag:bool=True):
     global skip_picking_flag
     skip_picking_flag=skip_flag
 
+# 是否使用陀螺仪进行角度纠正
+use_gyro_flag=False
+
+
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
     video:Video_Stream=self.Video
@@ -390,6 +394,9 @@ def Pos_Correction_Func(self:MissionDef):
     * y_offset为角度纠正时机械臂y轴位置偏移(为了确保场地边缘在视野中),以场外方向为正\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
     6. [纠正时机械臂y轴补偿:y_compensation_h, y_compensation_l]\n
+    7. [陀螺仪角度纠正参数:force_disable,target_angle,correction_time]\n
+        * force_disable[bool]:if(true)在本任务中强制关闭陀螺仪角度纠正功能,转而使用视觉方案
+        * target_angle[int16]:目标角度/deg
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
@@ -423,13 +430,16 @@ def Pos_Correction_Func(self:MissionDef):
             target_object=green_ring
             lin_flag=True
         if(self.Stage_Flag==0):
-            # 机械臂就位
             busy_flag=True
             action_time=self.Para_List[1][0]
+            # 原料区:角度纠正
             if(correction_pos==CP.Material):
-                x,y,z=material_plate.Get_Material_Pos()
-                z+=120
-                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
+                force_disable_flag,target_angle,timeout=self.Para_List[7]
+                if(force_disable_flag==True or use_gyro_flag==False):
+                    busy_flag=False
+                else:
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout)
+            # 加工/暂存区:机械臂就位
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
                 # 获得角度纠正y轴位置偏移(为了确保场地边缘在视野中)
                 y_offset=self.Para_List[4][5]
@@ -437,11 +447,26 @@ def Pos_Correction_Func(self:MissionDef):
                 y-=y_offset
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
-                self.Change_Stage(99)
+                self.Change_Stage(98)
                 if(self.Verbose_Flag==True):
                     correction_name=correction_pos.value[1]
                     self.Output("Mission({}) 开始{}".format(self.Name,correction_name))
+                # self.Phase_Start_Time=time.time()
+        # 原料区专属,(角度纠正完成后,)机械臂就位
+        elif(self.Stage_Flag==98):
+            if(correction_pos==CP.Material):
+                action_time=self.Para_List[1][0]
+                x,y,z=material_plate.Get_Material_Pos()
+                z+=120
+                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
+                if(busy_flag==False):
+                    self.Change_Stage()
+                    self.Output("Mission({}) 机械臂就位".format(self.Name))
+                    self.Phase_Start_Time=time.time()
+            else:
+                self.Change_Stage()
                 self.Phase_Start_Time=time.time()
+        # 原料区专属: 监视 & 放弃第一个
         elif(self.Stage_Flag==99):
             if(correction_pos==CP.Material):
                 RM.Monitor_andAbandon(frame_captured,target_object,lin_flag,self)
@@ -457,58 +482,69 @@ def Pos_Correction_Func(self:MissionDef):
                 if(time.time()-self.Phase_Start_Time>=16):
                     raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
-                adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
-                line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
-                                                           True)
-                # 角度取样(+滤波)
-                # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
-                miss_flag=False
-                if(len(line_list)!=0):
-                    pt1,pt2=line_list[0]
-                    cv.line(frame_captured,pt1,pt2,(0,0,0),2)
-                    vector_delta=pt2-pt1
-                    angle=np.arctan2(vector_delta[1],vector_delta[0])
-                    angle=np.degrees(angle)
-                    vector_delta[1]=0
-                    pt2=pt1+vector_delta
-                    cv.line(frame_captured,pt1,pt2,(0,0,255),2)
-                    filter_flag=self.Para_List[5][1]
-                    if(filter_flag==True):
-                        angle=myfilter.Get_Filtered_Value(angle)
-                else:
-                    miss_flag=True
-                frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
-                frame_processed=self.Video.Make_Thumbnails(frame_processed)
-                self.Video.Paste_Img(frame_captured,frame_processed)
-                # 按照规定时间间隔:判断角度,调整转动角速度
-                current_time=time.time()
-                if(current_time-self.Phase_Start_Time>=adjInterval):
-                    if(miss_flag==True):
-                        self.Output("Mission({}) 未检测到场地边缘".format(self.Name),WARNING)
-                        agv.Velocity_Control([0,0,0])
+                force_disable_flag=self.Para_List[7][0]
+                # 视觉方案角度纠正
+                if(force_disable_flag==True or use_gyro_flag==False):
+                    adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
+                    line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
+                                                            True)
+                    # 角度取样(+滤波)
+                    # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
+                    miss_flag=False
+                    if(len(line_list)!=0):
+                        pt1,pt2=line_list[0]
+                        cv.line(frame_captured,pt1,pt2,(0,0,0),2)
+                        vector_delta=pt2-pt1
+                        angle=np.arctan2(vector_delta[1],vector_delta[0])
+                        angle=np.degrees(angle)
+                        vector_delta[1]=0
+                        pt2=pt1+vector_delta
+                        cv.line(frame_captured,pt1,pt2,(0,0,255),2)
+                        filter_flag=self.Para_List[5][1]
+                        if(filter_flag==True):
+                            angle=myfilter.Get_Filtered_Value(angle)
                     else:
-                        if(len(line_list)>1):
-                            self.Output("Mission({}) 发现多个边缘".format(self.Name),WARNING)
-                        self.Output("Mission({}) (point,angle)({},{})"
-                                    .format(self.Name,pt1,angle))
-                        delta=angle+angle_compensation
-                        omg=0
-                        if(delta>stop_th):
-                            omg=-omg_adj
-                        elif(delta<-stop_th):
-                            omg=omg_adj
+                        miss_flag=True
+                    frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+                    frame_processed=self.Video.Make_Thumbnails(frame_processed)
+                    self.Video.Paste_Img(frame_captured,frame_processed)
+                    # 按照规定时间间隔:判断角度,调整转动角速度
+                    current_time=time.time()
+                    if(current_time-self.Phase_Start_Time>=adjInterval):
+                        if(miss_flag==True):
+                            self.Output("Mission({}) 未检测到场地边缘".format(self.Name),WARNING)
+                            agv.Velocity_Control([0,0,0])
                         else:
-                            self.Change_Stage(200)
-                            # 复位滤波器,准备进行高纠
-                            myfilter.Reset()
-                            self.Output("Mission({}) 角度纠正完毕".format(self.Name))
-                        agv.Velocity_Control([0,0,omg])
-                    self.Phase_Start_Time=time.time()
+                            if(len(line_list)>1):
+                                self.Output("Mission({}) 发现多个边缘".format(self.Name),WARNING)
+                            self.Output("Mission({}) (point,angle)({},{})"
+                                        .format(self.Name,pt1,angle))
+                            delta=angle+angle_compensation
+                            omg=0
+                            if(delta>stop_th):
+                                omg=-omg_adj
+                            elif(delta<-stop_th):
+                                omg=omg_adj
+                            else:
+                                self.Change_Stage(200)
+                                # 复位滤波器,准备进行高纠
+                                myfilter.Reset()
+                                self.Output("Mission({}) 视觉角度纠正完毕".format(self.Name))
+                            agv.Velocity_Control([0,0,omg])
+                        self.Phase_Start_Time=time.time()
+                # 陀螺仪角度纠正
+                else:
+                    target_angle,timeout=self.Para_List[7][1:]
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout)
+                    if(busy_flag==False):
+                        self.Change_Stage(200)
+                        self.Output("Mission({}) 惯性角度纠正完毕".format(self.Name))
+                    
+        # 原料区专用:超时错误处理
         elif(self.Stage_Flag==101):
-            # 原料区专用:超时错误处理
             RM.RawMaterial_ErrorHandler(self,agv,0.3)
+        # 加工\暂存区专属,调整机械臂姿态,进行高纠
         elif(self.Stage_Flag==200):
-            # 加工\暂存区专属,调整机械臂姿态,进行高纠
             action_time=self.Para_List[1][0]
             y_compensation=self.Para_List[6][0]
             x,y,z=green_ring.Get_Processing_Pos()
