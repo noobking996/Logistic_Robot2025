@@ -947,6 +947,8 @@ def Storage_Place_Func(self:MissionDef):
     global skip_picking_flag
     if(skip_picking_flag==True):
         self.End()
+        # 自增轮次计数器
+        round_counter.Increment()
         self.Output("Mission({}) 跳过放置".format(self.Name))
     # 若skip_picking_flag为False,则正常放置
     else:
