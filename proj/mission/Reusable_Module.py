@@ -301,7 +301,7 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
         # 读取之前存储的中间点,并加上z轴偏移
         x,y,z=arm.Get_Intermediat_Point()
         # z+=height_offset
-        z+=30
+        z+=35
         busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
         if(busy_flag==False):
             cnt.Increment()
