@@ -28,7 +28,7 @@ QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
-                                       None,None,[False],None,[False,(0,-1),0.5]],True)
+                                       None,None,[False],None,[False,(0,0),0.5]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,40],[5],[100,100,300,150],[400,250]],True)
