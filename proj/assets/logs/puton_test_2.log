@@ -1,0 +1,479 @@
+17:02:27.209 - INFO - Video Capture: width=640, height=480, fps=30.0
+17:02:27.258 - DEBUG - Video Setup OK
+17:02:27.259 - INFO - Manipulator: link_lengths:(65, 130, 130); actuator_offsets:(71, -21.12, 0)
+17:02:27.262 - DEBUG - Joint_to_Actuator_Matrix:[array([805.        ,  -4.16666667]), array([795.        ,  -4.16666667]), array([745.        ,   4.16666667])]
+17:02:27.262 - INFO - Mission(MissionManager) Ready
+17:02:27.263 - INFO - Mission(视频帧捕获) Ready
+17:02:27.263 - INFO - Mission(原料区纠正) Ready
+17:02:27.263 - INFO - Mission(视频帧标记+显示) Ready
+17:02:27.263 - INFO - Mission(视频帧保存) Ready
+17:02:27.521 - DEBUG - (Joint_Angle_Ctrl)joint:[ 92.64389773 -92.23472207 -90.        ],servo:[(1, 419), (2, 797), (3, 370)]
+17:02:27.521 - DEBUG - (myManipulator) 开始移动
+17:02:27.654 - DEBUG - (myManipulator) 到达目标点:(0, -260, 109.66999999999999)
+17:02:27.655 - DEBUG - Mission(原料区纠正) 开始原料区位置纠正
+17:02:27.687 - DEBUG - Mission(原料区纠正) 开始等待
+17:02:28.186 - DEBUG - Mission(原料区纠正) 等待结束,开始监视
+17:02:30.196 - DEBUG - Mission(原料区纠正) 目标消失,开始纠正
+17:02:30.297 - DEBUG - Mission(原料区纠正),circle_params,554.5,168.5,234.5,-71.5
+17:02:33.730 - DEBUG - Mission(原料区纠正),circle_params,44.5,144.5,-275.5,-95.5
+17:02:33.766 - DEBUG - Mission(原料区纠正),circle_params,45.5,160.5,-275.5,-95.5
+17:02:33.829 - DEBUG - Mission(原料区纠正),circle_params,59.5,154.5,100.0,100.0
+17:02:33.866 - DEBUG - Mission(原料区纠正),circle_params,64.5,160.5,-255.5,-79.5
+17:02:33.898 - DEBUG - Mission(原料区纠正),circle_params,67.5,162.5,-255.5,-79.5
+17:02:33.929 - DEBUG - Mission(原料区纠正),circle_params,72.5,166.5,-255.5,-79.5
+17:02:33.966 - DEBUG - Mission(原料区纠正),circle_params,78.5,170.5,-255.5,-79.5
+17:02:33.998 - DEBUG - Mission(原料区纠正),circle_params,82.5,174.5,18.0,14.0
+17:02:34.030 - DEBUG - Mission(原料区纠正),circle_params,88.5,174.5,18.0,14.0
+17:02:34.065 - DEBUG - Mission(原料区纠正),circle_params,94.5,176.5,18.0,14.0
+17:02:34.097 - DEBUG - Mission(原料区纠正),circle_params,101.5,178.5,18.0,14.0
+17:02:34.129 - DEBUG - Mission(原料区纠正),circle_params,105.5,181.5,23.0,7.0
+17:02:34.167 - DEBUG - Mission(原料区纠正),circle_params,110.5,184.5,23.0,7.0
+17:02:34.197 - DEBUG - Mission(原料区纠正),circle_params,115.5,185.5,23.0,7.0
+17:02:34.229 - DEBUG - Mission(原料区纠正),circle_params,121.5,188.5,16.0,7.0
+17:02:34.267 - DEBUG - Mission(原料区纠正),circle_params,126.5,189.5,16.0,7.0
+17:02:34.297 - DEBUG - Mission(原料区纠正),circle_params,131.5,191.5,16.0,7.0
+17:02:34.329 - DEBUG - Mission(原料区纠正),circle_params,137.5,192.5,16.0,7.0
+17:02:34.366 - DEBUG - Mission(原料区纠正),circle_params,143.5,196.5,22.0,8.0
+17:02:34.397 - DEBUG - Mission(原料区纠正),circle_params,148.5,197.5,22.0,8.0
+17:02:34.430 - DEBUG - Mission(原料区纠正),circle_params,155.5,199.5,22.0,8.0
+17:02:34.466 - DEBUG - Mission(原料区纠正),circle_params,159.5,202.5,22.0,8.0
+17:02:34.497 - DEBUG - Mission(原料区纠正),circle_params,165.5,202.5,22.0,6.0
+17:02:34.529 - DEBUG - Mission(原料区纠正),circle_params,172.5,205.5,22.0,6.0
+17:02:34.566 - DEBUG - Mission(原料区纠正),circle_params,175.5,206.5,22.0,6.0
+17:02:34.597 - DEBUG - Mission(原料区纠正),circle_params,182.5,207.5,22.0,6.0
+17:02:34.629 - DEBUG - Mission(原料区纠正),circle_params,188.5,209.5,23.0,7.0
+17:02:34.668 - DEBUG - Mission(原料区纠正),circle_params,192.5,210.5,23.0,7.0
+17:02:34.697 - DEBUG - Mission(原料区纠正),circle_params,197.5,210.5,23.0,7.0
+17:02:34.729 - DEBUG - Mission(原料区纠正),circle_params,205.5,212.5,23.0,7.0
+17:02:34.765 - DEBUG - Mission(原料区纠正),circle_params,210.5,214.5,22.0,5.0
+17:02:34.797 - DEBUG - Mission(原料区纠正),circle_params,216.5,215.5,22.0,5.0
+17:02:34.829 - DEBUG - Mission(原料区纠正),circle_params,220.5,214.5,22.0,5.0
+17:02:34.865 - DEBUG - Mission(原料区纠正),circle_params,225.5,217.5,15.0,3.0
+17:02:34.897 - DEBUG - Mission(原料区纠正),circle_params,233.5,219.5,15.0,3.0
+17:02:34.929 - DEBUG - Mission(原料区纠正),circle_params,238.5,218.5,15.0,3.0
+17:02:34.965 - DEBUG - Mission(原料区纠正),circle_params,244.5,220.5,19.0,3.0
+17:02:34.997 - DEBUG - Mission(原料区纠正),circle_params,249.5,218.5,19.0,3.0
+17:02:35.029 - DEBUG - Mission(原料区纠正),circle_params,252.5,221.5,19.0,3.0
+17:02:35.067 - DEBUG - Mission(原料区纠正),circle_params,248.5,219.5,4.0,-1.0
+17:02:35.067 - INFO - Mission(原料区纠正) 目标静止,开始行动
+17:02:35.098 - DEBUG - Mission(原料区纠正),delta_y,69.5,vy,20
+17:02:35.231 - DEBUG - Mission(原料区纠正),delta_y,69.5,vy,20
+17:02:35.367 - DEBUG - Mission(原料区纠正),delta_y,55.5,vy,20
+17:02:35.499 - DEBUG - Mission(原料区纠正),delta_y,37.5,vy,20
+17:02:35.631 - DEBUG - Mission(原料区纠正),delta_y,22.5,vy,20
+17:02:35.767 - DEBUG - Mission(原料区纠正) 横向纠正完毕
+17:02:35.768 - DEBUG - Mission(原料区纠正),delta_y,9.5,vy,0
+17:02:35.899 - DEBUG - Mission(原料区纠正),delta_x,20.5,vx,20
+17:02:36.031 - DEBUG - Mission(原料区纠正),delta_x,20.5,vx,20
+17:02:36.167 - DEBUG - Mission(原料区纠正) 纵向纠正完毕
+17:02:36.167 - DEBUG - Mission(原料区纠正),delta_x,10.5,vx,0
+17:02:36.187 - INFO - Mission(原料区纠正) End, Duration(s):8.92383885383606
+17:02:36.187 - INFO - Mission(原料区纠正) 开始扫描物块1
+17:02:36.219 - INFO - Mission(原料区夹取) Ready
+17:02:43.734 - DEBUG - Mission(原料区夹取),circle_params,56.5,126.5,-263.5,-113.5
+17:02:43.766 - DEBUG - Mission(原料区夹取),circle_params,60.5,134.5,-263.5,-113.5
+17:02:43.802 - DEBUG - Mission(原料区夹取),circle_params,65.5,138.5,-263.5,-113.5
+17:02:43.834 - DEBUG - Mission(原料区夹取),circle_params,70.5,139.5,-263.5,-113.5
+17:02:43.867 - DEBUG - Mission(原料区夹取),circle_params,75.5,145.5,19.0,19.0
+17:02:43.901 - DEBUG - Mission(原料区夹取),circle_params,78.5,148.5,19.0,19.0
+17:02:43.935 - DEBUG - Mission(原料区夹取),circle_params,83.5,151.5,19.0,19.0
+17:02:43.967 - DEBUG - Mission(原料区夹取),circle_params,85.5,155.5,10.0,10.0
+17:02:44.002 - DEBUG - Mission(原料区夹取),circle_params,93.5,157.5,10.0,10.0
+17:02:44.034 - DEBUG - Mission(原料区夹取),circle_params,98.5,160.5,10.0,10.0
+17:02:44.066 - DEBUG - Mission(原料区夹取),circle_params,101.5,165.5,10.0,10.0
+17:02:44.102 - DEBUG - Mission(原料区夹取),circle_params,107.5,167.5,22.0,12.0
+17:02:44.134 - DEBUG - Mission(原料区夹取),circle_params,111.5,168.5,22.0,12.0
+17:02:44.166 - DEBUG - Mission(原料区夹取),circle_params,117.5,175.5,22.0,12.0
+17:02:44.203 - DEBUG - Mission(原料区夹取),circle_params,123.5,178.5,22.0,12.0
+17:02:44.234 - DEBUG - Mission(原料区夹取),circle_params,126.5,180.5,19.0,13.0
+17:02:44.267 - DEBUG - Mission(原料区夹取),circle_params,133.5,185.5,19.0,13.0
+17:02:44.301 - DEBUG - Mission(原料区夹取),circle_params,138.5,186.5,19.0,13.0
+17:02:44.335 - DEBUG - Mission(原料区夹取),circle_params,141.5,188.5,15.0,8.0
+17:02:44.367 - DEBUG - Mission(原料区夹取),circle_params,147.5,191.5,15.0,8.0
+17:02:44.402 - DEBUG - Mission(原料区夹取),circle_params,152.5,194.5,15.0,8.0
+17:02:44.434 - DEBUG - Mission(原料区夹取),circle_params,158.5,197.5,15.0,8.0
+17:02:44.467 - DEBUG - Mission(原料区夹取),circle_params,164.5,201.5,23.0,13.0
+17:02:44.503 - DEBUG - Mission(原料区夹取),circle_params,167.5,203.5,23.0,13.0
+17:02:44.535 - DEBUG - Mission(原料区夹取),circle_params,171.5,203.5,23.0,13.0
+17:02:44.567 - DEBUG - Mission(原料区夹取),circle_params,177.5,208.5,13.0,7.0
+17:02:44.602 - DEBUG - Mission(原料区夹取),circle_params,184.5,210.5,13.0,7.0
+17:02:44.634 - DEBUG - Mission(原料区夹取),circle_params,187.5,212.5,13.0,7.0
+17:02:44.666 - DEBUG - Mission(原料区夹取),circle_params,193.5,215.5,13.0,7.0
+17:02:44.702 - DEBUG - Mission(原料区夹取),circle_params,197.5,215.5,20.0,7.0
+17:02:44.734 - DEBUG - Mission(原料区夹取),circle_params,204.5,219.5,20.0,7.0
+17:02:44.767 - DEBUG - Mission(原料区夹取),circle_params,210.5,223.5,20.0,7.0
+17:02:44.802 - DEBUG - Mission(原料区夹取),circle_params,214.5,225.5,20.0,7.0
+17:02:44.834 - DEBUG - Mission(原料区夹取),circle_params,220.5,225.5,23.0,10.0
+17:02:44.867 - DEBUG - Mission(原料区夹取),circle_params,226.5,229.5,23.0,10.0
+17:02:44.902 - DEBUG - Mission(原料区夹取),circle_params,230.5,230.5,23.0,10.0
+17:02:44.934 - DEBUG - Mission(原料区夹取),circle_params,237.5,232.5,23.0,10.0
+17:02:44.966 - DEBUG - Mission(原料区夹取),circle_params,243.5,234.5,23.0,9.0
+17:02:45.003 - DEBUG - Mission(原料区夹取),circle_params,248.5,235.5,23.0,9.0
+17:02:45.034 - DEBUG - Mission(原料区夹取),circle_params,253.5,237.5,23.0,9.0
+17:02:45.067 - DEBUG - Mission(原料区夹取),circle_params,260.5,238.5,17.0,4.0
+17:02:45.102 - DEBUG - Mission(原料区夹取),circle_params,263.5,240.5,17.0,4.0
+17:02:45.134 - DEBUG - Mission(原料区夹取),circle_params,272.5,241.5,17.0,4.0
+17:02:45.166 - DEBUG - Mission(原料区夹取),circle_params,276.5,243.5,17.0,4.0
+17:02:45.203 - DEBUG - Mission(原料区夹取),circle_params,281.5,244.5,21.0,6.0
+17:02:45.233 - DEBUG - Mission(原料区夹取),circle_params,288.5,246.5,21.0,6.0
+17:02:45.268 - DEBUG - Mission(原料区夹取),circle_params,293.5,247.5,21.0,6.0
+17:02:45.302 - DEBUG - Mission(原料区夹取),circle_params,297.5,250.5,21.0,6.0
+17:02:45.334 - DEBUG - Mission(原料区夹取),circle_params,305.5,249.5,24.0,5.0
+17:02:45.367 - DEBUG - Mission(原料区夹取),circle_params,311.5,251.5,24.0,5.0
+17:02:45.402 - DEBUG - Mission(原料区夹取),circle_params,316.5,251.5,24.0,5.0
+17:02:45.433 - DEBUG - Mission(原料区夹取),circle_params,322.5,251.5,24.0,5.0
+17:02:45.467 - DEBUG - Mission(原料区夹取),circle_params,328.5,253.5,23.0,4.0
+17:02:45.502 - DEBUG - Mission(原料区夹取),circle_params,331.5,254.5,23.0,4.0
+17:02:45.534 - DEBUG - Mission(原料区夹取),circle_params,332.5,255.5,23.0,4.0
+17:02:45.566 - DEBUG - Mission(原料区夹取),circle_params,328.5,252.5,0.0,-1.0
+17:02:45.567 - INFO - Mission(原料区夹取) 目标静止,开始行动
+17:02:45.588 - DEBUG - (Joint_Angle_Ctrl)joint:[  78.30980373 -141.98021436  -90.        ],servo:[(1, 479), (2, 530), (3, 370)]
+17:02:45.589 - DEBUG - (myManipulator) 开始移动
+17:02:45.720 - DEBUG - (myManipulator) 到达目标点:(0, -220, -10.330000000000013)
+17:02:45.720 - DEBUG - Mission(原料区夹取) 准备前进夹取
+17:02:45.752 - DEBUG - Kinematics_3RAtype: joint_angles:[78.30980373138468, -141.98021435570251, -90.0]
+17:02:45.752 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:02:45.753 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:02:45.753 - DEBUG - Kinematics_3RAtype: p1:[149.    10.79   0.  ]
+17:02:45.753 - DEBUG - Kinematics_3RAtype: p1+p4:[220.   -10.33   0.  ]
+17:02:45.753 - DEBUG - Kinematics_3RAtype: x1:219.99999999999994,y1:-10.330000000000037,z1:0.0
+17:02:45.754 - DEBUG - Kinematics_3RAtype: p0:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01]
+17:02:45.755 - DEBUG - (myManipulator) 开始直线运动,当前点:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01],参数:[80.00000000000006, array([-1.68388935e-16, -1.00000000e+00,  3.10862447e-16]), 20.0, 0.05]
+17:02:45.788 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 1.01033361e-14 -2.40000000e+02 -1.03300000e+01],已移动距离:20.0
+17:02:45.789 - DEBUG - (Joint_Angle_Ctrl)joint:[  72.21077531 -132.57506051  -90.        ],servo:[(1, 504), (2, 543), (3, 370)]
+17:02:45.888 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 6.7355574e-15 -2.6000000e+02 -1.0330000e+01],已移动距离:40.0
+17:02:45.889 - DEBUG - (Joint_Angle_Ctrl)joint:[  66.37095076 -122.79564087  -90.        ],servo:[(1, 528), (2, 560), (3, 370)]
+17:02:45.988 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 3.3677787e-15 -2.8000000e+02 -1.0330000e+01],已移动距离:60.0
+17:02:45.989 - DEBUG - (Joint_Angle_Ctrl)joint:[  60.54701009 -112.5236268   -90.        ],servo:[(1, 553), (2, 578), (3, 370)]
+17:02:46.088 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 9.46633086e-30 -3.00000000e+02 -1.03300000e+01],已移动距离:80.0
+17:02:46.089 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:02:46.188 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(0, -300, -10.330000000000013)
+17:02:46.189 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:02:46.190 - DEBUG - Mission(原料区夹取) 到达夹取位置
+17:02:46.288 - DEBUG - (myManipulator) 夹爪闭合
+17:02:46.352 - DEBUG - Mission(原料区夹取) 机械臂夹取
+17:02:46.388 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:02:46.620 - DEBUG - (myManipulator) 动作组执行完毕
+17:02:46.620 - DEBUG - Mission(原料区夹取) 提起物块
+17:02:46.652 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-76.99972673467398;执行时间:0.075
+17:02:46.653 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -76.99972673],servo:[(3, 424)]
+17:02:46.752 - DEBUG - (myManipulator) yaw轴加速完成
+17:02:46.788 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-37.998906938695924;执行时间:0.15
+17:02:46.789 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -37.99890694],servo:[(3, 587)]
+17:02:46.952 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:02:46.988 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-24.998633673369902;执行时间:0.075
+17:02:46.989 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -24.99863367],servo:[(3, 641)]
+17:02:47.088 - DEBUG - (myManipulator) yaw轴减速完成
+17:02:47.088 - DEBUG - Mission(原料区夹取) 已朝向物料盘
+17:02:47.121 - DEBUG - (Joint_Angle_Ctrl)joint:[ 145.10053041 -156.75355783  -24.99863367],servo:[(1, 200), (2, 746), (3, 641)]
+17:02:47.121 - DEBUG - (myManipulator) 开始移动
+17:02:47.288 - DEBUG - (myManipulator) 到达目标点:(142.02010253506668, -66.22093830885018, 27)
+17:02:47.288 - DEBUG - Mission(原料区夹取) 到达物料盘附近
+17:02:47.320 - DEBUG - Kinematics_3RAtype: joint_angles:[145.1005304106791, -156.75355782950024, -24.998633673369902]
+17:02:47.321 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:02:47.321 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:02:47.321 - DEBUG - Kinematics_3RAtype: p1:[85.70010273 48.12        0.        ]
+17:02:47.322 - DEBUG - Kinematics_3RAtype: p1+p4:[156.70010273  27.           0.        ]
+17:02:47.322 - DEBUG - Kinematics_3RAtype: x1:156.70010272675444,y1:27.000000000000018,z1:0.0
+17:02:47.322 - DEBUG - Kinematics_3RAtype: p0:[142.02010254 -66.22093831  27.        ]
+17:02:47.323 - DEBUG - (myManipulator) 开始直线运动,当前点:[142.02010254 -66.22093831  27.        ],参数:[36.055512754639906, array([ 0.5027347 , -0.23441444, -0.83205029]), 12.5, 0.05]
+17:02:47.352 - DEBUG - (myManipulator) 正在直线运动,当前点:[148.30428625 -69.15111886  16.59937132],已移动距离:12.5
+17:02:47.353 - DEBUG - (Joint_Angle_Ctrl)joint:[ 133.41233928 -159.27896132  -24.99863367],servo:[(1, 249), (2, 687), (3, 641)]
+17:02:47.452 - DEBUG - (myManipulator) 正在直线运动,当前点:[154.58846997 -72.08129941   6.19874264],已移动距离:25.0
+17:02:47.453 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.56289378 -160.48722929  -24.99863367],servo:[(1, 311), (2, 620), (3, 641)]
+17:02:47.552 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(160.14645983334032, -74.67287128866741, -3)
+17:02:47.553 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -24.99863367],servo:[(1, 371), (2, 561), (3, 641)]
+17:02:47.553 - DEBUG - Mission(原料区夹取) 放入物料盘
+17:02:47.652 - DEBUG - (myManipulator) 夹爪张开
+17:02:47.720 - DEBUG - Mission(原料区夹取) 物块已释放
+17:02:47.788 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:02:48.020 - DEBUG - (myManipulator) 动作组执行完毕
+17:02:48.020 - DEBUG - Mission(原料区夹取) 姿态收缩
+17:02:48.052 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-37.998906938695924;执行时间:0.075
+17:02:48.053 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -37.99890694],servo:[(3, 587)]
+17:02:48.152 - DEBUG - (myManipulator) yaw轴加速完成
+17:02:48.188 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-76.99972673467398;执行时间:0.15
+17:02:48.189 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -76.99972673],servo:[(3, 424)]
+17:02:48.352 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:02:48.388 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.075
+17:02:48.390 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -90.        ],servo:[(3, 370)]
+17:02:48.488 - DEBUG - (myManipulator) yaw轴减速完成
+17:02:48.489 - DEBUG - Mission(原料区夹取) 已朝向原料盘
+17:02:48.521 - DEBUG - (Joint_Angle_Ctrl)joint:[ 92.64389773 -92.23472207 -90.        ],servo:[(1, 419), (2, 797), (3, 370)]
+17:02:48.521 - DEBUG - (myManipulator) 开始移动
+17:02:48.652 - DEBUG - (myManipulator) 到达目标点:(0, -260, 109.66999999999999)
+17:02:48.652 - INFO - Mission(原料区夹取) 机械臂就位,开始扫描物块2
+17:02:54.135 - DEBUG - Mission(原料区夹取),circle_params,71.5,132.5,-248.5,-107.5
+17:02:54.166 - DEBUG - Mission(原料区夹取),circle_params,74.5,132.5,-248.5,-107.5
+17:02:54.204 - DEBUG - Mission(原料区夹取),circle_params,79.5,140.5,-248.5,-107.5
+17:02:54.234 - DEBUG - Mission(原料区夹取),circle_params,84.5,144.5,-248.5,-107.5
+17:02:54.267 - DEBUG - Mission(原料区夹取),circle_params,87.5,146.5,16.0,14.0
+17:02:54.303 - DEBUG - Mission(原料区夹取),circle_params,92.5,151.5,16.0,14.0
+17:02:54.334 - DEBUG - Mission(原料区夹取),circle_params,98.5,152.5,16.0,14.0
+17:02:54.367 - DEBUG - Mission(原料区夹取),circle_params,100.5,156.5,13.0,10.0
+17:02:54.405 - DEBUG - Mission(原料区夹取),circle_params,105.5,161.5,13.0,10.0
+17:02:54.434 - DEBUG - Mission(原料区夹取),circle_params,113.5,164.5,13.0,10.0
+17:02:54.467 - DEBUG - Mission(原料区夹取),circle_params,114.5,167.5,13.0,10.0
+17:02:54.503 - DEBUG - Mission(原料区夹取),circle_params,121.5,170.5,21.0,14.0
+17:02:54.534 - DEBUG - Mission(原料区夹取),circle_params,126.5,174.5,21.0,14.0
+17:02:54.567 - DEBUG - Mission(原料区夹取),circle_params,131.5,176.5,21.0,14.0
+17:02:54.604 - DEBUG - Mission(原料区夹取),circle_params,137.5,179.5,16.0,9.0
+17:02:54.634 - DEBUG - Mission(原料区夹取),circle_params,141.5,183.5,16.0,9.0
+17:02:54.667 - DEBUG - Mission(原料区夹取),circle_params,146.5,186.5,16.0,9.0
+17:02:54.703 - DEBUG - Mission(原料区夹取),circle_params,151.5,188.5,16.0,9.0
+17:02:54.735 - DEBUG - Mission(原料区夹取),circle_params,154.5,191.5,17.0,12.0
+17:02:54.766 - DEBUG - Mission(原料区夹取),circle_params,161.5,193.5,17.0,12.0
+17:02:54.804 - DEBUG - Mission(原料区夹取),circle_params,167.5,198.5,17.0,12.0
+17:02:54.834 - DEBUG - Mission(原料区夹取),circle_params,172.5,201.5,18.0,10.0
+17:02:54.867 - DEBUG - Mission(原料区夹取),circle_params,177.5,202.5,18.0,10.0
+17:02:54.903 - DEBUG - Mission(原料区夹取),circle_params,181.5,204.5,18.0,10.0
+17:02:54.934 - DEBUG - Mission(原料区夹取),circle_params,185.5,206.5,18.0,10.0
+17:02:54.967 - DEBUG - Mission(原料区夹取),circle_params,191.5,208.5,19.0,7.0
+17:02:55.003 - DEBUG - Mission(原料区夹取),circle_params,199.5,213.5,19.0,7.0
+17:02:55.034 - DEBUG - Mission(原料区夹取),circle_params,203.5,215.5,19.0,7.0
+17:02:55.066 - DEBUG - Mission(原料区夹取),circle_params,207.5,215.5,19.0,7.0
+17:02:55.103 - DEBUG - Mission(原料区夹取),circle_params,214.5,220.5,23.0,12.0
+17:02:55.134 - DEBUG - Mission(原料区夹取),circle_params,218.5,221.5,23.0,12.0
+17:02:55.166 - DEBUG - Mission(原料区夹取),circle_params,224.5,224.5,23.0,12.0
+17:02:55.203 - DEBUG - Mission(原料区夹取),circle_params,230.5,227.5,23.0,12.0
+17:02:55.235 - DEBUG - Mission(原料区夹取),circle_params,236.5,226.5,22.0,6.0
+17:02:55.266 - DEBUG - Mission(原料区夹取),circle_params,240.5,231.5,22.0,6.0
+17:02:55.302 - DEBUG - Mission(原料区夹取),circle_params,246.5,231.5,22.0,6.0
+17:02:55.336 - DEBUG - Mission(原料区夹取),circle_params,250.5,233.5,14.0,7.0
+17:02:55.366 - DEBUG - Mission(原料区夹取),circle_params,259.5,236.5,14.0,7.0
+17:02:55.404 - DEBUG - Mission(原料区夹取),circle_params,265.5,237.5,14.0,7.0
+17:02:55.435 - DEBUG - Mission(原料区夹取),circle_params,267.5,239.5,14.0,7.0
+17:02:55.467 - DEBUG - Mission(原料区夹取),circle_params,275.5,240.5,25.0,7.0
+17:02:55.504 - DEBUG - Mission(原料区夹取),circle_params,279.5,241.5,25.0,7.0
+17:02:55.535 - DEBUG - Mission(原料区夹取),circle_params,285.5,243.5,25.0,7.0
+17:02:55.566 - DEBUG - Mission(原料区夹取),circle_params,291.5,245.5,25.0,7.0
+17:02:55.603 - DEBUG - Mission(原料区夹取),circle_params,297.5,247.5,22.0,7.0
+17:02:55.635 - DEBUG - Mission(原料区夹取),circle_params,301.5,248.5,22.0,7.0
+17:02:55.668 - DEBUG - Mission(原料区夹取),circle_params,308.5,249.5,22.0,7.0
+17:02:55.703 - DEBUG - Mission(原料区夹取),circle_params,314.5,249.5,22.0,7.0
+17:02:55.735 - DEBUG - Mission(原料区夹取),circle_params,318.5,249.5,21.0,2.0
+17:02:55.766 - DEBUG - Mission(原料区夹取),circle_params,326.5,253.5,21.0,2.0
+17:02:55.804 - DEBUG - Mission(原料区夹取),circle_params,331.5,253.5,21.0,2.0
+17:02:55.835 - DEBUG - Mission(原料区夹取),circle_params,338.5,255.5,21.0,2.0
+17:02:55.866 - DEBUG - Mission(原料区夹取),circle_params,344.5,256.5,26.0,7.0
+17:02:55.903 - DEBUG - Mission(原料区夹取),circle_params,349.5,257.5,26.0,7.0
+17:02:55.935 - DEBUG - Mission(原料区夹取),circle_params,356.5,256.5,26.0,7.0
+17:02:55.967 - DEBUG - Mission(原料区夹取),circle_params,361.5,258.5,17.0,2.0
+17:02:56.003 - DEBUG - Mission(原料区夹取),circle_params,361.5,257.5,17.0,2.0
+17:02:56.034 - DEBUG - Mission(原料区夹取),circle_params,359.5,258.5,17.0,2.0
+17:02:56.067 - DEBUG - Mission(原料区夹取),circle_params,363.5,259.5,2.0,1.0
+17:02:56.067 - INFO - Mission(原料区夹取) 目标静止,开始行动
+17:02:56.090 - DEBUG - (Joint_Angle_Ctrl)joint:[  78.30980373 -141.98021436  -90.        ],servo:[(1, 479), (2, 530), (3, 370)]
+17:02:56.090 - DEBUG - (myManipulator) 开始移动
+17:02:56.221 - DEBUG - (myManipulator) 到达目标点:(0, -220, -10.330000000000013)
+17:02:56.221 - DEBUG - Mission(原料区夹取) 准备前进夹取
+17:02:56.253 - DEBUG - Kinematics_3RAtype: joint_angles:[78.30980373138468, -141.98021435570251, -90.0]
+17:02:56.254 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:02:56.254 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:02:56.254 - DEBUG - Kinematics_3RAtype: p1:[149.    10.79   0.  ]
+17:02:56.255 - DEBUG - Kinematics_3RAtype: p1+p4:[220.   -10.33   0.  ]
+17:02:56.255 - DEBUG - Kinematics_3RAtype: x1:219.99999999999994,y1:-10.330000000000037,z1:0.0
+17:02:56.256 - DEBUG - Kinematics_3RAtype: p0:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01]
+17:02:56.256 - DEBUG - (myManipulator) 开始直线运动,当前点:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01],参数:[80.00000000000006, array([-1.68388935e-16, -1.00000000e+00,  3.10862447e-16]), 20.0, 0.05]
+17:02:56.289 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 1.01033361e-14 -2.40000000e+02 -1.03300000e+01],已移动距离:20.0
+17:02:56.290 - DEBUG - (Joint_Angle_Ctrl)joint:[  72.21077531 -132.57506051  -90.        ],servo:[(1, 504), (2, 543), (3, 370)]
+17:02:56.389 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 6.7355574e-15 -2.6000000e+02 -1.0330000e+01],已移动距离:40.0
+17:02:56.390 - DEBUG - (Joint_Angle_Ctrl)joint:[  66.37095076 -122.79564087  -90.        ],servo:[(1, 528), (2, 560), (3, 370)]
+17:02:56.489 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 3.3677787e-15 -2.8000000e+02 -1.0330000e+01],已移动距离:60.0
+17:02:56.490 - DEBUG - (Joint_Angle_Ctrl)joint:[  60.54701009 -112.5236268   -90.        ],servo:[(1, 553), (2, 578), (3, 370)]
+17:02:56.589 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 9.46633086e-30 -3.00000000e+02 -1.03300000e+01],已移动距离:80.0
+17:02:56.591 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:02:56.689 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(0, -300, -10.330000000000013)
+17:02:56.690 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:02:56.690 - DEBUG - Mission(原料区夹取) 到达夹取位置
+17:02:56.789 - DEBUG - (myManipulator) 夹爪闭合
+17:02:56.855 - DEBUG - Mission(原料区夹取) 机械臂夹取
+17:02:56.889 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:02:57.121 - DEBUG - (myManipulator) 动作组执行完毕
+17:02:57.121 - DEBUG - Mission(原料区夹取) 提起物块
+17:02:57.153 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-72.0;执行时间:0.075
+17:02:57.154 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -72.        ],servo:[(3, 445)]
+17:02:57.253 - DEBUG - (myManipulator) yaw轴加速完成
+17:02:57.289 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-18.0;执行时间:0.15
+17:02:57.290 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -18.        ],servo:[(3, 670)]
+17:02:57.453 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:02:57.489 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:0.0;执行时间:0.075
+17:02:57.490 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206    0.        ],servo:[(3, 745)]
+17:02:57.589 - DEBUG - (myManipulator) yaw轴减速完成
+17:02:57.590 - DEBUG - Mission(原料区夹取) 已朝向物料盘
+17:02:57.622 - DEBUG - (Joint_Angle_Ctrl)joint:[ 139.78240353 -155.77650451    0.        ],servo:[(1, 223), (2, 728), (3, 745)]
+17:02:57.622 - DEBUG - (myManipulator) 开始移动
+17:02:57.789 - DEBUG - (myManipulator) 到达目标点:(161.7, 0.0, 27)
+17:02:57.789 - DEBUG - Mission(原料区夹取) 到达物料盘附近
+17:02:57.821 - DEBUG - Kinematics_3RAtype: joint_angles:[139.78240353497202, -155.77650450740458, 0.0]
+17:02:57.822 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:02:57.822 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:02:57.823 - DEBUG - Kinematics_3RAtype: p1:[90.7  48.12  0.  ]
+17:02:57.823 - DEBUG - Kinematics_3RAtype: p1+p4:[161.7  27.    0. ]
+17:02:57.824 - DEBUG - Kinematics_3RAtype: x1:161.7,y1:26.99999999999999,z1:0.0
+17:02:57.824 - DEBUG - Kinematics_3RAtype: p0:[161.7   0.   27. ]
+17:02:57.825 - DEBUG - (myManipulator) 开始直线运动,当前点:[161.7   0.   27. ],参数:[36.055512754639885, array([ 0.5547002 ,  0.        , -0.83205029]), 12.5, 0.05]
+17:02:57.853 - DEBUG - (myManipulator) 正在直线运动,当前点:[168.63375245   0.          16.59937132],已移动距离:12.5
+17:02:57.854 - DEBUG - (Joint_Angle_Ctrl)joint:[ 128.07468622 -157.88027131    0.        ],servo:[(1, 271), (2, 671), (3, 745)]
+17:02:57.953 - DEBUG - (myManipulator) 正在直线运动,当前点:[175.56750491   0.           6.19874264],已移动距离:25.0
+17:02:57.954 - DEBUG - (Joint_Angle_Ctrl)joint:[ 113.96536184 -158.6857032     0.        ],servo:[(1, 330), (2, 609), (3, 745)]
+17:02:58.053 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(181.7, 0, -3)
+17:02:58.054 - DEBUG - (Joint_Angle_Ctrl)joint:[ 100.7290812 -158.2016189    0.       ],servo:[(1, 385), (2, 556), (3, 745)]
+17:02:58.055 - DEBUG - Mission(原料区夹取) 放入物料盘
+17:02:58.153 - DEBUG - (myManipulator) 夹爪张开
+17:02:58.221 - DEBUG - Mission(原料区夹取) 物块已释放
+17:02:58.289 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:02:58.521 - DEBUG - (myManipulator) 动作组执行完毕
+17:02:58.522 - DEBUG - Mission(原料区夹取) 姿态收缩
+17:02:58.553 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-18.0;执行时间:0.075
+17:02:58.554 - DEBUG - (Joint_Angle_Ctrl)joint:[ 100.7290812 -158.2016189  -18.       ],servo:[(3, 670)]
+17:02:58.653 - DEBUG - (myManipulator) yaw轴加速完成
+17:02:58.689 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-72.0;执行时间:0.15
+17:02:58.690 - DEBUG - (Joint_Angle_Ctrl)joint:[ 100.7290812 -158.2016189  -72.       ],servo:[(3, 445)]
+17:02:58.853 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:02:58.889 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.075
+17:02:58.890 - DEBUG - (Joint_Angle_Ctrl)joint:[ 100.7290812 -158.2016189  -90.       ],servo:[(3, 370)]
+17:02:58.989 - DEBUG - (myManipulator) yaw轴减速完成
+17:02:58.990 - DEBUG - Mission(原料区夹取) 已朝向原料盘
+17:02:59.022 - DEBUG - (Joint_Angle_Ctrl)joint:[ 92.64389773 -92.23472207 -90.        ],servo:[(1, 419), (2, 797), (3, 370)]
+17:02:59.022 - DEBUG - (myManipulator) 开始移动
+17:02:59.153 - DEBUG - (myManipulator) 到达目标点:(0, -260, 109.66999999999999)
+17:02:59.154 - INFO - Mission(原料区夹取) 机械臂就位,开始扫描物块3
+17:03:04.737 - DEBUG - Mission(原料区夹取),circle_params,67.5,140.5,-252.5,-99.5
+17:03:04.768 - DEBUG - Mission(原料区夹取),circle_params,67.5,150.5,-252.5,-99.5
+17:03:04.804 - DEBUG - Mission(原料区夹取),circle_params,76.5,146.5,-252.5,-99.5
+17:03:04.836 - DEBUG - Mission(原料区夹取),circle_params,82.5,150.5,-252.5,-99.5
+17:03:04.870 - DEBUG - Mission(原料区夹取),circle_params,86.5,153.5,19.0,13.0
+17:03:04.904 - DEBUG - Mission(原料区夹取),circle_params,91.5,151.5,19.0,13.0
+17:03:04.936 - DEBUG - Mission(原料区夹取),circle_params,94.5,161.5,19.0,13.0
+17:03:04.968 - DEBUG - Mission(原料区夹取),circle_params,98.5,162.5,19.0,13.0
+17:03:05.005 - DEBUG - Mission(原料区夹取),circle_params,104.5,166.5,18.0,13.0
+17:03:05.036 - DEBUG - Mission(原料区夹取),circle_params,110.5,171.5,18.0,13.0
+17:03:05.068 - DEBUG - Mission(原料区夹取),circle_params,113.5,170.5,18.0,13.0
+17:03:05.105 - DEBUG - Mission(原料区夹取),circle_params,118.5,176.5,18.0,13.0
+17:03:05.136 - DEBUG - Mission(原料区夹取),circle_params,124.5,177.5,20.0,11.0
+17:03:05.169 - DEBUG - Mission(原料区夹取),circle_params,128.5,182.5,20.0,11.0
+17:03:05.205 - DEBUG - Mission(原料区夹取),circle_params,134.5,185.5,20.0,11.0
+17:03:05.236 - DEBUG - Mission(原料区夹取),circle_params,138.5,191.5,20.0,11.0
+17:03:05.269 - DEBUG - Mission(原料区夹取),circle_params,142.5,189.5,18.0,12.0
+17:03:05.304 - DEBUG - Mission(原料区夹取),circle_params,148.5,194.5,18.0,12.0
+17:03:05.337 - DEBUG - Mission(原料区夹取),circle_params,154.5,197.5,18.0,12.0
+17:03:05.369 - DEBUG - Mission(原料区夹取),circle_params,157.5,200.5,18.0,12.0
+17:03:05.405 - DEBUG - Mission(原料区夹取),circle_params,164.5,202.5,22.0,13.0
+17:03:05.436 - DEBUG - Mission(原料区夹取),circle_params,170.5,205.5,22.0,13.0
+17:03:05.469 - DEBUG - Mission(原料区夹取),circle_params,172.5,206.5,22.0,13.0
+17:03:05.504 - DEBUG - Mission(原料区夹取),circle_params,180.5,209.5,22.0,13.0
+17:03:05.536 - DEBUG - Mission(原料区夹取),circle_params,184.5,211.5,20.0,9.0
+17:03:05.569 - DEBUG - Mission(原料区夹取),circle_params,189.5,214.5,20.0,9.0
+17:03:05.604 - DEBUG - Mission(原料区夹取),circle_params,195.5,216.5,20.0,9.0
+17:03:05.636 - DEBUG - Mission(原料区夹取),circle_params,201.5,221.5,20.0,9.0
+17:03:05.669 - DEBUG - Mission(原料区夹取),circle_params,207.5,221.5,23.0,10.0
+17:03:05.704 - DEBUG - Mission(原料区夹取),circle_params,214.5,223.5,23.0,10.0
+17:03:05.735 - DEBUG - Mission(原料区夹取),circle_params,218.5,226.5,23.0,10.0
+17:03:05.768 - DEBUG - Mission(原料区夹取),circle_params,220.5,229.5,23.0,10.0
+17:03:05.805 - DEBUG - Mission(原料区夹取),circle_params,228.5,231.5,21.0,10.0
+17:03:05.835 - DEBUG - Mission(原料区夹取),circle_params,232.5,232.5,21.0,10.0
+17:03:05.869 - DEBUG - Mission(原料区夹取),circle_params,238.5,232.5,21.0,10.0
+17:03:05.905 - DEBUG - Mission(原料区夹取),circle_params,244.5,236.5,16.0,5.0
+17:03:05.936 - DEBUG - Mission(原料区夹取),circle_params,248.5,237.5,16.0,5.0
+17:03:05.968 - DEBUG - Mission(原料区夹取),circle_params,255.5,239.5,16.0,5.0
+17:03:06.005 - DEBUG - Mission(原料区夹取),circle_params,263.5,243.5,16.0,5.0
+17:03:06.035 - DEBUG - Mission(原料区夹取),circle_params,266.5,242.5,22.0,6.0
+17:03:06.068 - DEBUG - Mission(原料区夹取),circle_params,274.5,243.5,22.0,6.0
+17:03:06.104 - DEBUG - Mission(原料区夹取),circle_params,278.5,245.5,22.0,6.0
+17:03:06.136 - DEBUG - Mission(原料区夹取),circle_params,282.5,248.5,16.0,6.0
+17:03:06.169 - DEBUG - Mission(原料区夹取),circle_params,288.5,249.5,16.0,6.0
+17:03:06.205 - DEBUG - Mission(原料区夹取),circle_params,296.5,250.5,16.0,6.0
+17:03:06.236 - DEBUG - Mission(原料区夹取),circle_params,301.5,250.5,19.0,2.0
+17:03:06.268 - DEBUG - Mission(原料区夹取),circle_params,308.5,251.5,19.0,2.0
+17:03:06.304 - DEBUG - Mission(原料区夹取),circle_params,314.5,254.5,19.0,2.0
+17:03:06.336 - DEBUG - Mission(原料区夹取),circle_params,317.5,255.5,19.0,2.0
+17:03:06.368 - DEBUG - Mission(原料区夹取),circle_params,325.5,254.5,24.0,4.0
+17:03:06.405 - DEBUG - Mission(原料区夹取),circle_params,331.5,256.5,24.0,4.0
+17:03:06.437 - DEBUG - Mission(原料区夹取),circle_params,334.5,257.5,24.0,4.0
+17:03:06.468 - DEBUG - Mission(原料区夹取),circle_params,343.5,256.5,24.0,4.0
+17:03:06.505 - DEBUG - Mission(原料区夹取),circle_params,341.5,258.5,16.0,4.0
+17:03:06.536 - DEBUG - Mission(原料区夹取),circle_params,339.5,256.5,16.0,4.0
+17:03:06.569 - DEBUG - Mission(原料区夹取),circle_params,341.5,257.5,16.0,4.0
+17:03:06.606 - DEBUG - Mission(原料区夹取),circle_params,340.5,257.5,-1.0,-1.0
+17:03:06.607 - INFO - Mission(原料区夹取) 目标静止,开始行动
+17:03:06.623 - DEBUG - (Joint_Angle_Ctrl)joint:[  78.30980373 -141.98021436  -90.        ],servo:[(1, 479), (2, 530), (3, 370)]
+17:03:06.624 - DEBUG - (myManipulator) 开始移动
+17:03:06.754 - DEBUG - (myManipulator) 到达目标点:(0, -220, -10.330000000000013)
+17:03:06.754 - DEBUG - Mission(原料区夹取) 准备前进夹取
+17:03:06.790 - DEBUG - Kinematics_3RAtype: joint_angles:[78.30980373138468, -141.98021435570251, -90.0]
+17:03:06.791 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:03:06.791 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:03:06.791 - DEBUG - Kinematics_3RAtype: p1:[149.    10.79   0.  ]
+17:03:06.792 - DEBUG - Kinematics_3RAtype: p1+p4:[220.   -10.33   0.  ]
+17:03:06.792 - DEBUG - Kinematics_3RAtype: x1:219.99999999999994,y1:-10.330000000000037,z1:0.0
+17:03:06.792 - DEBUG - Kinematics_3RAtype: p0:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01]
+17:03:06.793 - DEBUG - (myManipulator) 开始直线运动,当前点:[ 1.34711148e-14 -2.20000000e+02 -1.03300000e+01],参数:[80.00000000000006, array([-1.68388935e-16, -1.00000000e+00,  3.10862447e-16]), 20.0, 0.05]
+17:03:06.822 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 1.01033361e-14 -2.40000000e+02 -1.03300000e+01],已移动距离:20.0
+17:03:06.823 - DEBUG - (Joint_Angle_Ctrl)joint:[  72.21077531 -132.57506051  -90.        ],servo:[(1, 504), (2, 543), (3, 370)]
+17:03:06.922 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 6.7355574e-15 -2.6000000e+02 -1.0330000e+01],已移动距离:40.0
+17:03:06.923 - DEBUG - (Joint_Angle_Ctrl)joint:[  66.37095076 -122.79564087  -90.        ],servo:[(1, 528), (2, 560), (3, 370)]
+17:03:07.023 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 3.3677787e-15 -2.8000000e+02 -1.0330000e+01],已移动距离:60.0
+17:03:07.023 - DEBUG - (Joint_Angle_Ctrl)joint:[  60.54701009 -112.5236268   -90.        ],servo:[(1, 553), (2, 578), (3, 370)]
+17:03:07.123 - DEBUG - (myManipulator) 正在直线运动,当前点:[ 9.46633086e-30 -3.00000000e+02 -1.03300000e+01],已移动距离:80.0
+17:03:07.123 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:03:07.222 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(0, -300, -10.330000000000013)
+17:03:07.223 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -90.        ],servo:[(1, 578), (2, 599), (3, 370)]
+17:03:07.223 - DEBUG - Mission(原料区夹取) 到达夹取位置
+17:03:07.322 - DEBUG - (myManipulator) 夹爪闭合
+17:03:07.390 - DEBUG - Mission(原料区夹取) 机械臂夹取
+17:03:07.422 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:03:07.654 - DEBUG - (myManipulator) 动作组执行完毕
+17:03:07.654 - DEBUG - Mission(原料区夹取) 提起物块
+17:03:07.690 - DEBUG - (myManipulator) yaw轴开始加速,目标角:-67.00027326532602;执行时间:0.075
+17:03:07.691 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206  -67.00027327],servo:[(3, 466)]
+17:03:07.790 - DEBUG - (myManipulator) yaw轴加速完成
+17:03:07.822 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:1.9989069386959173;执行时间:0.15
+17:03:07.823 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206    1.99890694],servo:[(3, 753)]
+17:03:07.990 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:03:08.022 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:24.998633673369902;执行时间:0.075
+17:03:08.023 - DEBUG - (Joint_Angle_Ctrl)joint:[  54.55655398 -101.58467206   24.99863367],servo:[(3, 849)]
+17:03:08.122 - DEBUG - (myManipulator) yaw轴减速完成
+17:03:08.123 - DEBUG - Mission(原料区夹取) 已朝向物料盘
+17:03:08.155 - DEBUG - (Joint_Angle_Ctrl)joint:[ 145.10053041 -156.75355783   24.99863367],servo:[(1, 200), (2, 746), (3, 849)]
+17:03:08.155 - DEBUG - (myManipulator) 开始移动
+17:03:08.322 - DEBUG - (myManipulator) 到达目标点:(142.02010253506668, 66.22093830885018, 27)
+17:03:08.323 - DEBUG - Mission(原料区夹取) 到达物料盘附近
+17:03:08.354 - DEBUG - Kinematics_3RAtype: joint_angles:[145.1005304106791, -156.75355782950024, 24.998633673369902]
+17:03:08.355 - DEBUG - Kinematics_3RAtype: p4:[ 71.   -21.12   0.  ]
+17:03:08.355 - DEBUG - Kinematics_3RAtype: l0:65,l1:130,l2:130
+17:03:08.355 - DEBUG - Kinematics_3RAtype: p1:[85.70010273 48.12        0.        ]
+17:03:08.356 - DEBUG - Kinematics_3RAtype: p1+p4:[156.70010273  27.           0.        ]
+17:03:08.356 - DEBUG - Kinematics_3RAtype: x1:156.70010272675444,y1:27.000000000000018,z1:0.0
+17:03:08.357 - DEBUG - Kinematics_3RAtype: p0:[142.02010254  66.22093831  27.        ]
+17:03:08.357 - DEBUG - (myManipulator) 开始直线运动,当前点:[142.02010254  66.22093831  27.        ],参数:[36.055512754639906, array([ 0.5027347 ,  0.23441444, -0.83205029]), 12.5, 0.05]
+17:03:08.391 - DEBUG - (myManipulator) 正在直线运动,当前点:[148.30428625  69.15111886  16.59937132],已移动距离:12.5
+17:03:08.391 - DEBUG - (Joint_Angle_Ctrl)joint:[ 133.41233928 -159.27896132   24.99863367],servo:[(1, 249), (2, 687), (3, 849)]
+17:03:08.491 - DEBUG - (myManipulator) 正在直线运动,当前点:[154.58846997  72.08129941   6.19874264],已移动距离:25.0
+17:03:08.492 - DEBUG - (Joint_Angle_Ctrl)joint:[ 118.56289378 -160.48722929   24.99863367],servo:[(1, 311), (2, 620), (3, 849)]
+17:03:08.590 - DEBUG - (myManipulator) 直线运动完成,到达目标点:(160.14645983334032, 74.67287128866741, -3)
+17:03:08.591 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298   24.99863367],servo:[(1, 371), (2, 561), (3, 849)]
+17:03:08.591 - DEBUG - Mission(原料区夹取) 放入物料盘
+17:03:08.690 - DEBUG - (myManipulator) 夹爪张开
+17:03:08.754 - DEBUG - Mission(原料区夹取) 物块已释放
+17:03:08.822 - DEBUG - (myManipulator) 执行动作组:hold_stuff
+17:03:09.054 - DEBUG - (myManipulator) 动作组执行完毕
+17:03:09.055 - DEBUG - Mission(原料区夹取) 姿态收缩
+17:03:09.090 - DEBUG - (myManipulator) yaw轴开始加速,目标角:1.9989069386959173;执行时间:0.075
+17:03:09.091 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298    1.99890694],servo:[(3, 753)]
+17:03:09.190 - DEBUG - (myManipulator) yaw轴加速完成
+17:03:09.222 - DEBUG - (myManipulator) yaw轴开始匀速运动,目标角:-67.00027326532602;执行时间:0.15
+17:03:09.223 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -67.00027327],servo:[(3, 466)]
+17:03:09.390 - DEBUG - (myManipulator) yaw轴匀速运动完成
+17:03:09.422 - DEBUG - (myManipulator) yaw轴开始减速到,目标角:-90.0;执行时间:0.075
+17:03:09.423 - DEBUG - (Joint_Angle_Ctrl)joint:[ 104.13257405 -160.26715298  -90.        ],servo:[(3, 370)]
+17:03:09.522 - DEBUG - (myManipulator) yaw轴减速完成
+17:03:09.523 - DEBUG - Mission(原料区夹取) 已朝向原料盘
+17:03:09.554 - INFO - Mission(原料区夹取) End, Duration(s):33.33558130264282
+17:03:09.591 - INFO - Mission(视频帧捕获) Cap Released
+17:03:09.591 - INFO - Mission(视频帧捕获) End, Duration(s):42.32841467857361
+17:03:09.594 - INFO - Mission(视频帧标记+显示) Windows Closed
+17:03:09.594 - INFO - Mission(视频帧标记+显示) End, Duration(s):42.33106517791748
+17:03:09.596 - INFO - Mission(视频帧保存) VideoWriter Released
+17:03:09.596 - INFO - Mission(视频帧保存) End, Duration(s):42.33276176452637
+17:03:09.596 - INFO - Mission(MissionManager) End, Duration(s):42.3339946269989

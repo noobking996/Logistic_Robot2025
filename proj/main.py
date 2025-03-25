@@ -151,7 +151,7 @@ Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 #####################################################################################
 
 # 初始化机械臂对象
-yaw_compensation=0
+yaw_compensation=-5
 MF.arm=myManipulator([(65,130,130),(71,-20-1.12,0)],Public_Logger,MF.myServo)
 MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
                                     [[(180-90),420],[180-(90+19.2),500]],
@@ -176,13 +176,13 @@ x_delta=x4_conpensation*cos(plate_angle)
 y_delta=x4_conpensation*sin(plate_angle)
 y_delta_minus=-y_delta
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
-                   [(176.46-x_delta,82.28-y_delta-5,-61+stuff_claw_height),
+                   [(176.46-x_delta,82.28-y_delta,-61+stuff_claw_height),
                     public_material_pos,
                     (150+20,-public_processing_distance-10,stuff_claw_height-arm_height)])
 blue_stuff.Set_Mixing_Portion((0,-3,3))
 blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
-                    [(194.7-x4_conpensation+5,-6,-61+stuff_claw_height),
+                    [(194.7-x4_conpensation+5,0,-61+stuff_claw_height),
                      public_material_pos,
                      (0+7,-public_processing_distance-2,stuff_claw_height-arm_height)])
 green_stuff.Set_Mixing_Portion((-1,2,-1))
@@ -190,7 +190,7 @@ green_stuff.Set_Height(stuff_height)
 red_stuff=myObject("circle",myVideo,[(70,60,180),(255,180,255)],
                   [(176.46-x_delta,-82.28-y_delta_minus,-61+stuff_claw_height),
                    public_material_pos,
-                   (-150+9,-public_processing_distance-5,stuff_claw_height-arm_height)])
+                   (-150+9,-public_processing_distance,stuff_claw_height-arm_height)])
 red_stuff.Set_Mixing_Portion((2,0,-2))
 red_stuff.Set_Height(stuff_height)
 
@@ -211,7 +211,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()

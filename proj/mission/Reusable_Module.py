@@ -242,7 +242,7 @@ def EndActuator_Retreat(arm:myManipulator,current_pos:Tuple,speed:np.uint16,
     return complete_flag
 
 
-def Get_Radial_Offset_Pos(arm:myManipulator,target_pos:Tuple,delta_r:float)->bool:
+def Get_Radial_Offset_Pos(arm:myManipulator,target_pos:Tuple,delta_r:float):
     """
     * 根据目标位置和给定的径向偏移量,计算偏移后的位置\n
         * 用于加工区夹取,计算就位位置\n
@@ -298,7 +298,8 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
     """
     * 将物块放到车载物料盘
     @param legacy_flag: 是否采用老版本原料区夹取的参数设置模式,默认为True
-    @param stuff_index: 新参数模式下的物料索引号,用于选取yaw轴转动时间
+    @param stuff_index: 新参数模式下的物料索引号,用于选取yaw轴转动时间\n
+    * 说明: 0325版本放置动作由垂直下降更改为倾斜下降,目的是防止掉块\n
     """
     complete_flag=False
     t_turn,t_aim,speed_down,height_offset=(None,None,None,None)
@@ -314,6 +315,10 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
         busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION)
         if(busy_flag==False):
             cnt.Increment()
+            # 获取并存储径向偏移后的位置
+            pos=current_stuff.Get_StuffPlate_Pos()
+            pos=Get_Radial_Offset_Pos(arm,pos,20)
+            arm.Store_Intermediate_Point(pos)
             self.Output("Mission({}) 已朝向物料盘".format(self.Name))
     elif(cnt.Get()==1):
         if(legacy_flag==True):
@@ -323,12 +328,14 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
             # 获取任务参数0
             stuff_height_offset=self.Para_List[0][2]
             height_offset=stuff_height_offset
-        x,y,z=current_stuff.Get_StuffPlate_Pos()
-        z+=height_offset
+        # 读取之前存储的中间点,并加上z轴偏移
+        x,y,z=arm.Get_Intermediat_Point()
+        # z+=height_offset
+        z+=35
         busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
         if(busy_flag==False):
             cnt.Increment()
-            self.Output("Mission({}) 到达物料盘上方".format(self.Name))
+            self.Output("Mission({}) 到达物料盘附近".format(self.Name))
     elif(cnt.Get()==2):
         if(legacy_flag==True):
             put_speed=self.Para_List[3][1]
