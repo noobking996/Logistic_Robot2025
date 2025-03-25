@@ -28,7 +28,7 @@ QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
-                                       None,None,[False],None,[False,0,0.5]],True)
+                                       None,None,[False],None,[False,(0,-1),0.5]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,40],[5],[100,100,300,150],[400,250]],True)
@@ -72,9 +72,9 @@ Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[200,200,20
                                                            [(0,0,0),(0,0,0),(0,0,0)]],True)
 
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
-                             [[0,-400,0],[MOVJ_Drection.Left_Backward,100,80],
+                             [[0,-400,0],[MOVJ_Drection.Left_Backward,100,79],
                               [0,-400,0],[200,-200,0]],
-                             [2.2,1.07,3,1],True)
+                             [2.2,1.07,4,1],True)
 
 Home_Pos_Correction=MissionDef("启停区位置纠正",MF.Home_Pos_Correction_Func,None,True)
 
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([Storage_2_RawMaterial],[[0,0,0]],True,0)
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_walking_0"
+Mission_Code="debug_walking_1"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
