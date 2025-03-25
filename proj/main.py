@@ -72,9 +72,9 @@ Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[200,200,20
                                                            [(0,0,0),(0,0,0),(0,0,0)]],True)
 
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
-                             [[0,-700,0],[MOVJ_Drection.Left_Backward,190,73],
-                              [0,-700,0],[200,-200,0]],
-                             [1.05,1.08,2.2,1.1],True)
+                             [[0,-400,0],[MOVJ_Drection.Left_Backward,100,80],
+                              [0,-400,0],[200,-200,0]],
+                             [2.2,1.07,3,1],True)
 
 Home_Pos_Correction=MissionDef("启停区位置纠正",MF.Home_Pos_Correction_Func,None,True)
 
@@ -91,7 +91,7 @@ Logistics_Handling=MissionManager([Standby,Departure,Scan_QRcode,QRcode_2_RawMat
                                    RawMaterial_2_Processing,Processing_Pos_Correction,
                                    Processing_PickAndPlace,Processing_2_Storage,
                                    Storage_Pos_Correction,Storage_Stacking,Storage_Go_Home,
-                                   Home_Pos_Correction],[[0,0,1]],True,13)
+                                   Home_Pos_Correction],[[0,0,1]],True,0)
 
 
 # 二值化调参任务定义
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([Storage_2_RawMaterial],[[0,0,0]],True,0)
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0324_2241"
+Mission_Code="debug_walking_0"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])

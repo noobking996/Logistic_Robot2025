@@ -395,8 +395,9 @@ def Pos_Correction_Func(self:MissionDef):
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
     6. [纠正时机械臂y轴补偿:y_compensation_h, y_compensation_l]\n
     7. [陀螺仪角度纠正参数:force_disable,target_angle,correction_time]\n
-        * force_disable[bool]:if(true)在本任务中强制关闭陀螺仪角度纠正功能,转而使用视觉方案
-        * target_angle[int16]:目标角度/deg
+        * force_disable[bool|Tuple]:if(true)在本任务中强制关闭陀螺仪角度纠正功能,转而使用视觉方案
+        * target_angle[int16|Tuple]:目标角度/deg
+            * 为元组类型的情况表明第一/二轮参数配置不同
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
@@ -435,10 +436,17 @@ def Pos_Correction_Func(self:MissionDef):
             # 原料区:角度纠正
             if(correction_pos==CP.Material):
                 force_disable_flag,target_angle,timeout=self.Para_List[7]
-                if(force_disable_flag==True or use_gyro_flag==False):
+                round_num=round_counter.Get()
+                # 考虑force_disable_flag为元组的情况
+                disable_flag=None
+                if(isinstance(force_disable_flag,Tuple)):
+                    disable_flag=force_disable_flag[round_num]
+                else:
+                    disable_flag=force_disable_flag
+                if(disable_flag==True or use_gyro_flag==False):
                     busy_flag=False
                 else:
-                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout)
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout,round_num)
             # 加工/暂存区:机械臂就位
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
                 # 获得角度纠正y轴位置偏移(为了确保场地边缘在视野中)
@@ -482,9 +490,16 @@ def Pos_Correction_Func(self:MissionDef):
                 if(time.time()-self.Phase_Start_Time>=16):
                     raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
+                # 根据配置参数决定纠正方案
                 force_disable_flag=self.Para_List[7][0]
+                disable_flag=None
+                round_num=round_counter.Get()
+                if(isinstance(force_disable_flag,Tuple)):
+                    disable_flag=force_disable_flag[round_num]
+                else:
+                    disable_flag=force_disable_flag
                 # 视觉方案角度纠正
-                if(force_disable_flag==True or use_gyro_flag==False):
+                if(disable_flag==True or use_gyro_flag==False):
                     adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
                     line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
                                                             True)
@@ -535,7 +550,7 @@ def Pos_Correction_Func(self:MissionDef):
                 # 陀螺仪角度纠正
                 else:
                     target_angle,timeout=self.Para_List[7][1:]
-                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout)
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout,round_num)
                     if(busy_flag==False):
                         self.Change_Stage(200)
                         self.Output("Mission({}) 惯性角度纠正完毕".format(self.Name))

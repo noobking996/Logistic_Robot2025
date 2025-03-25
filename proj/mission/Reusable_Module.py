@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 import math
 import time
-from typing import Tuple
+from typing import Tuple,Union
 from logging import Logger,DEBUG,INFO,WARNING,ERROR,CRITICAL
 from mission.Setup import MissionDef
 from subsystems.AGV import myAGV
@@ -53,18 +53,28 @@ def Show_MissionCode(winname:str,mission_code:str):
     cv.moveWindow(winname,65,0)
     cv.imshow(winname,img)
 
-def Gyro_Angle_Correction(self:MissionDef,agv:myAGV,target_angle:np.int16,timeout:float=1)->bool:
+def Gyro_Angle_Correction(self:MissionDef,agv:myAGV,target_angle:Union[np.int16,Tuple],
+                          timeout:float=1,round_num=0)->bool:
     """
     * 陀螺仪角度校准
         * 不自带状态转换,通过判断返回的标志位判断是否完成
-    ## return \n
+    @param target_angle: 目标角度
+    @param timeout: 纠正时间
+    @param round_num: 当前round_counter值(0,1,2...)\n
+    ## Return \n
     busy_flag: 校准是否完成\n
     """
     busy_flag=True
     if(cnt.Get()==0):
         cnt.Increment()
-        agv.Angle_Correction(target_angle)
-        self.Output("Mission({}) 开始惯性角度校准".format(self.Name))
+        # 考虑到不同轮次同一位置纠正角度可能不同,故添加tuple容纳多个目标角度
+        correction_angle=None
+        if(isinstance(target_angle,Tuple)):
+            correction_angle:np.int16=target_angle[round_num]
+        else:
+            correction_angle=np.int16(target_angle)
+        agv.Angle_Correction(correction_angle)
+        self.Output("Mission({}) 开始惯性角度校准,目标角度:{}".format(self.Name,correction_angle))
         self.Phase_Start_Time=time.time()
     elif(cnt.Get()==1):
         if(time.time()-self.Phase_Start_Time>=timeout):
