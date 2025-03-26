@@ -28,7 +28,7 @@ QRcode_2_RawMaterial=MissionDef_t("扫码->原料",MF.QRcode_2_RawMaterial_Func,
 
 RawMaterial_Pos_Correction=MissionDef("原料区纠正",MF.Pos_Correction_Func,
                                       [[CP.Material],[100],[0.1,(20,20),(20,20),5,None],
-                                       None,None,[False],None,[(False,True),(0,0),0.5]],True)
+                                       None,None,[False],None,[(False,True),(0,-1),0.5]],True)
 
 RawMaterial_Picking=MissionDef("原料区夹取",MF.RawMaterial_Picking_Func,
                                [[120,40,40],[5],[100,100,300,150],[400,250]],True)
@@ -41,7 +41,7 @@ RawMaterial_2_Processing=MissionDef_t("原料区->加工区",MF.RawMaterial_2_Pr
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18],[False,-179,0.5]],True)
+                                       [True,True],[30,18],[False,(-179,-177),0.5]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
@@ -50,12 +50,12 @@ Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAnd
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-500,0],[MOVJ_Drection.Left_Backward,200,84],[0,-500,0]],
-                                  [1.6,1,0.9],True)
+                                  [1.6,1.05,0.9],True)
 
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18],[False,91,0.5]],True)
+                                       [True,True],[30,18],[False,(91,93),0.5]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
@@ -74,7 +74,7 @@ Storage_Stacking=MissionDef("暂存区码垛",MF.Storage_Place_Func,[[200,200,20
 Storage_Go_Home=MissionDef_t("暂存区->启停区",MF.Storage_Go_Home_Func,
                              [[0,-400,0],[MOVJ_Drection.Left_Backward,100,79],
                               [0,-400,0],[200,-200,0]],
-                             [2.2,1.07,3.7,1],True)
+                             [2.2,1.07,3.7,0.85],True)
 
 Home_Pos_Correction=MissionDef("启停区位置纠正",MF.Home_Pos_Correction_Func,None,True)
 
@@ -104,12 +104,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([RawMaterial_2_Processing],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_Place],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_walking_2"
+Mission_Code="debug_0326_1258"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -120,7 +120,7 @@ Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
 MF.show_missionCode=False
 
 # 是否在完整任务流中跳过夹取/放置(行走调试用)
-MF.Skip_All_PickPlace(True)
+MF.Skip_All_PickPlace(False)
 
 # 是否使用陀螺仪全局代替视觉方案进行角度纠正
 MF.use_gyro_flag=True
@@ -178,19 +178,19 @@ y_delta_minus=-y_delta
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
                    [(176.46-x_delta,82.28-y_delta,-61+stuff_claw_height),
                     public_material_pos,
-                    (150+20,-public_processing_distance-10,stuff_claw_height-arm_height)])
+                    (150+10,-public_processing_distance-10,stuff_claw_height-arm_height)])
 blue_stuff.Set_Mixing_Portion((0,-3,3))
 blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
                     [(194.7-x4_conpensation+5,0,-61+stuff_claw_height),
                      public_material_pos,
-                     (0+7,-public_processing_distance-2,stuff_claw_height-arm_height)])
+                     (0,-public_processing_distance-2,stuff_claw_height-arm_height)])
 green_stuff.Set_Mixing_Portion((-1,2,-1))
 green_stuff.Set_Height(stuff_height)
 red_stuff=myObject("circle",myVideo,[(70,60,180),(255,180,255)],
                   [(176.46-x_delta,-82.28-y_delta_minus,-61+stuff_claw_height),
                    public_material_pos,
-                   (-150+9,-public_processing_distance,stuff_claw_height-arm_height)])
+                   (-150,-public_processing_distance,stuff_claw_height-arm_height)])
 red_stuff.Set_Mixing_Portion((2,0,-2))
 red_stuff.Set_Height(stuff_height)
 
@@ -211,7 +211,7 @@ MF.edge_line=myObject("line",myVideo,[(210,205,200),(255,255,255)])
 #####################################################################################
 
 def main():
-    mission_manager=Logistics_Handling
+    mission_manager=Partial_MIssion_Test
     mission_manager.Set_Logger(Public_Logger)
     mission_manager.Set_VideoStream(myVideo)
     mission_manager.Reset()
