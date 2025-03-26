@@ -55,7 +55,7 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18],[False,(90,93),0.5]],True)
+                                       [True,True],[30,18],[False,(91,93),0.5]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
@@ -181,7 +181,7 @@ y_delta_minus=-y_delta
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
                    [(176.46-x_delta,82.28-y_delta,-61+stuff_claw_height),
                     public_material_pos,
-                    (150+10,-public_processing_distance-10,stuff_claw_height-arm_height)])
+                    (150+5,-public_processing_distance-5,stuff_claw_height-arm_height)])
 blue_stuff.Set_Mixing_Portion((0,-3,3))
 blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
