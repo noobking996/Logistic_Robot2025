@@ -487,7 +487,7 @@ def Pos_Correction_Func(self:MissionDef):
             if(correction_pos==CP.Material):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
-                if(time.time()-self.Phase_Start_Time>=16):
+                if(time.time()-self.Phase_Start_Time>=100):
                     raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
                 # 根据配置参数决定纠正方案
