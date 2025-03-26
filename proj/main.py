@@ -45,8 +45,8 @@ Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
-                                    [150,200,200],[150,200,40],[(2,-3,0),(2,0,0),(0,0,0)],
-                                    [(2,0.5,0),(3.5,0,0),(3,0,0)]],True)
+                                    [150,200,200],[150,200,40],[(0,0,0),(0,0,0),(0,0,0)],
+                                    [(0,0,0),(0,0,0),(0,0,0)]],True)
 
 Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_Func,
                                   [[0,-500,0],[MOVJ_Drection.Left_Backward,200,84],[0,-500,0]],
@@ -55,12 +55,12 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,0,None,-80],
-                                       [True,True],[30,18],[False,(91,93),0.5]],True)
+                                       [True,True],[30,18],[False,(90,93),0.5]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
                                                         [200,150,350,60],[False],
-                                                        [(3,-1,0),(0,-1,0),(0,-1,0)]],True)
+                                                        [(0,0,0),(0,0,0),(0,0,0)]],True)
 
 Storage_2_RawMaterial=MissionDef_t("暂存区->原料区",MF.Three_Section_Turn_Func,
                                     [[0,-400,0],[MOVJ_Drection.Left_Backward,100,80],[0,-400,0]],
@@ -109,7 +109,7 @@ Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_Place],[[0,0
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0326_1258"
+Mission_Code="debug_0326_1833"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -159,6 +159,9 @@ MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
 MF.arm.Set_YawAccRatio(0.2,0.25)
 MF.arm.Set_Claw_Angles((800,980))
 MF.arm.Set_Radial_Offset(50)
+
+# 加工区放置/回收专用的yaw轴机械误差补偿(提高放置精度)
+MF.RM.StuffPutFetch_Yaw_Comp=2
 
 # 初始化物块对象
 arm_height=148.33           #机械臂坐标系原点距离地面高度
