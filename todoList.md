@@ -14,7 +14,7 @@ material_plate_height=80        # 原料盘高度,原料区夹取用
 
 """物块相关参数"""
 stuff_height=56                 # 物块高度,码垛用
-stuff_claw_height=52+7            # 夹持时夹爪距离物料底部的距离
+stuff_claw_height=52+3            # 夹持时夹爪距离物料底部的距离
 stuff_radius_range=(80,100)      # 物块半径范围,原料区纠正/夹取用
 ```
 ## 小圆物块无法识别的问题
