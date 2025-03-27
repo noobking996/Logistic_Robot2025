@@ -104,12 +104,12 @@ MF.rgb_order_list=[[1,2,3],[2,3,1]]
 
 # 测试任务管理器(视觉相关调试,只能在本地终端启动)
 # 参数列表内容:1. 常驻任务触发条件(这里可将录像开启条件设为100,即一直不开启);
-Partial_MIssion_Test=MissionManager([Storage_Pos_Correction,Storage_Place],[[0,0,0]],True,0)
+Partial_MIssion_Test=MissionManager([RawMaterial_Pos_Correction,RawMaterial_Picking],[[0,0,0]],True,0)
 
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0326_1833"
+Mission_Code="debug_pickplace_2"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -151,7 +151,8 @@ Frame_Save.Set_Callback(MF.Frame_Save_Callback,"VideoWriter Released")
 #####################################################################################
 
 # 初始化机械臂对象
-yaw_compensation=-5
+yaw_compensation=-5             # 全局yaw轴误差补偿<舵机微分值>
+MF.RM.StuffPutFetch_Yaw_Comp=2  # 加工区放置/回收专用的yaw轴误差补偿<deg>(在全局补偿的基础上)
 MF.arm=myManipulator([(65,130,130),(71,-20-1.12,0)],Public_Logger,MF.myServo)
 MF.arm.Set_Joint_to_Actuator_Matrix([[[90,430],[90-16.8,500]],
                                     [[(180-90),420],[180-(90+19.2),500]],
@@ -160,14 +161,20 @@ MF.arm.Set_YawAccRatio(0.2,0.25)
 MF.arm.Set_Claw_Angles((800,980))
 MF.arm.Set_Radial_Offset(50)
 
-# 加工区放置/回收专用的yaw轴机械误差补偿(提高放置精度)
-MF.RM.StuffPutFetch_Yaw_Comp=2
+stuff_radius_range=None
 
 # 初始化物块对象
-arm_height=148.33           #机械臂坐标系原点距离地面高度
-stuff_claw_height=55+3        # 夹持时夹爪距离物料底部的距离
-stuff_height=70              # 物块高度
-material_plate_height=80    # 原料盘高度
+arm_height=148.33               #机械臂坐标系原点距离地面高度
+
+"""场地相关参数"""
+material_plate_height=80        # 原料盘高度,原料区夹取用
+
+"""物块相关参数"""
+stuff_height=70                 # 物块高度,码垛用
+stuff_claw_height=55+3            # 夹持时夹爪距离物料底部的距离
+stuff_radius_range=None      # 物块半径范围,原料区纠正/夹取用
+MF.RM.Stuff_Disapear_Time=0   # 认为物块消失的时间,原料区放弃第一个用(适用于圆不易检测到的情况)
+
 # 原料区夹取位置
 public_material_pos=(0,-260,material_plate_height+stuff_claw_height-arm_height)
 # 加工区放置距离(abs(y))
@@ -181,19 +188,22 @@ y_delta_minus=-y_delta
 blue_stuff=myObject("circle",myVideo,[(200,20,20),(255,180,190)],
                    [(176.46-x_delta,82.28-y_delta,-61+stuff_claw_height),
                     public_material_pos,
-                    (150+5,-public_processing_distance-5,stuff_claw_height-arm_height)])
+                    (150+5,-public_processing_distance-5,stuff_claw_height-arm_height)],
+                    stuff_radius_range)
 blue_stuff.Set_Mixing_Portion((0,-3,3))
 blue_stuff.Set_Height(stuff_height)
 green_stuff=myObject("circle",myVideo,[(100,210,40),(250,255,180)],
                     [(194.7-x4_conpensation+5,0,-61+stuff_claw_height),
                      public_material_pos,
-                     (0,-public_processing_distance-2,stuff_claw_height-arm_height)])
+                     (0,-public_processing_distance-2,stuff_claw_height-arm_height)],
+                    stuff_radius_range)
 green_stuff.Set_Mixing_Portion((-1,2,-1))
 green_stuff.Set_Height(stuff_height)
 red_stuff=myObject("circle",myVideo,[(70,60,180),(255,180,255)],
                   [(176.46-x_delta,-82.28-y_delta_minus,-61+stuff_claw_height),
                    public_material_pos,
-                   (-150,-public_processing_distance,stuff_claw_height-arm_height)])
+                   (-150,-public_processing_distance,stuff_claw_height-arm_height)],
+                   stuff_radius_range)
 red_stuff.Set_Mixing_Portion((2,0,-2))
 red_stuff.Set_Height(stuff_height)
 
@@ -202,7 +212,7 @@ MF.Stuff_List_Init((red_stuff,green_stuff,blue_stuff))
 #####################################################################################
 
 MF.material_plate=myObject("circle",myVideo,[(210,210,210),(255,255,255)],
-                           [None,public_material_pos,None])
+                           [None,public_material_pos,None],stuff_radius_range)
 # MF.material_plate.Set_TransMatrix(0.15)
 
 MF.green_ring=myObject("circle",myVideo,None,[None,None,(0,-public_processing_distance,

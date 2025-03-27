@@ -63,11 +63,15 @@ def Logger_Setup(mission_code:str="Logistic_Handling",
 
 class myObject:
     def __init__(self,shape:str,video:Video_Stream,
-                 color_range:List[Tuple]=None,pos_list:List[Tuple]=None):
+                 color_range:List[Tuple]=None,pos_list:List[Tuple]=None,
+                 additional_params:Tuple=None):
         """
         * 创建任务目标类,存储任务对象(物块\线条\原料盘)的的颜色和位置等信息
         @param color_range: 物块颜色范围(BGR)[th_l,th_h]
         @param pos_list: 物块(机械臂基座坐标系下)位置列表[物料盘位置,原料盘位置,加工/暂存区位置]
+        @param additional_params: 物体额外参数,覆盖默认参数\n
+            * 对于圆形物块: 识别圆半径范围(r_min,r_max),默认(100,200)
+            * 对于场地边缘: canny边缘检测的阈值范围,默认(90,180)
         """
         self.Name=shape
         if(pos_list!=None):
@@ -110,6 +114,8 @@ class myObject:
         self.Pos_Filter=None
         # 物体高度
         self.Height=None
+        # 额外参数
+        self.Additional_Params=additional_params
         
     def Set_Height(self,height:float):
         """
@@ -177,6 +183,9 @@ class myObject:
         @param detail_params:
             1. 圆形物块识别参数,默认为(100,200),即半径范围[100,200]\n
             2. 场地边缘识别参数,默认为(90,180),是canny边缘检测的阈值范围\n
+            * 250327版本: 类属性Additional_Params和该参数都可以修改上述默认参数,
+            但该参数的优先级高于前者,即如果该参数不为None,则使用该参数,否则使用Additional_Params;
+            若两者都为None,则使用默认参数\n
         @param greyscale_mode: 是否开启灰度识别模式(目前原料区纠正在用),默认为false
         @return: \n
         "circle":(List[(c,r)],二值化图像);\n
@@ -210,7 +219,10 @@ class myObject:
             frame_thresholded = cv.GaussianBlur(frame_thresholded, (17, 19), 0)  # 高斯滤波
             circle_centroid_list=[]
             if(detail_params==None):
-                detail_params=(100,200)
+                if(self.Additional_Params==None):
+                    detail_params=(100,200)
+                else:
+                    detail_params=self.Additional_Params
             minR,maxR=detail_params
             circles=cv.HoughCircles(frame_thresholded,cv.HOUGH_GRADIENT,1,300,param1=20,
                                     param2=50,minRadius=minR,maxRadius=maxR)
@@ -246,7 +258,10 @@ class myObject:
         elif(self.Name=="line"):
             point_angle_list=[]
             if(detail_params==None):
-                detail_params=(90,180)
+                if(self.Additional_Params==None):
+                    detail_params=(90,180)
+                else:
+                    detail_params=self.Additional_Params
             th_l,th_h=detail_params
             frame_thresholded = cv.Canny(frame_thresholded, th_l, th_h)
             lines=cv.HoughLinesP(frame_thresholded,1,math.radians(1),140,
