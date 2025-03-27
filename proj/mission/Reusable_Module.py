@@ -83,6 +83,8 @@ def Gyro_Angle_Correction(self:MissionDef,agv:myAGV,target_angle:Union[np.int16,
             self.Output("Mission({}) 角度校准结束".format(self.Name))
     return busy_flag
 
+
+Stuff_Disapear_Time:float=None     # 检测不到圆多长时间认为物块消失
 def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag,self:MissionDef):
     """
     * 持续监视目标,等到其消失后,进入位置纠正阶段
@@ -108,7 +110,7 @@ def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag
         # 此举是为了为纠正保留足够的时间
         # 版本250327: 需要持续0.5s看不到圆才认为目标消失
         if(num_circle==0):
-            if(time.time()-self.Phase_Start_Time>=0.5):
+            if(time.time()-self.Phase_Start_Time>=Stuff_Disapear_Time):
                 self.Change_Stage()
                 cnt.Reset()
                 self.Output("Mission({}) 确认目标消失,开始纠正".format(self.Name))

@@ -173,6 +173,7 @@ material_plate_height=80        # 原料盘高度,原料区夹取用
 stuff_height=70                 # 物块高度,码垛用
 stuff_claw_height=55+3            # 夹持时夹爪距离物料底部的距离
 stuff_radius_range=None      # 物块半径范围,原料区纠正/夹取用
+MF.RM.Stuff_Disapear_Time=0   # 认为物块消失的时间,原料区放弃第一个用(适用于圆不易检测到的情况)
 
 # 原料区夹取位置
 public_material_pos=(0,-260,material_plate_height+stuff_claw_height-arm_height)
