@@ -96,6 +96,7 @@ def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag
         if(time.time()-self.Phase_Start_Time>=0.5):
             cnt.Increment()
             self.Output("Mission({}) 等待结束,开始监视".format(self.Name))
+            self.Phase_Start_Time=time.time()
     elif(cnt.Get()==2):
         circie_list,frame_processed=target_object.Detect(frame_captured,lin_flag,
                                                                     None,True)
@@ -105,10 +106,16 @@ def Monitor_andAbandon(frame_captured:np.ndarray,target_object:myObject,lin_flag
         num_circle=len(circie_list)
         # 如果一开始就发现目标,则持续监视,等到其消失为止才进入原料区纠正
         # 此举是为了为纠正保留足够的时间
+        # 版本250327: 需要持续0.5s看不到圆才认为目标消失
         if(num_circle==0):
-            self.Change_Stage()
-            cnt.Reset()
-            self.Output("Mission({}) 目标消失,开始纠正".format(self.Name))
+            if(time.time()-self.Phase_Start_Time>=0.5):
+                self.Change_Stage()
+                cnt.Reset()
+                self.Output("Mission({}) 确认目标消失,开始纠正".format(self.Name))
+                self.Phase_Start_Time=time.time()
+            else:
+                self.Output("Mission({}) 目标疑似消失,确认中...".format(self.Name))
+        else:
             self.Phase_Start_Time=time.time()
 
 def Circle_Detect_Stable(self:MissionDef,frame_captured:np.ndarray,current_stuff:myObject,
