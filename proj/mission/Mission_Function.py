@@ -1048,14 +1048,71 @@ def Storage_Place_Func(self:MissionDef):
 
 
 # 第二轮专属
+
+def Material_Go_Home_Func(self:MissionDef_t):
+    """
+    *  原料区->启停区
+    * 参数列表元素数: 3 [[角度校准角度],[直走速度],[斜走速度]]
+    * 时间列表元素数: 3 [[角度校准时间],直走时间,斜走时间]
+    * 参数: stop_wait_time, 制动等待时间
+    """
+    if(self.Stage_Flag==0):
+        self.Change_Stage()
+        agv.Angle_Correction(self.Para_List[0][0])
+        self.Output("Mission({}) 开始角度校准".format(self.Name))
+        self.Phase_Start_Time=time.time()
+    # 等待角度纠正完成,开始直走
+    if(self.Stage_Flag==1):
+        if(time.time()-self.Phase_Start_Time>=self.Time_List[0]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[1])
+            self.Output("Mission({}) 开始直走".format(self.Name))
+            self.Phase_Start_Time=time.time()
+
+    # 等待直走完成，开始斜走
+    elif(self.Stage_Flag==2):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[2])
+            self.Output("Mission({}) 开始斜走".format(self.Name))
+            self.Phase_Start_Time=time.time()
+        
+    # 等待直走完成，停止
+    elif(self.Stage_Flag==3):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+            self.Change_Stage()
+            agv.Velocity_Control([0,0,0])
+            self.Output("Mission({}) 开始制动".format(self.Name))
+            self.Phase_Start_Time=time.time()
+
+    # 等待制动完成，结束
+    elif(self.Stage_Flag==4):
+        stop_wait_time=0.5
+        if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
+            self.Change_Stage()
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
+
+    else:
+        self.End()
+
+
+Home_Pos_Compensation:List[np.int16]=None
+def Home_Callback(self:MissionDef_t):
+    """
+    * 回启停区完成后的回调函数,用于提高回家成功率
+    """
+    global Home_Pos_Compensation
+    agv.Position_Control(Home_Pos_Compensation)
+
+
 def Storage_Go_Home_Func(self:MissionDef_t):
     """
-    @功能: 暂存区->启停区
+    * 暂存区->启停区
     @参数列表元素数: 4 [[直走速度],[圆弧转弯参数],[直走速度],[斜走速度]]
     @时间列表元素数: 4 [直走时间,圆弧转弯时间,直走时间,斜走时间]
     @参数: stop_wait_time, 制动等待时间
     """
-    stop_wait_time=0
+    stop_wait_time=0.5
 
     # 开始直走，计时
     if(self.Stage_Flag==0):
