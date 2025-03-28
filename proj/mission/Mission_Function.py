@@ -479,8 +479,18 @@ def Pos_Correction_Func(self:MissionDef):
             if(correction_pos==CP.Material):
                 RM.Monitor_andAbandon(frame_captured,target_object,lin_flag,self)
             else:
-                self.Change_Stage()
+                self.Change_Stage(102)
                 self.Phase_Start_Time=time.time()
+
+        elif(self.Stage_Flag==102):
+            # 加工/暂存区专用,等待一段时间再开始角度纠正,以防摄像头没停稳造成误判
+            if(correction_pos==CP.Material):
+                self.Change_Stage(100)
+            else:
+                if(time.time()-self.Phase_Start_Time>=0.3):
+                    self.Change_Stage(100)
+                    self.Phase_Start_Time=time.time()
+             
         elif(self.Stage_Flag==100):
             # 若纠正位置为加工/暂存区,则进行角度纠正
             # 若纠正位置为原料区,则检测原料盘圆形物块阴影并判断是否静止
@@ -725,6 +735,62 @@ def RawMaterial_Picking_Func(self:MissionDef):
             stuff_index_counter.Reset()
             self.End()
 
+
+def RawMaterial_2_Processing_Stable_Func(self:MissionDef_t):
+    """
+    * 用走+转+三段转弯的方式完成原料区->加工区
+        * "转"尝试使用角度纠正的形势
+    ## 参数列表:\n
+    [\n
+    0. [直走位移参数],
+    1. [原地转弯目标角],
+    2. [直走速度参数],
+    3. [圆弧转弯参数],
+    4. [直走速度参数]\n
+    ]
+    ## 时间列表:
+    [直走等待时间,原地转弯等待时间,直走时间,圆弧转弯时间,直走时间]
+    """
+    if(self.Stage_Flag==0):
+        self.Change_Stage()
+        agv.Position_Control(self.Para_List[0])
+        self.Output("Mission({}) 开始直走".format(self.Name))
+        self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==1):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[0]):
+            self.Change_Stage()
+            agv.Position_Control(self.Para_List[1])
+            self.Output("Mission({}) 开始原地转弯".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==2):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[2])
+            self.Output("Mission({}) 开始直走2".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==3):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+            self.Change_Stage()
+            agv.MOVJ_control(self.Para_List[3])
+            self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==4):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[3]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[4])
+            self.Output("Mission({}) 开始直走3".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==5):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[4]):
+            self.Change_Stage()
+            agv.Velocity_Control([0,0,0])
+            self.Output("Mission({}) 开始制动".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==6):
+        stop_wait_time=0.5
+        if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
+            self.End()
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
 
 def RawMaterial_2_Processing_Func(self:MissionDef_t):
     """

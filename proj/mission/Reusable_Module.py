@@ -303,6 +303,9 @@ def Material_FetchStuff(self:MissionDef,arm:myManipulator,current_stuff:myObject
             self.Change_Stage()
             self.Output("Mission({}) 提起物块".format(self.Name))
 
+
+# 车放yaw轴补偿
+StuffPlatePutFetch_Yaw_Comp=None
 def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,legacy_flag=True,
                      stuff_index=None)->bool:
     """
@@ -311,6 +314,7 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
     @param stuff_index: 新参数模式下的物料索引号,用于选取yaw轴转动时间\n
     * 说明: 0325版本放置动作由垂直下降更改为倾斜下降,目的是防止掉块\n
     """
+    global StuffPlatePutFetch_Yaw_Comp
     complete_flag=False
     t_turn,t_aim,speed_down,height_offset=(None,None,None,None)
     if(legacy_flag==False):
@@ -322,7 +326,8 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
             t2=self.Para_List[2][2]
             t_turn=t2
         pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+        busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION
+                                      ,yaw_compensation=StuffPlatePutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             # 获取并存储径向偏移后的位置
@@ -342,7 +347,7 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
         x,y,z=arm.Get_Intermediat_Point()
         # z+=height_offset
         z+=35
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim)
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim,yaw_compensation=StuffPlatePutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 到达物料盘附近".format(self.Name))
@@ -351,7 +356,8 @@ def StuffPlate_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,le
             put_speed=self.Para_List[3][1]
             speed_down=put_speed
         pos=current_stuff.Get_StuffPlate_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down)
+        busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down,
+                                      StuffPlatePutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 放入物料盘".format(self.Name))
@@ -449,7 +455,7 @@ def StuffPlate_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
 
 
 # 加工区放置/回收专用的yaw轴机械误差补偿(提高放置精度)
-StuffPutFetch_Yaw_Comp=None
+ProcessPutFetch_Yaw_Comp=None
 
 def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
                      stuff_index=None,stacking_flag=False,compensation_index=None)->bool:
@@ -470,13 +476,13 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
     pos=current_stuff.Get_Processing_Pos()
     pos=Pos_Compensation(pos,self,compensation_index,stuff_index)
     up_flag=False
-    global StuffPutFetch_Yaw_Comp
+    global ProcessPutFetch_Yaw_Comp
     if(speed_up!=0):
         up_flag=True
     if(cnt.Get()==0):
         turn_time=self.Para_List[0][stuff_index]
         busy_flag=arm.Goto_Target_Pos(pos,turn_time,arm.Ctrl_Mode.YAW_ROTATION,
-                                      yaw_compensation=StuffPutFetch_Yaw_Comp)
+                                      yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已朝向加工区圆环".format(self.Name))
@@ -485,7 +491,7 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
         if(stacking_flag==True):
             z+=current_stuff.Height
         z+=height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim,yaw_compensation=StuffPutFetch_Yaw_Comp)
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim,yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已对准圆环".format(self.Name))
@@ -494,7 +500,7 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
         if(stacking_flag==True):
             z+=current_stuff.Height
         busy_flag=arm.Goto_Target_Pos((x,y,z),50,arm.Ctrl_Mode.LINEAR,speed_down,
-                                      yaw_compensation=StuffPutFetch_Yaw_Comp)
+                                      yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 物块到达地面".format(self.Name))
@@ -505,7 +511,7 @@ def Processing_PutOn(self:MissionDef,arm:myManipulator,current_stuff:myObject,
             self.Output("Mission({}) 物块已释放".format(self.Name))
     elif(cnt.Get()==4):
         if(up_flag==True):
-            retreat_cpltFlag=EndActuator_Retreat(arm,pos,speed_up,self,StuffPutFetch_Yaw_Comp)
+            retreat_cpltFlag=EndActuator_Retreat(arm,pos,speed_up,self,ProcessPutFetch_Yaw_Comp)
             if(retreat_cpltFlag==True):
                 cnt.Increment()
                 self.Output("Mission({}) 夹爪已回撤".format(self.Name))
@@ -537,7 +543,7 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
     pos=Pos_Compensation(pos,self,compensation_index,stuff_index)
     # 与加工区放置共用一个height_offset
     height_offset=self.Para_List[2][3]
-    global StuffPutFetch_Yaw_Comp
+    global ProcessPutFetch_Yaw_Comp
     if(cnt.Get()==0):
         t_turn=None
         if(self.Stage_Flag==10):
@@ -545,7 +551,7 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
         else:
             t_turn=self.Para_List[0][stuff_index]
         busy_flag=arm.Goto_Target_Pos(pos,t_turn,arm.Ctrl_Mode.YAW_ROTATION,
-                                      yaw_compensation=StuffPutFetch_Yaw_Comp)
+                                      yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已朝向加工区物料".format(self.Name))
@@ -557,13 +563,13 @@ def Processing_Fetch(self:MissionDef,arm:myManipulator,current_stuff:myObject,
     elif(cnt.Get()==2):
         x,y,z=arm.Get_Intermediat_Point()
         # z+=height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim,yaw_compensation=StuffPutFetch_Yaw_Comp)
+        busy_flag=arm.Goto_Target_Pos((x,y,z),t_aim,yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已对准物料".format(self.Name))
     elif(cnt.Get()==3):
         busy_flag=arm.Goto_Target_Pos(pos,50,arm.Ctrl_Mode.LINEAR,speed_down,
-                                      yaw_compensation=StuffPutFetch_Yaw_Comp)
+                                      yaw_compensation=ProcessPutFetch_Yaw_Comp)
         if(busy_flag==False):
             cnt.Increment()
             self.Output("Mission({}) 已到达夹取位置".format(self.Name))
