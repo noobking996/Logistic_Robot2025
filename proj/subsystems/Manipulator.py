@@ -416,12 +416,13 @@ class myManipulator:
 
     def Goto_Target_Pos(self,target_position:Tuple[float,float,float],time_ms:np.uint16,
                         Mode:Ctrl_Mode=Ctrl_Mode.POINT_TO_POINT,
-                        speed_mm_s:np.uint16=10)->bool:
+                        speed_mm_s:np.uint16=10,yaw_compensation:float=0)->bool:
         """
         @param target_position: 目标位置(x,y,z)/mm
         @param time_ms: 在直线模式下为微分运动到位时间;其它模式下为动作到位时间,单位ms
         @param Mode: 控制模式
-        @param speed_mm_s: 直线模式下的运动速度,单位mm/s,默认10,推荐50-300\n
+        @param speed_mm_s: 直线模式下的运动速度,单位mm/s,默认10,推荐50-300
+        @param yaw_compensation: yaw轴角独立补偿(用于在放置时补偿机械臂机械误差),单位:deg\n
         ## returns: 
         busy_flag: 忙碌标志,True表示机械臂正在工作,应保持当前任务状态,持续循环到返回false为止,
                 False表示机械臂工作结束,可以改变任务状态,执行新任务
@@ -432,6 +433,7 @@ class myManipulator:
                 self.Change_Status(1)
                 # 解算角度并发送运动指令
                 theta3=self.INverse_Kinematics_3RAtype(target_position)
+                theta3+=yaw_compensation
                 theta1,theta2=self.INverse_Kinematics_3RAtype(target_position,False)
                 self.Joint_Angle_Ctrl([(1,theta1),(2,theta2),(3,theta3)],time_ms)
                 # 计算等待时间
@@ -448,6 +450,8 @@ class myManipulator:
                 self.Change_Status(1)
                 # 计算p0(当前点),unit_vector(单位向量),D_p1_2_p0(总距离),step_length(步长)
                 theta1,theta2,theta3=self.Current_JointAngles
+                # 减去yaw轴补偿,抵消之前的补偿对正解的影响
+                theta3-=yaw_compensation
                 p0=self.Kinematics_3RAtype([theta1,theta2,theta3])
                 vector_pn_2_p0=np.array(target_position)-p0
                 D_pn_2_p0=np.linalg.norm(vector_pn_2_p0)
@@ -481,6 +485,7 @@ class myManipulator:
                 x,y,z=p
                 self.End_Wait_Time=time.time()+gap_time
                 theta3=self.INverse_Kinematics_3RAtype((x,y,z))
+                theta3+=yaw_compensation
                 theta1,theta2=self.INverse_Kinematics_3RAtype((x,y,z),False)
                 self.Joint_Angle_Ctrl([(1,theta1),(2,theta2),(3,theta3)],time_ms)
             elif(self.Status_Flag==2):
@@ -496,6 +501,7 @@ class myManipulator:
                 self.Store_YawAccTime(acc_time)
                 # 按照比率计算缓冲角度,并存储
                 theta3=self.INverse_Kinematics_3RAtype(target_position)
+                theta3+=yaw_compensation
                 theta3_0=self.Current_JointAngles[2]
                 delta=theta3-theta3_0
                 acc_angle=angle_ratio*delta

@@ -66,6 +66,16 @@ stuff_index_counter=RM.Module_Stage_Counter()
 # 轮次计数器
 round_counter=RM.Module_Stage_Counter()
 
+# 跳过夹取/放置任务标志
+skip_picking_flag=None
+def Skip_All_PickPlace(skip_flag:bool=True):
+    global skip_picking_flag
+    skip_picking_flag=skip_flag
+
+# 是否使用陀螺仪进行角度纠正
+use_gyro_flag=False
+
+
 def Frame_Capture_Func(self:MissionDef):
     global frame_captured
     video:Video_Stream=self.Video
@@ -384,6 +394,10 @@ def Pos_Correction_Func(self:MissionDef):
     * y_offset为角度纠正时机械臂y轴位置偏移(为了确保场地边缘在视野中),以场外方向为正\n
     5. [是否滤波:filter_flag_xy, filter_flag_angle]\n
     6. [纠正时机械臂y轴补偿:y_compensation_h, y_compensation_l]\n
+    7. [陀螺仪角度纠正参数:force_disable,target_angle,correction_time]\n
+        * force_disable[bool|Tuple]:if(true)在本任务中强制关闭陀螺仪角度纠正功能,转而使用视觉方案
+        * target_angle[int16|Tuple]:目标角度/deg
+            * 为元组类型的情况表明第一/二轮参数配置不同
     ]
     * stop_th[tuple] = thy, thx
     * v_adj[tuple] = v_adj_y, v_adj_x
@@ -417,13 +431,23 @@ def Pos_Correction_Func(self:MissionDef):
             target_object=green_ring
             lin_flag=True
         if(self.Stage_Flag==0):
-            # 机械臂就位
             busy_flag=True
             action_time=self.Para_List[1][0]
+            # 原料区:角度纠正
             if(correction_pos==CP.Material):
-                x,y,z=material_plate.Get_Material_Pos()
-                z+=120
-                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
+                force_disable_flag,target_angle,timeout=self.Para_List[7]
+                round_num=round_counter.Get()
+                # 考虑force_disable_flag为元组的情况
+                disable_flag=None
+                if(isinstance(force_disable_flag,Tuple)):
+                    disable_flag=force_disable_flag[round_num]
+                else:
+                    disable_flag=force_disable_flag
+                if(disable_flag==True or use_gyro_flag==False):
+                    busy_flag=False
+                else:
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout,round_num)
+            # 加工/暂存区:机械臂就位
             elif(correction_pos==CP.Processing or correction_pos==CP.Storage):
                 # 获得角度纠正y轴位置偏移(为了确保场地边缘在视野中)
                 y_offset=self.Para_List[4][5]
@@ -431,78 +455,121 @@ def Pos_Correction_Func(self:MissionDef):
                 y-=y_offset
                 busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
             if(busy_flag==False):
-                self.Change_Stage(99)
+                self.Change_Stage(98)
                 if(self.Verbose_Flag==True):
                     correction_name=correction_pos.value[1]
                     self.Output("Mission({}) 开始{}".format(self.Name,correction_name))
+                # self.Phase_Start_Time=time.time()
+        # 原料区专属,(角度纠正完成后,)机械臂就位
+        elif(self.Stage_Flag==98):
+            if(correction_pos==CP.Material):
+                action_time=self.Para_List[1][0]
+                x,y,z=material_plate.Get_Material_Pos()
+                z+=120
+                busy_flag=arm.Goto_Target_Pos((x,y,z),action_time)
+                if(busy_flag==False):
+                    self.Change_Stage()
+                    self.Output("Mission({}) 机械臂就位".format(self.Name))
+                    self.Phase_Start_Time=time.time()
+            else:
+                self.Change_Stage()
                 self.Phase_Start_Time=time.time()
+        # 原料区专属: 监视 & 放弃第一个
         elif(self.Stage_Flag==99):
             if(correction_pos==CP.Material):
                 RM.Monitor_andAbandon(frame_captured,target_object,lin_flag,self)
             else:
-                self.Change_Stage()
+                self.Change_Stage(102)
                 self.Phase_Start_Time=time.time()
+
+        elif(self.Stage_Flag==102):
+            # 加工/暂存区专用,等待一段时间再开始角度纠正,以防摄像头没停稳造成误判
+            if(correction_pos==CP.Material):
+                self.Change_Stage(100)
+            else:
+                if(time.time()-self.Phase_Start_Time>=0.3):
+                    self.Change_Stage(100)
+                    self.Phase_Start_Time=time.time()
+             
         elif(self.Stage_Flag==100):
             # 若纠正位置为加工/暂存区,则进行角度纠正
             # 若纠正位置为原料区,则检测原料盘圆形物块阴影并判断是否静止
             if(correction_pos==CP.Material):
                 vc_th=self.Para_List[2][3]
                 RM.Circle_Detect_Stable(self,frame_captured,target_object,vc_th,1,False,True)
-                if(time.time()-self.Phase_Start_Time>=16):
+                if(time.time()-self.Phase_Start_Time>=100):
                     raise TimeoutError("Mission({}) 原料区纠正超时".format(self.Name))
             else:
-                adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
-                line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
-                                                           True)
-                # 角度取样(+滤波)
-                # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
-                miss_flag=False
-                if(len(line_list)!=0):
-                    pt1,pt2=line_list[0]
-                    cv.line(frame_captured,pt1,pt2,(0,0,0),2)
-                    vector_delta=pt2-pt1
-                    angle=np.arctan2(vector_delta[1],vector_delta[0])
-                    angle=np.degrees(angle)
-                    vector_delta[1]=0
-                    pt2=pt1+vector_delta
-                    cv.line(frame_captured,pt1,pt2,(0,0,255),2)
-                    filter_flag=self.Para_List[5][1]
-                    if(filter_flag==True):
-                        angle=myfilter.Get_Filtered_Value(angle)
+                # 根据配置参数决定纠正方案
+                force_disable_flag=self.Para_List[7][0]
+                disable_flag=None
+                round_num=round_counter.Get()
+                if(isinstance(force_disable_flag,Tuple)):
+                    disable_flag=force_disable_flag[round_num]
                 else:
-                    miss_flag=True
-                frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
-                frame_processed=self.Video.Make_Thumbnails(frame_processed)
-                self.Video.Paste_Img(frame_captured,frame_processed)
-                # 按照规定时间间隔:判断角度,调整转动角速度
-                current_time=time.time()
-                if(current_time-self.Phase_Start_Time>=adjInterval):
-                    if(miss_flag==True):
-                        self.Output("Mission({}) 未检测到场地边缘".format(self.Name),WARNING)
-                        agv.Velocity_Control([0,0,0])
+                    disable_flag=force_disable_flag
+                # 视觉方案角度纠正
+                if(disable_flag==True or use_gyro_flag==False):
+                    adjInterval,stop_th,omg_adj,angle_compensation,detail_params,_=self.Para_List[4]
+                    line_list,frame_processed=edge_line.Detect(frame_captured,False,detail_params,
+                                                            True)
+                    # 角度取样(+滤波)
+                    # 暂无多物体识别能力,只要第一个坐标,其它全部当成噪声放弃
+                    miss_flag=False
+                    if(len(line_list)!=0):
+                        pt1,pt2=line_list[0]
+                        cv.line(frame_captured,pt1,pt2,(0,0,0),2)
+                        vector_delta=pt2-pt1
+                        angle=np.arctan2(vector_delta[1],vector_delta[0])
+                        angle=np.degrees(angle)
+                        vector_delta[1]=0
+                        pt2=pt1+vector_delta
+                        cv.line(frame_captured,pt1,pt2,(0,0,255),2)
+                        filter_flag=self.Para_List[5][1]
+                        if(filter_flag==True):
+                            angle=myfilter.Get_Filtered_Value(angle)
                     else:
-                        if(len(line_list)>1):
-                            self.Output("Mission({}) 发现多个边缘".format(self.Name),WARNING)
-                        self.Output("Mission({}) (point,angle)({},{})"
-                                    .format(self.Name,pt1,angle))
-                        delta=angle+angle_compensation
-                        omg=0
-                        if(delta>stop_th):
-                            omg=-omg_adj
-                        elif(delta<-stop_th):
-                            omg=omg_adj
+                        miss_flag=True
+                    frame_processed=cv.cvtColor(frame_processed,cv.COLOR_GRAY2BGR)
+                    frame_processed=self.Video.Make_Thumbnails(frame_processed)
+                    self.Video.Paste_Img(frame_captured,frame_processed)
+                    # 按照规定时间间隔:判断角度,调整转动角速度
+                    current_time=time.time()
+                    if(current_time-self.Phase_Start_Time>=adjInterval):
+                        if(miss_flag==True):
+                            self.Output("Mission({}) 未检测到场地边缘".format(self.Name),WARNING)
+                            agv.Velocity_Control([0,0,0])
                         else:
-                            self.Change_Stage(200)
-                            # 复位滤波器,准备进行高纠
-                            myfilter.Reset()
-                            self.Output("Mission({}) 角度纠正完毕".format(self.Name))
-                        agv.Velocity_Control([0,0,omg])
-                    self.Phase_Start_Time=time.time()
+                            if(len(line_list)>1):
+                                self.Output("Mission({}) 发现多个边缘".format(self.Name),WARNING)
+                            self.Output("Mission({}) (point,angle)({},{})"
+                                        .format(self.Name,pt1,angle))
+                            delta=angle+angle_compensation
+                            omg=0
+                            if(delta>stop_th):
+                                omg=-omg_adj
+                            elif(delta<-stop_th):
+                                omg=omg_adj
+                            else:
+                                self.Change_Stage(200)
+                                # 复位滤波器,准备进行高纠
+                                myfilter.Reset()
+                                self.Output("Mission({}) 视觉角度纠正完毕".format(self.Name))
+                            agv.Velocity_Control([0,0,omg])
+                        self.Phase_Start_Time=time.time()
+                # 陀螺仪角度纠正
+                else:
+                    target_angle,timeout=self.Para_List[7][1:]
+                    busy_flag=RM.Gyro_Angle_Correction(self,agv,target_angle,timeout,round_num)
+                    if(busy_flag==False):
+                        self.Change_Stage(200)
+                        self.Output("Mission({}) 惯性角度纠正完毕".format(self.Name))
+                    
+        # 原料区专用:超时错误处理
         elif(self.Stage_Flag==101):
-            # 原料区专用:超时错误处理
             RM.RawMaterial_ErrorHandler(self,agv,0.3)
+        # 加工\暂存区专属,调整机械臂姿态,进行高纠
         elif(self.Stage_Flag==200):
-            # 加工\暂存区专属,调整机械臂姿态,进行高纠
             action_time=self.Para_List[1][0]
             y_compensation=self.Para_List[6][0]
             x,y,z=green_ring.Get_Processing_Pos()
@@ -558,14 +625,25 @@ def Pos_Correction_Func(self:MissionDef):
                 self.Phase_Start_Time=time.time()
         elif(self.Stage_Flag==2):
             if(correction_pos==CP.Material):
-                # 复位滤波器,准备后续任务
-                myfilter.Reset()
-                self.End()
-                stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
-                self.Output("Mission({}) 开始扫描物块{}"
-                            .format(self.Name,stuff_index+1),INFO)
+                # 若skip_picking_flag为True,则复位机械臂再结束任务
+                global skip_picking_flag
+                if(skip_picking_flag==True):
+                    busy_flag=arm.Run_Preset_Action(arm.ActionGroup.HOLD_STUFF)
+                    if(busy_flag==False):
+                        myfilter.Reset()
+                        self.End()
+                        self.Output("Mission({}) 机械臂复位,即将跳过夹取".format(self.Name))
+                # 若skip_picking_flag为False,则直接结束,并衔接夹取任务
+                else:
+                    # 复位滤波器,准备后续任务
+                    myfilter.Reset()
+                    self.End()
+                    # 衔接原料区夹取任务,仅有信息输出作用
+                    stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
+                    self.Output("Mission({}) 开始扫描物块{}"
+                                .format(self.Name,stuff_index+1),INFO)
             else:
-                # 原料/加工区低纠正就位
+                # 加工/暂存区低纠正就位
                 x,y,z=green_ring.Get_Processing_Pos()
                 z-=50
                 # 试验中物块在机械臂系下的y值会大于纠正位置,纠正时需要补偿
@@ -610,46 +688,109 @@ def RawMaterial_Picking_Func(self:MissionDef):
     global stuff_index_counter
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [4,9]):
-        # 获取任务参数0
-        material_height_offset=self.Para_List[0][0]
-        t0=self.Para_List[2][0]
-        # 移动到物块上方
-        x,y,z=current_stuff.Get_Material_Pos()
-        z+=material_height_offset
-        busy_flag=arm.Goto_Target_Pos((x,y,z),t0)
-        if(busy_flag==False):
-            self.Change_Stage()
-            if(self.Verbose_Flag==True):
-                self.Output("Mission({}) 机械臂就位,开始扫描物块{}"
-                            .format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [0,5,10]):
-        # 获取任务参数1
-        vc_th=self.Para_List[1][0]
-        # 检测圆形
-        RM.Circle_Detect_Stable(self,frame_captured,current_stuff,vc_th)
-    elif(self.Stage_Flag in [1,6,11]):
-        RM.Material_FetchStuff(self,arm,current_stuff)
-    elif(self.Stage_Flag in [2,7,12]):
-        RM.StuffPlate_PutOn(self,arm,current_stuff)
-    elif(self.Stage_Flag in [3,8,13]):
-        t2=self.Para_List[2][2]
-        pos=current_stuff.Get_Material_Pos()
-        busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            # 每次将物料放上车后的回转是完成物料夹取的标志,索引自增,进行下一个物料的夹取
-            # 最后一次回转后标志所有夹取结束,索引重置
-            if(self.Stage_Flag!=13):
-                stuff_index_counter.Increment()
-            else:
-                stuff_index_counter.Reset()
-            self.Change_Stage()
-            self.Output("Mission({}) 已朝向原料盘".format(self.Name))
-    elif(self.Stage_Flag==14):
-        # 完成所有夹取任务后,复位物料索引计数器
-        stuff_index_counter.Reset()
+    # 若skip_picking_flag为True,则跳过夹取过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
         self.End()
+        self.Output("Mission({}) 跳过夹取".format(self.Name))
+    # 若skip_picking_flag为False,则正常夹取
+    else:
+        if(self.Stage_Flag in [4,9]):
+            # 获取任务参数0
+            material_height_offset=self.Para_List[0][0]
+            t0=self.Para_List[2][0]
+            # 移动到物块上方
+            x,y,z=current_stuff.Get_Material_Pos()
+            z+=material_height_offset
+            busy_flag=arm.Goto_Target_Pos((x,y,z),t0)
+            if(busy_flag==False):
+                self.Change_Stage()
+                if(self.Verbose_Flag==True):
+                    self.Output("Mission({}) 机械臂就位,开始扫描物块{}"
+                                .format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [0,5,10]):
+            # 获取任务参数1
+            vc_th=self.Para_List[1][0]
+            # 检测圆形
+            RM.Circle_Detect_Stable(self,frame_captured,current_stuff,vc_th)
+        elif(self.Stage_Flag in [1,6,11]):
+            RM.Material_FetchStuff(self,arm,current_stuff)
+        elif(self.Stage_Flag in [2,7,12]):
+            RM.StuffPlate_PutOn(self,arm,current_stuff)
+        elif(self.Stage_Flag in [3,8,13]):
+            t2=self.Para_List[2][2]
+            pos=current_stuff.Get_Material_Pos()
+            busy_flag=arm.Goto_Target_Pos(pos,t2,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                # 每次将物料放上车后的回转是完成物料夹取的标志,索引自增,进行下一个物料的夹取
+                # 最后一次回转后标志所有夹取结束,索引重置
+                if(self.Stage_Flag!=13):
+                    stuff_index_counter.Increment()
+                else:
+                    stuff_index_counter.Reset()
+                self.Change_Stage()
+                self.Output("Mission({}) 已朝向原料盘".format(self.Name))
+        elif(self.Stage_Flag==14):
+            # 完成所有夹取任务后,复位物料索引计数器
+            stuff_index_counter.Reset()
+            self.End()
 
+
+def RawMaterial_2_Processing_Stable_Func(self:MissionDef_t):
+    """
+    * 用走+转+三段转弯的方式完成原料区->加工区
+        * "转"尝试使用角度纠正的形势
+    ## 参数列表:\n
+    [\n
+    0. [直走位移参数],
+    1. [原地转弯目标角],
+    2. [直走速度参数],
+    3. [圆弧转弯参数],
+    4. [直走速度参数]\n
+    ]
+    ## 时间列表:
+    [直走等待时间,原地转弯等待时间,直走时间,圆弧转弯时间,直走时间]
+    """
+    if(self.Stage_Flag==0):
+        self.Change_Stage()
+        agv.Position_Control(self.Para_List[0])
+        self.Output("Mission({}) 开始直走".format(self.Name))
+        self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==1):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[0]):
+            self.Change_Stage()
+            agv.Position_Control(self.Para_List[1])
+            self.Output("Mission({}) 开始原地转弯".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==2):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[2])
+            self.Output("Mission({}) 开始直走2".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==3):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+            self.Change_Stage()
+            agv.MOVJ_control(self.Para_List[3])
+            self.Output("Mission({}) 开始圆弧转弯".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==4):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[3]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[4])
+            self.Output("Mission({}) 开始直走3".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==5):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[4]):
+            self.Change_Stage()
+            agv.Velocity_Control([0,0,0])
+            self.Output("Mission({}) 开始制动".format(self.Name))
+            self.Phase_Start_Time=time.time()
+    elif(self.Stage_Flag==6):
+        stop_wait_time=0.5
+        if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
+            self.End()
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
 
 def RawMaterial_2_Processing_Func(self:MissionDef_t):
     """
@@ -742,54 +883,61 @@ def Processing_PickAndPlace_Func(self:MissionDef):
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [0,3,6]):
-        self.Change_Stage()
-        self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [1,4,7]):
-        # 车取
-        RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
-    elif(self.Stage_Flag in [2,5,8]):
-        # 加放
-        comp=None
-        if(round_counter.Get()==0):
-            comp=5
-        else:
-            comp=6
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,False,comp)
-        # 每次完成放置后,索引计数器自增或重置
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=9):
-                stuff_index_counter.Increment()
-                self.Output("Mission({}) 索引自增".format(self.Name))
+    # 若skip_picking_flag为True,则跳过夹取过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
+        self.End()
+        self.Output("Mission({}) 跳过夹取".format(self.Name))
+    # 若skip_picking_flag为False,则正常夹取
+    else:
+        if(self.Stage_Flag in [0,3,6]):
+            self.Change_Stage()
+            self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [1,4,7]):
+            # 车取
+            RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
+        elif(self.Stage_Flag in [2,5,8]):
+            # 加放
+            comp=None
+            if(round_counter.Get()==0):
+                comp=5
             else:
+                comp=6
+            cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,False,comp)
+            # 每次完成放置后,索引计数器自增或重置
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=9):
+                    stuff_index_counter.Increment()
+                    self.Output("Mission({}) 索引自增".format(self.Name))
+                else:
+                    stuff_index_counter.Reset()
+                    self.Output("Mission({}) 开始回收".format(self.Name))
+        elif(self.Stage_Flag in [9,12,15]):
+            self.Change_Stage()
+            self.Output("Mission({}) 回收物块{}".format(self.Name,stuff_index+1),INFO)
+        elif(self.Stage_Flag in [10,13,16]):
+            # 加取
+            comp=None
+            if(round_counter.Get()==0):
+                comp=5
+            else:
+                comp=6            
+            RM.Processing_Fetch(self,arm,current_stuff,stuff_index,comp)
+        elif(self.Stage_Flag in [11,14,17]):
+            # 车放
+            cplt_flag=RM.StuffPlate_PutOn(self,arm,current_stuff,False,stuff_index)
+            # 除最后一次,每次完成回收后,索引计数器自增
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=18):
+                    stuff_index_counter.Increment()
+        elif(self.Stage_Flag==18):
+            t_turn=self.Para_List[0][stuff_index]
+            busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                self.End()
+                # 回收结束后重置索引计数器
                 stuff_index_counter.Reset()
-                self.Output("Mission({}) 开始回收".format(self.Name))
-    elif(self.Stage_Flag in [9,12,15]):
-        self.Change_Stage()
-        self.Output("Mission({}) 回收物块{}".format(self.Name,stuff_index+1),INFO)
-    elif(self.Stage_Flag in [10,13,16]):
-        # 加取
-        comp=None
-        if(round_counter.Get()==0):
-            comp=5
-        else:
-            comp=6            
-        RM.Processing_Fetch(self,arm,current_stuff,stuff_index,comp)
-    elif(self.Stage_Flag in [11,14,17]):
-        # 车放
-        cplt_flag=RM.StuffPlate_PutOn(self,arm,current_stuff,False,stuff_index)
-        # 除最后一次,每次完成回收后,索引计数器自增
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=18):
-                stuff_index_counter.Increment()
-    elif(self.Stage_Flag==18):
-        t_turn=self.Para_List[0][stuff_index]
-        busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            self.End()
-            # 回收结束后重置索引计数器
-            stuff_index_counter.Reset()
-            self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
+                self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
 
 
 def Three_Section_Turn_Func(self:MissionDef_t):
@@ -861,44 +1009,110 @@ def Storage_Place_Func(self:MissionDef):
     """
     stuff_index=rgb_order_list[round_counter.Get()][stuff_index_counter.Get()]-1
     current_stuff:myObject=stuff_list[stuff_index]
-    if(self.Stage_Flag in [0,3,6]):
-        self.Change_Stage()
-        self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1))
-    elif(self.Stage_Flag in [1,4,7]):
-        # 车取
-        RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
-    elif(self.Stage_Flag in [2,5,8]):
-        # 加放
-        stacking_flag=self.Para_List[3][0]
-        cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag,4)
-        # 每次完成放置后,索引计数器自增或重置
-        if(cplt_flag==True):
-            if(self.Stage_Flag!=9):
-                stuff_index_counter.Increment()
-            else:
+    # 若skip_picking_flag为True,则跳过放置过程
+    global skip_picking_flag
+    if(skip_picking_flag==True):
+        self.End()
+        # 自增轮次计数器
+        round_counter.Increment()
+        self.Output("Mission({}) 跳过放置".format(self.Name))
+    # 若skip_picking_flag为False,则正常放置
+    else:
+        if(self.Stage_Flag in [0,3,6]):
+            self.Change_Stage()
+            self.Output("Mission({}) 放置物块{}".format(self.Name,stuff_index+1))
+        elif(self.Stage_Flag in [1,4,7]):
+            # 车取
+            RM.StuffPlate_Fetch(self,arm,current_stuff,stuff_index)
+        elif(self.Stage_Flag in [2,5,8]):
+            # 加放
+            stacking_flag=self.Para_List[3][0]
+            cplt_flag=RM.Processing_PutOn(self,arm,current_stuff,stuff_index,stacking_flag,4)
+            # 每次完成放置后,索引计数器自增或重置
+            if(cplt_flag==True):
+                if(self.Stage_Flag!=9):
+                    stuff_index_counter.Increment()
+                else:
+                    stuff_index_counter.Reset()
+        elif(self.Stage_Flag==9):
+            t_turn=self.Para_List[0][stuff_index]
+            busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
+            if(busy_flag==False):
+                self.End()
+                # 回收结束后重置索引计数器
                 stuff_index_counter.Reset()
-    elif(self.Stage_Flag==9):
-        t_turn=self.Para_List[0][stuff_index]
-        busy_flag=arm.Goto_Target_Pos((0,-200,0),t_turn,arm.Ctrl_Mode.YAW_ROTATION)
-        if(busy_flag==False):
-            self.End()
-            # 回收结束后重置索引计数器
-            stuff_index_counter.Reset()
-            # 暂存区放置完成后第一轮结束,进入第二轮
-            # 注意此处第二轮暂存区码垛结束后也会自增,可能有bug
-            round_counter.Increment()
-            self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
+                # 暂存区放置完成后第一轮结束,进入第二轮
+                # 注意此处第二轮暂存区码垛结束后也会自增,可能有bug
+                round_counter.Increment()
+                self.Output("Mission({}) 回收完毕,机械臂复位".format(self.Name))
 
 
 # 第二轮专属
+
+def Material_Go_Home_Func(self:MissionDef_t):
+    """
+    *  原料区->启停区
+    * 参数列表元素数: 3 [[角度校准角度],[直走速度],[斜走速度]]
+    * 时间列表元素数: 3 [[角度校准时间],直走时间,斜走时间]
+    * 参数: stop_wait_time, 制动等待时间
+    """
+    if(self.Stage_Flag==0):
+        self.Change_Stage()
+        agv.Angle_Correction(self.Para_List[0][0])
+        self.Output("Mission({}) 开始角度校准".format(self.Name))
+        self.Phase_Start_Time=time.time()
+    # 等待角度纠正完成,开始直走
+    if(self.Stage_Flag==1):
+        if(time.time()-self.Phase_Start_Time>=self.Time_List[0]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[1])
+            self.Output("Mission({}) 开始直走".format(self.Name))
+            self.Phase_Start_Time=time.time()
+
+    # 等待直走完成，开始斜走
+    elif(self.Stage_Flag==2):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[1]):
+            self.Change_Stage()
+            agv.Velocity_Control(self.Para_List[2])
+            self.Output("Mission({}) 开始斜走".format(self.Name))
+            self.Phase_Start_Time=time.time()
+        
+    # 等待直走完成，停止
+    elif(self.Stage_Flag==3):
+        if((time.time()-self.Phase_Start_Time)>=self.Time_List[2]):
+            self.Change_Stage()
+            agv.Velocity_Control([0,0,0])
+            self.Output("Mission({}) 开始制动".format(self.Name))
+            self.Phase_Start_Time=time.time()
+
+    # 等待制动完成，结束
+    elif(self.Stage_Flag==4):
+        stop_wait_time=0.5
+        if((time.time()-self.Phase_Start_Time)>=stop_wait_time):
+            self.Change_Stage()
+            self.Output("Mission({}) 制动等待完成".format(self.Name))
+
+    else:
+        self.End()
+
+
+Home_Pos_Compensation:List[np.int16]=None
+def Home_Callback(self:MissionDef_t):
+    """
+    * 回启停区完成后的回调函数,用于提高回家成功率
+    """
+    global Home_Pos_Compensation
+    agv.Position_Control(Home_Pos_Compensation)
+
+
 def Storage_Go_Home_Func(self:MissionDef_t):
     """
-    @功能: 暂存区->启停区
+    * 暂存区->启停区
     @参数列表元素数: 4 [[直走速度],[圆弧转弯参数],[直走速度],[斜走速度]]
     @时间列表元素数: 4 [直走时间,圆弧转弯时间,直走时间,斜走时间]
     @参数: stop_wait_time, 制动等待时间
     """
-    stop_wait_time=0
+    stop_wait_time=0.5
 
     # 开始直走，计时
     if(self.Stage_Flag==0):

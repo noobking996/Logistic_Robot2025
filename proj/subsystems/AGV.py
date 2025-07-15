@@ -12,6 +12,8 @@ class AGVCommand(Enum):
     VELOCITY_CONTROL=0x00
     MOVJ_CONTROL=0x01
     POS_CTRL=0x02
+    SET_PARAMs=0x03
+    ANGLE_CORRECTION=0x04
 
 class MOVJ_Drection(Enum):
     Left_Forward=0x00
@@ -87,7 +89,7 @@ class myAGV:
     def MOVJ_control(self,param_list:List[Union[MOVJ_Drection, np.uint16]]):
 
         """
-        @param Movj_Param_List:圆弧运动参数列表[direction,rou_mm,omega_deg_s],
+        @param param_list:圆弧运动参数列表[direction,rou_mm,omega_deg_s],
             direction为MOVJ_Drection类型,rou_mm,omega_deg_s为uint16类型
         1. 功能:装载并发送数据帧,共使用6有效字节
         2. 数据帧格式:命令声明+方向 + rou_h + rou_l + omega_h + omega_l
@@ -124,6 +126,77 @@ class myAGV:
         # 1.下位机暂无回应帧
         # 2.阻塞方式读取回应数据可能影响实时性，故暂时不处理，等待后续版本  
 
+
+    def Position_Control(self,pos_param_list:List[np.int16]):
+        """
+        * 底盘位置控制
+        @param pos_param_list: 位置控制参数列表[x_mm,y_mm,z_mm,theta_degx10],int16类型
+        1. 功能:装载并发送数据帧,共使用8有效字节
+        2. 数据帧格式: 命令声明 + 位移方向 + x_h + x_l + y_h + y_l + theta_h + theta_l
+        """
+        # 装载命令声明
+        AGV_Data_Frame[0]=AGVCommand.POS_CTRL.value
+
+        x_mm=np.int16(pos_param_list[0])
+        y_mm=np.int16(pos_param_list[1])
+        # 参数theta_degx10为转动角度值*10,目的是实现小角度转动(分辨率0.1度)
+        theta_degx10=np.int16(pos_param_list[2])
+
+        # 设置广义速度方向标志位
+        sign_flag=np.uint8(0x00)
+        if(x_mm<0):
+            sign_flag|=(0x01<<0)
+        if(y_mm<0):
+            sign_flag|=(0x01<<1)
+        if(theta_degx10<0):
+            sign_flag|=(0x01<<2)
+        AGV_Data_Frame[1]=sign_flag
+
+        # 装载速度大小
+        x=np.uint16(abs(x_mm))
+        y=np.uint16(abs(y_mm))
+        theta=np.uint16(abs(theta_degx10))
+        x_bytes=x.tobytes('C')
+        y_bytes=y.tobytes('C')
+        theta_bytes=theta.tobytes('C')
+        # 发送顺序为高位在前，低位在后
+        AGV_Data_Frame[2]=x_bytes[1]
+        AGV_Data_Frame[3]=x_bytes[0]
+        AGV_Data_Frame[4]=y_bytes[1]
+        AGV_Data_Frame[5]=y_bytes[0]
+        AGV_Data_Frame[6]=theta_bytes[1]
+        AGV_Data_Frame[7]=theta_bytes[0]
+        # 一共使用8字节数据
+
+        # 发送数据帧
+        self.uartPort.write(AGV_Data_Frame)
+
+    
+    def Angle_Correction(self,target_angle_deg:np.int16):
+        """
+        * 角度校准
+        @param target_angle_deg: 目标角度值,int16类型,范围为(-180,180]
+        1. 功能:装载并发送数据帧,共使用3有效字节
+        2. 数据帧格式: 命令声明 + 角度正负值标志位 + 目标角度值
+        3.注意: 函数内部没有声明target_angle_deg为int16型,可能有bug
+        """
+        # 校验目标角度值
+        if(target_angle_deg<=-180 or target_angle_deg>180):
+            raise ValueError("角度值必须在(-180,180]范围内")
+        # 装载命令声明
+        AGV_Data_Frame[0]=AGVCommand.ANGLE_CORRECTION.value
+        minus_flag=np.uint8(0x00)
+        # 设置角度正负值标志位
+        if(target_angle_deg<0):
+            minus_flag=np.uint8(0x01)
+        AGV_Data_Frame[1]=minus_flag
+        # 装载角度大小
+        angle=np.uint8(abs(target_angle_deg))
+        AGV_Data_Frame[2]=angle
+        # 一共使用3字节数据
+
+        # 发送数据帧
+        self.uartPort.write(AGV_Data_Frame)
 
 
 ###################################################测试代码
