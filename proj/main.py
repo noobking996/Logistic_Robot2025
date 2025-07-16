@@ -56,7 +56,7 @@ RawMaterial_2_Processing_Stable_Round2=MissionDef_t("原料区->加工区(稳定
 Processing_Pos_Correction=MissionDef("加工区纠正",MF.Pos_Correction_Func,
                                       [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,1.5,None,-80],
-                                       [True,True],[30,18],[True,(-179,-177),0.5]],True)
+                                       [True,True],[30,18],[False,(-179,-177),0.5]],True)
 
 Processing_PickAndPlace=MissionDef("加工区放置回收",MF.Processing_PickAndPlace_Func,
                                    [[200,200,200],[150,250,300,50],[200,150,350,60],
@@ -70,7 +70,7 @@ Processing_2_Storage=MissionDef_t("加工区->暂存区",MF.Three_Section_Turn_F
 Storage_Pos_Correction=MissionDef("暂存区纠正",MF.Pos_Correction_Func,
                                    [[CP.Processing],[200,200],[0.1,(10,10),(20,20),0,(125,140)],
                                        [0.1,(2,2),(5,5),(160,200)],[0.1,0.7,1,1.5,None,-80],
-                                       [True,True],[30,18],[True,(91,93),0.5]],True)
+                                       [True,True],[30,18],[False,(91,93),0.5]],True)
 
 # 第一轮专属任务
 Storage_Place=MissionDef("暂存区放置",MF.Storage_Place_Func,[[200,200,200],[150,250,300,50],
@@ -129,7 +129,7 @@ Partial_MIssion_Test=MissionManager([Rawmaterial_Go_Home],[[0,0,0]],True,0)
 #####################################################################################
 
 # 任务代号
-Mission_Code="debug_0328_1835"
+Mission_Code="debug_0716_1611"
 
 # 创建公共日志记录器
 Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
@@ -137,7 +137,7 @@ Public_Logger=Setup.Logger_Setup(Mission_Code,[DEBUG,DEBUG,DEBUG])
 #####################################################################################
 
 # 是否显示任务码
-MF.show_missionCode=True
+MF.show_missionCode=False
 
 # 是否在完整任务流中跳过夹取/放置(行走调试用)
 MF.Skip_All_PickPlace(False)
