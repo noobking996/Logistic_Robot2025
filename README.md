@@ -93,7 +93,7 @@ Logistic_Robot2025/
 ## 使用方式
 - 通过```wizards```目录下的程序启动脚本启动
     ```bash
-    source wizards/run_gpioTest.sh
+    source wizards/run_mainpy.sh
     ```
 - 脚本启动后会在指定工作目录下寻找```main.py```, 并在指定的python环境下用sudo权限运行该python脚本
 - 请自行修改脚本中的工作目录和python解释器路径
